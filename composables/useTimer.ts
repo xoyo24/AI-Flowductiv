@@ -114,6 +114,11 @@ export const useTimer = () => {
       const { saveActivity } = useActivities()
       await saveActivity(activityData)
 
+      // Emit event to refresh activities list
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('activity-saved'))
+      }
+
       // Reset timer state
       resetTimer()
       return true

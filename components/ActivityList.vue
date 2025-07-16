@@ -107,6 +107,66 @@
       </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div v-if="editingActivity" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-card rounded-lg border border-border p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-foreground mb-4">Edit Activity</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm font-medium text-foreground">Activity Name</label>
+            <input
+              v-model="editingActivity.title"
+              class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground mt-1"
+            />
+          </div>
+          
+          <div>
+            <label class="text-sm font-medium text-foreground">Focus Rating (1-5)</label>
+            <select
+              v-model="editingActivity.focusRating"
+              class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground mt-1"
+            >
+              <option :value="null">No rating</option>
+              <option :value="1">1 - Poor</option>
+              <option :value="2">2 - Fair</option>
+              <option :value="3">3 - Good</option>
+              <option :value="4">4 - Great</option>
+              <option :value="5">5 - Excellent</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="text-sm font-medium text-foreground">Energy Level</label>
+            <select
+              v-model="editingActivity.energyLevel"
+              class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground mt-1"
+            >
+              <option :value="null">No rating</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-2 mt-6">
+          <button
+            @click="cancelEdit"
+            class="px-4 py-2 text-sm border border-border rounded-md hover:bg-secondary transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="saveEdit"
+            class="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Summary Stats -->
     <div v-if="activities.length > 0" class="border-t border-border pt-4 mt-6">
       <div class="grid grid-cols-3 gap-4 text-center">
@@ -149,9 +209,26 @@ const refreshActivities = async () => {
   await getTodaysActivities()
 }
 
+const editingActivity = ref<any>(null)
+
 const editActivity = (activity: any) => {
-  // TODO: Implement edit modal/form
-  console.log('Edit activity:', activity)
+  editingActivity.value = { ...activity }
+}
+
+const saveEdit = async () => {
+  if (!editingActivity.value) return
+  
+  await updateActivity(editingActivity.value.id, {
+    title: editingActivity.value.title,
+    focusRating: editingActivity.value.focusRating,
+    energyLevel: editingActivity.value.energyLevel
+  })
+  
+  editingActivity.value = null
+}
+
+const cancelEdit = () => {
+  editingActivity.value = null
 }
 
 const removeActivity = async (id: string) => {
@@ -160,6 +237,22 @@ const removeActivity = async (id: string) => {
   }
 }
 
-// Auto-refresh when new activities are added
-// This will be handled by the timer composable calling saveActivity
+// Initialize and auto-refresh when new activities are added
+onMounted(async () => {
+  // Load today's activities on mount
+  await refreshActivities()
+  
+  // Listen for new activity events
+  const handleActivitySaved = () => {
+    refreshActivities()
+  }
+  
+  if (typeof window !== 'undefined') {
+    window.addEventListener('activity-saved', handleActivitySaved)
+    
+    onUnmounted(() => {
+      window.removeEventListener('activity-saved', handleActivitySaved)
+    })
+  }
+})
 </script>

@@ -173,10 +173,8 @@ export const useActivities = () => {
     return `${minutes}m`
   }
 
-  // Initialize - load today's activities
-  onMounted(async () => {
-    await getTodaysActivities()
-  })
+  // Initialize - load today's activities (removed onMounted to fix warning)
+  // Components should call getTodaysActivities() explicitly
 
   return {
     // State (readonly)

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   
   modules: [
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/supabase',
+    // '@nuxtjs/supabase', // Disabled for Phase 0 - local SQLite only
     '@vueuse/nuxt',
     '@vite-pwa/nuxt'
   ],
@@ -29,13 +29,13 @@ export default defineNuxtConfig({
     }
   },
 
-  supabase: {
-    redirectOptions: {
-      login: '/auth/login',
-      callback: '/auth/callback',
-      exclude: ['/']
-    }
-  },
+  // supabase: {
+  //   redirectOptions: {
+  //     login: '/auth/login',
+  //     callback: '/auth/callback',
+  //     exclude: ['/']
+  //   }
+  // },
 
   pwa: {
     registerType: 'autoUpdate',

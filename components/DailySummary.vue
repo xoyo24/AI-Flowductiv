@@ -163,13 +163,24 @@ const generateSummary = async () => {
 }
 
 // Auto-generate summary when activities change (debounced)
-const debouncedGenerate = useDebounceFn(generateSummary, 5000)
+const debouncedGenerate = useDebounceFn(generateSummary, 3000)
 
-watch(activities, (newActivities) => {
-  if (newActivities.length > 0 && !summary.value) {
-    debouncedGenerate()
+watch(activities, (newActivities, oldActivities) => {
+  // Only auto-generate if we have new activities and no recent summary
+  if (newActivities.length > 0 && newActivities.length !== oldActivities?.length) {
+    if (!summary.value || needsRefresh()) {
+      debouncedGenerate()
+    }
   }
 }, { deep: true })
+
+const needsRefresh = () => {
+  if (!summary.value) return true
+  
+  // Refresh if summary is older than 5 minutes
+  const summaryAge = Date.now() - new Date(summary.value.generatedAt).getTime()
+  return summaryAge > 5 * 60 * 1000
+}
 
 // Load existing summary on mount
 onMounted(async () => {

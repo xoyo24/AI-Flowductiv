@@ -6,25 +6,36 @@
         <label for="activity-input" class="text-sm font-medium text-foreground">
           What are you working on?
         </label>
-        <div class="relative">
-          <input
-            id="activity-input"
-            v-model="activityInput"
-            type="text"
-            placeholder="Enter activity name (use #tags and !1-3 for priority)"
-            class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            :disabled="isRunning || isPaused"
-            @keyup.enter="handleStart"
-            data-testid="activity-input"
-          />
-          <div v-if="activityInput" class="absolute right-2 top-2 flex space-x-1">
-            <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-              #{{ tag }}
-            </span>
-            <span v-if="extractedPriority" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-              !{{ extractedPriority }}
-            </span>
+        <div class="flex space-x-2">
+          <div class="relative flex-1">
+            <input
+              id="activity-input"
+              v-model="activityInput"
+              type="text"
+              placeholder="Enter activity name (use #tags and !1-3 for priority)"
+              class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              :disabled="isRunning || isPaused"
+              @keyup.enter="handleStart"
+              data-testid="activity-input"
+            />
+            <div v-if="activityInput" class="absolute right-2 top-2 flex space-x-1">
+              <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                #{{ tag }}
+              </span>
+              <span v-if="extractedPriority" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                !{{ extractedPriority }}
+              </span>
+            </div>
           </div>
+          <button
+            v-if="!isRunning && !isPaused"
+            @click="handleStart"
+            :disabled="!activityInput.trim()"
+            class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors whitespace-nowrap"
+            data-testid="start-button"
+          >
+            Start
+          </button>
         </div>
       </div>
 
