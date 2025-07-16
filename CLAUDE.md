@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Flowductiv** is a privacy-first, AI-enhanced productivity tool built with modern web technologies. Fresh implementation using Nuxt 3, focusing on manual time tracking enhanced by multi-modal AI insights.
 
 📚 **Full Documentation**: See `docs/` for detailed specifications
+- `docs/PRD.md` - Product requirements and roadmap
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture details  
 - `docs/COLLABORATION_PLAN.md` - Development workflow and collaboration
 - `docs/SESSION_NOTES.md` - Current sprint goals and session tracking
