@@ -1,0 +1,39 @@
+Flowductiv Proprietary License
+
+Copyright (c) 2024 Flowductiv Team. All rights reserved.
+
+This software and associated documentation files (the "Software") are proprietary 
+and confidential to Flowductiv Team. 
+
+RESTRICTIONS:
+1. The Software is provided for evaluation, contribution, and collaboration purposes only.
+2. You may NOT use this Software to create, develop, or distribute competing products.
+3. You may NOT publish, distribute, or monetize applications based on this Software.
+4. You may NOT use the Software for commercial purposes without explicit written permission.
+5. You may NOT remove or modify this license notice.
+
+PERMITTED USES:
+- View and study the source code for learning purposes
+- Contribute improvements via pull requests (contributions become part of this project)
+- Fork for personal experimentation (non-commercial, non-competitive use only)
+- Use as reference for your own non-competing projects
+
+ATTRIBUTION:
+Any derivative work or substantial portions of this Software must include prominent 
+attribution to the original Flowductiv project and this license notice.
+
+DISCLAIMER:
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+CONTACT:
+For commercial licensing inquiries, please contact: [your-email@example.com]
+
+---
+
+This license may be updated at any time. The latest version will always be available 
+in the project repository.

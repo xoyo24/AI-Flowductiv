@@ -68,7 +68,9 @@ This project uses an optimized collaboration workflow between human developers a
 
 ## 📄 License
 
-MIT License - see LICENSE file for details
+**Proprietary License** - This project is proprietary software intended for evaluation and collaboration. Commercial use, distribution, or creation of competing products is prohibited without explicit permission. See [LICENSE](./LICENSE) for full details.
+
+For commercial licensing inquiries, please contact: [your-email@example.com]
 
 ---
 
