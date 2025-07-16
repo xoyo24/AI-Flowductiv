@@ -130,7 +130,32 @@
 </template>
 
 <script setup lang="ts">
-const { activities, getActivityStats, formatDuration } = useActivities()
+const { activities, getActivityStats, formatDuration, getTodaysActivities } = useActivities()
+
+// Event handler reference for cleanup
+let activitySavedHandler: (() => void) | null = null
+
+// Load today's activities on mount
+onMounted(async () => {
+  await getTodaysActivities()
+
+  // Listen for new activities
+  activitySavedHandler = async () => {
+    await getTodaysActivities()
+  }
+  
+  if (typeof window !== 'undefined') {
+    window.addEventListener('activity-saved', activitySavedHandler)
+  }
+})
+
+// Cleanup event listener on unmount
+onUnmounted(() => {
+  if (typeof window !== 'undefined' && activitySavedHandler) {
+    window.removeEventListener('activity-saved', activitySavedHandler)
+    activitySavedHandler = null
+  }
+})
 
 // Daily goal (in milliseconds) - could be user configurable
 const dailyGoal = ref(8 * 60 * 60 * 1000) // 8 hours

@@ -1,3 +1,5 @@
+import { getCurrentInstance } from 'vue'
+
 export interface TimerState {
   isRunning: boolean
   isPaused: boolean
@@ -204,16 +206,23 @@ export const useTimer = () => {
     }
   }
 
-  // Initialize on mount
-  onMounted(() => {
-    loadTimerState()
-  })
+  // Initialize on mount (only if in component context)
+  if (getCurrentInstance()) {
+    onMounted(() => {
+      loadTimerState()
+    })
 
-  // Cleanup on unmount
-  onUnmounted(() => {
-    pauseInterval()
-    saveTimerState()
-  })
+    // Cleanup on unmount
+    onUnmounted(() => {
+      pauseInterval()
+      saveTimerState()
+    })
+  } else {
+    // If not in component context, initialize immediately
+    if (typeof window !== 'undefined') {
+      loadTimerState()
+    }
+  }
 
   // Return readonly state and actions
   return {

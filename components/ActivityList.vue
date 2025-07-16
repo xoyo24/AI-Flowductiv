@@ -237,22 +237,29 @@ const removeActivity = async (id: string) => {
   }
 }
 
+// Event handler reference for cleanup
+let activitySavedHandler: (() => void) | null = null
+
 // Initialize and auto-refresh when new activities are added
 onMounted(async () => {
   // Load today's activities on mount
   await refreshActivities()
   
-  // Listen for new activity events
-  const handleActivitySaved = () => {
+  // Create and store event handler for cleanup
+  activitySavedHandler = () => {
     refreshActivities()
   }
   
   if (typeof window !== 'undefined') {
-    window.addEventListener('activity-saved', handleActivitySaved)
-    
-    onUnmounted(() => {
-      window.removeEventListener('activity-saved', handleActivitySaved)
-    })
+    window.addEventListener('activity-saved', activitySavedHandler)
+  }
+})
+
+// Cleanup event listener on unmount
+onUnmounted(() => {
+  if (typeof window !== 'undefined' && activitySavedHandler) {
+    window.removeEventListener('activity-saved', activitySavedHandler)
+    activitySavedHandler = null
   }
 })
 </script>

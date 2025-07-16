@@ -78,7 +78,7 @@ interface AISummary {
   generatedAt: string
 }
 
-const { activities } = useActivities()
+const { activities, getTodaysActivities } = useActivities()
 
 // Local state
 const summary = ref<AISummary | null>(null)
@@ -182,8 +182,14 @@ const needsRefresh = () => {
   return summaryAge > 5 * 60 * 1000
 }
 
+// Event handler reference for cleanup
+let activitySavedHandler: (() => void) | null = null
+
 // Load existing summary on mount
 onMounted(async () => {
+  // Load today's activities first
+  await getTodaysActivities()
+  
   if (activities.value.length > 0) {
     // Try to load cached summary for today
     try {
@@ -195,6 +201,23 @@ onMounted(async () => {
     } catch (err) {
       // No cached summary, that's okay
     }
+  }
+
+  // Listen for new activities
+  activitySavedHandler = async () => {
+    await getTodaysActivities()
+  }
+  
+  if (typeof window !== 'undefined') {
+    window.addEventListener('activity-saved', activitySavedHandler)
+  }
+})
+
+// Cleanup event listener on unmount
+onUnmounted(() => {
+  if (typeof window !== 'undefined' && activitySavedHandler) {
+    window.removeEventListener('activity-saved', activitySavedHandler)
+    activitySavedHandler = null
   }
 })
 </script>
