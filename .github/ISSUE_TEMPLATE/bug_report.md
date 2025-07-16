@@ -21,8 +21,8 @@ A clear and concise description of what you expected to happen.
 ## 📱 Environment
 - OS: [e.g. macOS, Windows, Linux]
 - Browser: [e.g. Chrome, Safari, Firefox]
-- Version: [e.g. 1.0.0]
-- Device: [e.g. Desktop, Mobile]
+- Node.js Version: [e.g. 18.x, 20.x]
+- Package Manager: [e.g. npm, bun]
 
 ## 📷 Screenshots
 If applicable, add screenshots to help explain your problem.
@@ -30,6 +30,7 @@ If applicable, add screenshots to help explain your problem.
 ## 📝 Additional Context
 Add any other context about the problem here.
 
----
-
-**Note:** This is proprietary software. Please do not include any suggestions for competing implementations.
+## 🧪 Testing
+- [ ] I have tested this in development mode (`npm run dev`)
+- [ ] I have cleared my browser cache and local storage
+- [ ] This issue is reproducible

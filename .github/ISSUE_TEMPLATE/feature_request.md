@@ -23,9 +23,11 @@ A clear and concise description of any alternative solutions or features you've 
 - [ ] Criterion 2
 - [ ] Criterion 3
 
+## 💻 Technical Considerations
+If you have ideas about implementation, feel free to share! This is an open project and we welcome technical input.
+
 ## 📝 Additional Context
 Add any other context, mockups, or screenshots about the feature request here.
 
----
-
-**Note:** Feature implementation will be done by the core team. This is proprietary software - please focus on user needs rather than technical implementation details.
+## 🚀 Motivation
+How would this feature improve your productivity workflow?
