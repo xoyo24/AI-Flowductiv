@@ -17,15 +17,16 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Private keys (only available on server-side)
+    // Private keys (only available on server-side) - for Phase 1A
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     openaiApiKey: process.env.OPENAI_API_KEY,
     googleApiKey: process.env.GOOGLE_API_KEY,
     
     // Public keys (exposed to client-side)
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      // Supabase disabled for Phase 0 - using local SQLite only
+      // supabaseUrl: process.env.SUPABASE_URL,
+      // supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     }
   },
 
@@ -79,5 +80,12 @@ export default defineNuxtConfig({
 
   experimental: {
     typedPages: true
+  },
+
+  // Nitro configuration for clean development
+  nitro: {
+    experimental: {
+      wasm: false
+    }
   }
 })
