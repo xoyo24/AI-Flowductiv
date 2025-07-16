@@ -73,95 +73,15 @@ npm run task:next          # Get next recommended task (if using TaskMaster)
   - User feedback integration
   - Major refactoring
 
-## 🏗️ **Phase 0 - Collaboration Breakdown**
+## 📋 **Sprint Management Framework**
 
-### **Week 1: Foundation Setup**
+> **For current sprint goals and task breakdowns, see [SESSION_NOTES.md](./SESSION_NOTES.md)**
 
-#### **Session 1 (Weekend 2hrs): Environment Setup**
-**👤 Your Tasks (60 min):**
-- [ ] Clone and initialize project repository
-- [ ] Install Bun and verify development environment
-- [ ] Configure VS Code with recommended extensions
-- [ ] Set up project structure and initial commit
-
-**🤖 AI Tasks (60 min):**
-- [ ] Generate all configuration files (nuxt.config.ts, package.json, etc.)
-- [ ] Create base component scaffolding
-- [ ] Set up TypeScript configuration
-- [ ] Generate initial project documentation
-
-**🤝 Collaboration Points:**
-- Review generated configurations together
-- Verify environment setup is working
-- Decide on any custom tooling preferences
-
-#### **Session 2 (30 min): Database Schema**
-**👤 Your Tasks (15 min):**
-- [ ] Review database schema design
-- [ ] Test local database setup
-- [ ] Verify migration system works
-
-**🤖 AI Tasks (15 min):**
-- [ ] Generate Drizzle schema files
-- [ ] Create database utility functions
-- [ ] Set up migration scripts
-
-#### **Session 3 (45 min): Core Timer Logic**
-**👤 Your Tasks (20 min):**
-- [ ] Review timer composable logic
-- [ ] Test timer accuracy and edge cases
-- [ ] Validate localStorage persistence
-
-**🤖 AI Tasks (25 min):**
-- [ ] Implement useTimer composable
-- [ ] Create timer utility functions
-- [ ] Add comprehensive timer tests
-
-#### **Session 4 (30 min): Timer UI Components**
-**👤 Your Tasks (10 min):**
-- [ ] Review component design and UX
-- [ ] Test responsive behavior
-- [ ] Validate accessibility features
-
-**🤖 AI Tasks (20 min):**
-- [ ] Generate TimerDisplay component
-- [ ] Create TimerControls component
-- [ ] Implement proper styling and interactions
-
-### **Week 2: Activity Management**
-
-#### **Session 5 (45 min): Activity Storage System**
-**👤 Your Tasks (20 min):**
-- [ ] Review API endpoint design
-- [ ] Test database operations
-- [ ] Validate error handling
-
-**🤖 AI Tasks (25 min):**
-- [ ] Create useActivities composable
-- [ ] Generate API endpoints
-- [ ] Implement CRUD operations
-
-#### **Session 6 (30 min): Activity UI Components**
-**👤 Your Tasks (10 min):**
-- [ ] Review activity list design
-- [ ] Test user interactions
-- [ ] Validate data display
-
-**🤖 AI Tasks (20 min):**
-- [ ] Create ActivityList component
-- [ ] Generate ActivityItem component
-- [ ] Implement editing functionality
-
-#### **Session 7 (Weekend 1hr): Integration & Testing**
-**👤 Your Tasks (30 min):**
-- [ ] End-to-end workflow testing
-- [ ] User experience validation
-- [ ] Performance verification
-
-**🤖 AI Tasks (30 min):**
-- [ ] Create integration tests
-- [ ] Generate comprehensive test suite
-- [ ] Set up CI/CD pipeline basics
+### **Sprint Planning Approach**
+- **Sprint Duration**: 1 week (4-7 sessions)
+- **Session Tracking**: Dynamic updates in SESSION_NOTES.md
+- **Phase Transitions**: Documented in both files
+- **Retrospectives**: Weekly reviews with action items
 
 ## 🔄 **Daily Workflow Patterns**
 
@@ -231,38 +151,38 @@ npm run task:next          # Get next recommended task (if using TaskMaster)
 ## 🎯 **Weekly Sprint Planning**
 
 ### **Monday Planning (15 min):**
-- Review previous week's progress
+- Review previous week's progress in SESSION_NOTES.md
 - Select this week's focus area
 - Break down tasks by session length
 - Identify any blockers or dependencies
+- Update sprint goals and priorities
 
 ### **Friday Review (15 min):**
-- Assess week's achievements
-- Document any issues or learnings
+- Assess week's achievements against sprint goals
+- Document any issues or learnings in SESSION_NOTES.md
 - Plan weekend session (if available)
-- Update project documentation
+- Update sprint metrics and velocity
 
-### **Sprint Metrics:**
-- **Velocity**: Tasks completed per week
-- **Quality**: Tests passing, no regressions
+### **Sprint Metrics Tracking:**
+- **Velocity**: Sessions completed vs planned
+- **Quality**: Features working, tests passing
 - **User Value**: Features that improve core workflow
-- **Technical Debt**: Refactoring and optimization tasks
+- **Blockers**: Environment, dependencies, decisions needed
 
 ## 🚀 **Phase Transition Strategy**
 
-### **Phase 0 → Phase 1A Criteria:**
-- [ ] Timer works reliably for 2+ hour sessions
-- [ ] Activities save and load correctly
-- [ ] Basic UI is responsive and accessible
-- [ ] 10+ beta users validate core workflow
-- [ ] Performance meets benchmarks (<1s load time)
+### **Phase Completion Criteria:**
+- All must-have features implemented
+- Core workflows tested and validated
+- Performance benchmarks met
+- Documentation updated
 
 ### **Handoff Protocol:**
-1. **User** validates all phase criteria
+1. **User** validates all phase criteria in SESSION_NOTES.md
 2. **AI** prepares next phase detailed tasks
-3. **Together** review and adjust Phase 1A plan
+3. **Together** review and adjust upcoming phase plan
 4. **User** approves transition and scope
-5. **AI** generates first Phase 1A tasks
+5. **AI** updates SESSION_NOTES.md with new sprint goals
 
 ## 🛠️ **Development Environment Optimization**
 

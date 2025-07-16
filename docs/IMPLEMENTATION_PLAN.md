@@ -582,6 +582,64 @@ export default defineNuxtConfig({
 - [ ] Push notifications can be enabled
 - [ ] App updates automatically when available
 
+## 🚀 **Deployment Strategy**
+
+### **Development → Production Pipeline**
+
+#### **Phase 0: Local Development (Current)**
+```bash
+# Development stack
+bun dev                    # Local development server
+Local SQLite              # Development database
+```
+
+#### **Phase 1A: Production Deployment**
+```bash
+# Production stack
+Vercel                    # Hosting platform (excellent Bun support)
+Supabase                  # Production database (PostgreSQL)
+Bun                       # Package manager (faster builds on Vercel)
+```
+
+### **Migration Path: SQLite → Supabase**
+
+#### **Task: Database Migration Setup**
+```typescript
+// Environment-based database selection
+// server/database/index.ts
+export const getDatabase = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // Production: Supabase PostgreSQL
+    return drizzle(postgres(process.env.DATABASE_URL!))
+  } else {
+    // Development: Local SQLite
+    return drizzle(new Database('local.db'))
+  }
+}
+```
+
+**Migration Strategy:**
+1. **Phase 0**: Continue with SQLite for MVP development
+2. **Phase 1A**: Add Supabase configuration alongside SQLite
+3. **Phase 1B**: Switch production to Supabase, keep SQLite for dev
+4. **Phase 2**: Optional - migrate dev to Supabase for consistency
+
+**Deployment Commands:**
+```bash
+# Vercel deployment (auto-detects Bun)
+vercel --prod
+
+# Database migration to Supabase
+bun run db:migrate:prod
+```
+
+**Benefits of This Strategy:**
+- ✅ **Zero downtime** migration path
+- ✅ **Bun optimization** on Vercel (faster builds)
+- ✅ **Cost-effective** development (free SQLite)
+- ✅ **Scalable** production (Supabase)
+- ✅ **Industry standard** stack for portfolio
+
 ## 🧪 **Verification & Testing Strategy**
 
 ### **Automated Testing Framework**
