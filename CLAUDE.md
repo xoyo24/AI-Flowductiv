@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Flowductiv** is a privacy-first, AI-enhanced productivity tool built with modern web technologies. Fresh implementation using Nuxt 3, focusing on manual time tracking enhanced by multi-modal AI insights.
 
 📚 **Full Documentation**: See `docs/` for detailed specifications
-- `docs/ENHANCED_PRD.md` - Product requirements and roadmap
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture details  
 - `docs/COLLABORATION_PLAN.md` - Development workflow and collaboration
 - `docs/SESSION_NOTES.md` - Current sprint goals and session tracking
@@ -74,16 +73,7 @@ export const useTimer = () => {
 
 *See `docs/IMPLEMENTATION_PLAN.md` for complete schema definitions*
 
-## Current Phase Status
-
-### Phase 0: Proof of Concept (2 weeks)
-**Goal**: Validate core timer with 10-20 beta users  
-**Sessions**: 30-60min daily, weekend sprints  
-
-**Week 1**: Environment + Timer + Database  
-**Week 2**: Activities + Testing + PWA  
-
-*See `docs/COLLABORATION_PLAN.md` for detailed workflow*
+*For current phase status and sprint progress, see `docs/SESSION_NOTES.md`*
 
 ## File Structure (Modern Nuxt 3)
 ```
