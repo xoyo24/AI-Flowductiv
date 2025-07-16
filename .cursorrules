@@ -1,0 +1,250 @@
+# Flowductiv - Cursor IDE Rules
+
+## Project Context
+Flowductiv is a modern privacy-first productivity tool built with Nuxt 3, focusing on manual time tracking enhanced by AI insights. This is a fresh implementation optimized for collaborative development with 30-60 minute daily sessions.
+
+## Tech Stack & Architecture
+- **Framework**: Nuxt 3 with TypeScript and auto-imports
+- **UI**: shadcn-vue + Tailwind CSS (modern component library)
+- **State**: Vue composables (replacing heavy stores)
+- **Database**: Drizzle ORM + SQLite/Supabase for type-safe operations
+- **AI**: Multi-provider router (Claude, GPT-4, Gemini, Ollama)
+- **Testing**: Vitest + Playwright
+- **Tooling**: Bun + Biome (faster than npm + ESLint)
+
+## Code Style & Patterns
+
+### Vue 3 Component Standards
+- Always use `<script setup>` syntax
+- Implement proper TypeScript types for all props and emits
+- Use composables for business logic instead of stores
+- Follow shadcn-vue component patterns for consistency
+- Include data-testid attributes for E2E testing
+
+### Composable Design (Replace Pinia Stores)
+```typescript
+// ✅ Good: Readonly state exposure with clear actions
+export const useTimer = () => {
+  const isRunning = ref(false)
+  const currentActivity = ref('')
+  
+  const startTimer = (activity: string) => {
+    currentActivity.value = activity
+    isRunning.value = true
+  }
+  
+  return {
+    // Expose state as readonly
+    isRunning: readonly(isRunning),
+    currentActivity: readonly(currentActivity),
+    // Expose actions
+    startTimer
+  }
+}
+
+// ❌ Avoid: Direct state mutation from components
+```
+
+### Database Operations (Drizzle ORM)
+- Use type-safe schema definitions
+- Implement proper error handling for all database operations
+- Use migrations for schema changes
+- Include proper indexing for query optimization
+
+### API Design (Nuxt 3 Server Routes)
+```typescript
+// ✅ Good: Proper error handling and validation
+export default defineEventHandler(async (event) => {
+  try {
+    const body = await readBody(event)
+    // Validate input
+    const result = await db.insert(activities).values(body)
+    return { data: result }
+  } catch (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Database operation failed'
+    })
+  }
+})
+```
+
+### AI Integration Patterns
+- Always check cache before making API calls
+- Use provider selection based on task requirements (speed vs quality vs privacy)
+- Implement graceful fallbacks for provider failures
+- Track token usage and costs across providers
+- Use structured prompt templates for consistency
+
+## File Organization (Nuxt 3 Auto-imports)
+
+### Component Structure
+```
+components/
+├── Timer/
+│   ├── TimerDisplay.vue      # Time display with formatting
+│   ├── TimerControls.vue     # Start/pause/stop controls
+│   └── TimerSettings.vue     # Timer configuration
+├── Activity/
+│   ├── SmartInput.vue        # AI-enhanced activity input
+│   ├── ActivityList.vue      # Activity history display
+│   └── ActivityItem.vue      # Individual activity component
+├── AI/
+│   ├── DailySummary.vue      # AI-generated insights
+│   └── ProviderSelector.vue  # AI provider selection
+└── ui/                       # shadcn-vue base components
+```
+
+### Composable Organization
+```
+composables/
+├── useTimer.ts              # Timer state and controls
+├── useActivities.ts         # Activity CRUD operations
+├── useAuth.ts              # Authentication management
+├── useAI.ts                # AI provider management
+└── useStorage.ts           # Local storage utilities
+```
+
+## Development Workflow
+
+### Collaboration Patterns
+- **Human tasks**: Architectural decisions, code reviews, user testing
+- **AI tasks**: Code generation, documentation, test creation
+- **Session optimization**: 30min quick wins, 45min features, 60min deep work
+
+### Code Quality Standards
+- All code must pass Biome linting (configured for speed)
+- TypeScript strict mode with no `any` types
+- Components require proper loading and error states
+- API endpoints must include comprehensive error handling
+- Features require corresponding unit and integration tests
+
+### Testing Requirements
+```typescript
+// ✅ Good: Comprehensive component testing
+describe('TimerControls', () => {
+  it('starts timer with activity name', async () => {
+    const { startTimer } = useTimer()
+    render(TimerControls)
+    
+    await user.click(screen.getByRole('button', { name: 'Start' }))
+    expect(startTimer).toHaveBeenCalledWith('Focus Session')
+  })
+})
+```
+
+## Performance Standards
+
+### Development Benchmarks
+- Dev server start: <2 seconds
+- Hot reload: <200ms
+- TypeScript checking: <5 seconds
+- Test suite execution: <30 seconds
+
+### Production Benchmarks
+- Initial page load: <1 second
+- Timer operations: <200ms response
+- Database operations: <500ms
+- AI summary generation: <5 seconds
+
+## Security & Privacy
+
+### Data Handling
+- Default to local-first storage (SQLite in browser)
+- Optional cloud sync with E2E encryption
+- AI privacy levels: local-only, encrypted-cloud, full-cloud
+- No tracking without explicit user consent
+
+### Authentication
+- Simple demo user for development
+- Supabase integration for production
+- Progressive authentication (anonymous → email → premium)
+
+## AI Provider Configuration
+
+### Provider Selection Strategy
+```typescript
+// Different providers for different use cases
+const providerStrategy = {
+  'daily-summary': 'claude',     // Best reasoning
+  'quick-categorization': 'gemini', // Fastest response
+  'detailed-analysis': 'gpt4',   // Balanced quality/speed
+  'privacy-mode': 'ollama'       // Local processing
+}
+```
+
+### Prompt Template Standards
+- Use structured, provider-agnostic templates
+- Include context about user's productivity goals
+- Maintain consistent tone (encouraging but honest)
+- Optimize for actionable insights over generic advice
+
+## Common Patterns to Follow
+
+### Error Handling
+```typescript
+// ✅ Good: Comprehensive error handling
+try {
+  const result = await apiCall()
+  return result
+} catch (error) {
+  console.error('Operation failed:', error)
+  // Show user-friendly error message
+  throw createError({
+    statusCode: 500,
+    statusMessage: 'Something went wrong. Please try again.'
+  })
+}
+```
+
+### Loading States
+```vue
+<!-- ✅ Good: Proper loading and error states -->
+<template>
+  <div>
+    <div v-if="loading" class="animate-spin">Loading...</div>
+    <div v-else-if="error" class="text-red-500">{{ error }}</div>
+    <div v-else>{{ content }}</div>
+  </div>
+</template>
+```
+
+### Type Safety
+```typescript
+// ✅ Good: Proper TypeScript interfaces
+interface Activity {
+  id: string
+  title: string
+  durationMs: number
+  startTime: Date
+  endTime: Date
+  tags: string[]
+}
+
+// ❌ Avoid: any types or loose typing
+```
+
+## Build & Deployment
+
+### Local Development
+```bash
+bun install              # Install dependencies
+bun dev                  # Start development server
+bun test                 # Run test suite
+bun run lint             # Check code quality
+```
+
+### Production Build
+```bash
+bun run build            # Build for production
+bun run preview          # Preview production build
+bun run analyze          # Analyze bundle size
+```
+
+## Documentation Standards
+- Update CLAUDE.md for any architectural changes
+- Include JSDoc comments for complex functions
+- Maintain README with current setup instructions
+- Document API endpoints with OpenAPI/swagger comments
+
+Remember: Focus on modern, performant, and maintainable code that supports the collaborative 30-60 minute development sessions optimized for human-AI teamwork.
