@@ -13,7 +13,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true
+    typeCheck: false // Disable for faster dev startup
   },
 
   runtimeConfig: {
