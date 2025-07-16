@@ -72,6 +72,9 @@ temp/
 *.key
 *.pem
 
+# Claude local settings (user-specific)
+.claude/settings.local.json
+
 # Test coverage
 coverage/
 
