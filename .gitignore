@@ -12,10 +12,13 @@ bun.lockb
 .env.local
 .env.production
 
-# Database
+# Database files (local development data)
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+local.db*
 
 # Logs
 logs
