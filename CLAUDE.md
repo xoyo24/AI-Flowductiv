@@ -123,26 +123,6 @@ Code generation, documentation, tests, configuration
 **AI Privacy Levels**: Local-only → Encrypted cloud → Full cloud  
 **No tracking** without explicit consent  
 
-## Collaboration Principles
-
-### Documentation Management
-- **SESSION_NOTES.md** is the **living document** - update during sessions for real progress
-- **COLLABORATION_PLAN.md** for workflow patterns - stable reference
-- **TodoWrite** for immediate session tracking - complement documentation
-- **Always verify environment** before suggesting commands (check tools are installed)
-
-### Session Flow Best Practices  
-- **Start each session** by reviewing SESSION_NOTES.md current status
-- **Update documentation proactively** during significant decisions, not just when asked
-- **Include testing** alongside feature implementation, not as afterthought
-- **Validate deployment readiness** regularly throughout development
-
-### Quality & Environment Standards
-- **Verify prerequisites** before task planning (Bun, npm, etc.)
-- **Flag quality gaps** proactively (missing tests, environment issues)
-- **Capture architectural decisions** with reasoning in SESSION_NOTES.md
-- **Link decisions to future impact** for better context
-
 ## Important Notes
 
 - Use **Bun** for all package management (verify installation first)
@@ -151,5 +131,7 @@ Code generation, documentation, tests, configuration
 - **Type-safe** database operations with Drizzle
 - **30-60 minute** optimized development sessions
 - **Dynamic documentation** - SESSION_NOTES.md reflects real progress
+
+*For collaboration principles and session flow best practices, see `docs/COLLABORATION_PLAN.md`*
 
 Remember: This is a fresh implementation focusing on modern best practices and optimized collaboration workflows with living documentation.

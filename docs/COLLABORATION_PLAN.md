@@ -24,6 +24,26 @@
 - **Problem-solving** when stuck on implementation
 - **Best practice reviews** and pattern establishment
 
+## 🤝 **Collaboration Principles**
+
+### **Documentation Management**
+- **SESSION_NOTES.md** is the **living document** - update during sessions for real progress
+- **COLLABORATION_PLAN.md** for workflow patterns - stable reference
+- **TodoWrite** for immediate session tracking - complement documentation
+- **Always verify environment** before suggesting commands (check tools are installed)
+
+### **Session Flow Best Practices**  
+- **Start each session** by reviewing SESSION_NOTES.md current status
+- **Update documentation proactively** during significant decisions, not just when asked
+- **Include testing** alongside feature implementation, not as afterthought
+- **Validate deployment readiness** regularly throughout development
+
+### **Quality & Environment Standards**
+- **Verify prerequisites** before task planning (Bun, npm, etc.)
+- **Flag quality gaps** proactively (missing tests, environment issues)
+- **Capture architectural decisions** with reasoning in SESSION_NOTES.md
+- **Link decisions to future impact** for better context
+
 ## 📅 **Daily Session Optimization (30-60 minutes)**
 
 ### **Quick Start Ritual (5 minutes)**
