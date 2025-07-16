@@ -9,7 +9,7 @@ export const activities = sqliteTable('activities', {
   durationMs: integer('duration_ms').notNull(),
   startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
   endTime: integer('end_time', { mode: 'timestamp' }).notNull(),
-  tags: text('tags', { mode: 'json' }).$type<string[]>().default([]),
+  tags: text('tags', { mode: 'json' }).$type<string[]>().default('[]'),
   priority: integer('priority'),
   focusRating: integer('focus_rating'),
   energyLevel: text('energy_level'),
@@ -41,7 +41,7 @@ export const users = sqliteTable('users', {
     theme?: string
     privacyLevel?: 'local' | 'encrypted' | 'cloud'
     defaultTags?: string[]
-  }>().default({}),
+  }>().default('{}'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
 })
