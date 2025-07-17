@@ -41,7 +41,9 @@ export const useTimer = () => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   })
 
-  const canStart = computed(() => !isRunning.value && !isPaused.value && currentActivity.value.trim().length > 0)
+  const canStart = computed(
+    () => !isRunning.value && !isPaused.value && currentActivity.value.trim().length > 0
+  )
   const canPause = computed(() => isRunning.value)
   const canResume = computed(() => isPaused.value)
   const canFinish = computed(() => isRunning.value || isPaused.value)
@@ -56,9 +58,9 @@ export const useTimer = () => {
     pausedTime.value = 0
     isRunning.value = true
     isPaused.value = false
-    
+
     resumeInterval()
-    
+
     // Save to localStorage for persistence
     saveTimerState()
     return true
@@ -70,7 +72,7 @@ export const useTimer = () => {
     isRunning.value = false
     isPaused.value = true
     pauseInterval()
-    
+
     saveTimerState()
     return true
   }
@@ -79,13 +81,14 @@ export const useTimer = () => {
     if (!isPaused.value || !startTime.value) return false
 
     // Calculate how long we were paused and add to pausedTime
-    const pauseDuration = Date.now() - (startTime.value.getTime() + elapsedMs.value + pausedTime.value)
+    const pauseDuration =
+      Date.now() - (startTime.value.getTime() + elapsedMs.value + pausedTime.value)
     pausedTime.value += pauseDuration
 
     isRunning.value = true
     isPaused.value = false
     resumeInterval()
-    
+
     saveTimerState()
     return true
   }
@@ -95,7 +98,7 @@ export const useTimer = () => {
     if (!startTime.value) return false
 
     // Calculate final duration
-    const finalDuration = isRunning.value 
+    const finalDuration = isRunning.value
       ? Date.now() - startTime.value.getTime() - pausedTime.value
       : elapsedMs.value
 
@@ -108,7 +111,7 @@ export const useTimer = () => {
       startTime: startTime.value,
       endTime: endTime,
       tags: extractTags(currentActivity.value),
-      priority: extractPriority(currentActivity.value)
+      priority: extractPriority(currentActivity.value),
     }
 
     try {
@@ -138,19 +141,19 @@ export const useTimer = () => {
     currentActivity.value = ''
     startTime.value = null
     pausedTime.value = 0
-    
+
     clearTimerState()
   }
 
   // Utility functions
   const extractTags = (text: string): string[] => {
     const tagRegex = /#(\w+)/g
-    return Array.from(text.matchAll(tagRegex), match => match[1])
+    return Array.from(text.matchAll(tagRegex), (match) => match[1])
   }
 
   const extractPriority = (text: string): number | null => {
     const priorityMatch = text.match(/!([1-3])/)
-    return priorityMatch ? parseInt(priorityMatch[1]) : null
+    return priorityMatch ? Number.parseInt(priorityMatch[1]) : null
   }
 
   // Persistence
@@ -162,7 +165,7 @@ export const useTimer = () => {
       isPaused: isPaused.value,
       elapsedMs: elapsedMs.value,
       currentActivity: currentActivity.value,
-      startTime: startTime.value
+      startTime: startTime.value,
     }
 
     localStorage.setItem('flowductiv-timer-state', JSON.stringify(state))
@@ -176,15 +179,15 @@ export const useTimer = () => {
       if (!saved) return
 
       const state: TimerState = JSON.parse(saved)
-      
+
       currentActivity.value = state.currentActivity
       startTime.value = state.startTime ? new Date(state.startTime) : null
-      
+
       if (state.isRunning && startTime.value) {
         // Calculate elapsed time since page was left
         const now = Date.now()
         const elapsed = now - startTime.value.getTime()
-        
+
         elapsedMs.value = elapsed
         isRunning.value = true
         isPaused.value = false
@@ -232,18 +235,18 @@ export const useTimer = () => {
     elapsedMs: readonly(elapsedMs),
     currentActivity: readonly(currentActivity),
     formattedTime,
-    
+
     // Computed state
     canStart,
     canPause,
     canResume,
     canFinish,
-    
+
     // Actions
     startTimer,
     pauseTimer,
     resumeTimer,
     finishTimer,
-    resetTimer
+    resetTimer,
   }
 }

@@ -37,18 +37,7 @@
     }
   },
   "files": {
-    "include": [
-      "**/*.js",
-      "**/*.ts",
-      "**/*.vue",
-      "**/*.json"
-    ],
-    "ignore": [
-      "node_modules/",
-      ".nuxt/",
-      ".output/",
-      "dist/",
-      "coverage/"
-    ]
+    "include": ["**/*.js", "**/*.ts", "**/*.vue", "**/*.json"],
+    "ignore": ["node_modules/", ".nuxt/", ".output/", "dist/", "coverage/"]
   }
 }

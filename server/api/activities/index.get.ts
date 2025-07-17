@@ -1,18 +1,18 @@
-import { db, activities } from '~/server/database'
-import { desc, gte, lte, and } from 'drizzle-orm'
+import { and, desc, gte, lte } from 'drizzle-orm'
+import { activities, db } from '~/server/database'
 
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event)
     const date = query.date as string
 
-    let whereConditions = []
+    const whereConditions = []
 
     // Filter by date if provided
     if (date) {
       const startOfDay = new Date(date)
       startOfDay.setHours(0, 0, 0, 0)
-      
+
       const endOfDay = new Date(date)
       endOfDay.setHours(23, 59, 59, 999)
 
@@ -39,13 +39,13 @@ export default defineEventHandler(async (event) => {
 
     return {
       data: result,
-      count: result.length
+      count: result.length,
     }
   } catch (error) {
     console.error('Database error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch activities'
+      statusMessage: 'Failed to fetch activities',
     })
   }
 })

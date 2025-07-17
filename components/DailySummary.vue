@@ -88,7 +88,7 @@ const error = ref<string | null>(null)
 // Computed values
 const formattedSummary = computed(() => {
   if (!summary.value) return ''
-  
+
   // Convert markdown-like content to HTML
   return summary.value.content
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -98,18 +98,20 @@ const formattedSummary = computed(() => {
 
 const focusScore = computed(() => {
   if (activities.value.length === 0) return 0
-  
-  const activitiesWithRating = activities.value.filter(a => a.focusRating !== null)
+
+  const activitiesWithRating = activities.value.filter((a) => a.focusRating !== null)
   if (activitiesWithRating.length === 0) return 0
-  
-  const average = activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) / activitiesWithRating.length
+
+  const average =
+    activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) /
+    activitiesWithRating.length
   return Math.round(average * 10) / 10
 })
 
 const productivityLevel = computed(() => {
   const totalTime = activities.value.reduce((sum, a) => sum + a.durationMs, 0)
   const hours = totalTime / (1000 * 60 * 60)
-  
+
   if (hours >= 6) return 'High'
   if (hours >= 3) return 'Medium'
   if (hours >= 1) return 'Low'
@@ -118,24 +120,24 @@ const productivityLevel = computed(() => {
 
 const timeAgo = computed(() => {
   if (!summary.value) return ''
-  
+
   const now = new Date()
   const generated = new Date(summary.value.generatedAt)
   const diffMinutes = Math.floor((now.getTime() - generated.getTime()) / (1000 * 60))
-  
+
   if (diffMinutes < 1) return 'just now'
   if (diffMinutes < 60) return `${diffMinutes}m ago`
-  
+
   const diffHours = Math.floor(diffMinutes / 60)
   if (diffHours < 24) return `${diffHours}h ago`
-  
+
   return 'yesterday'
 })
 
 // Actions
 const generateSummary = async () => {
   if (activities.value.length === 0) return
-  
+
   loading.value = true
   error.value = null
 
@@ -143,14 +145,14 @@ const generateSummary = async () => {
     const response = await $fetch<{ data: AISummary }>('/api/ai/daily-summary', {
       method: 'POST',
       body: {
-        activities: activities.value.map(a => ({
+        activities: activities.value.map((a) => ({
           title: a.title,
           durationMs: a.durationMs,
           tags: a.tags,
           priority: a.priority,
-          focusRating: a.focusRating
-        }))
-      }
+          focusRating: a.focusRating,
+        })),
+      },
     })
 
     summary.value = response.data
@@ -165,18 +167,22 @@ const generateSummary = async () => {
 // Auto-generate summary when activities change (debounced)
 const debouncedGenerate = useDebounceFn(generateSummary, 3000)
 
-watch(activities, (newActivities, oldActivities) => {
-  // Only auto-generate if we have new activities and no recent summary
-  if (newActivities.length > 0 && newActivities.length !== oldActivities?.length) {
-    if (!summary.value || needsRefresh()) {
-      debouncedGenerate()
+watch(
+  activities,
+  (newActivities, oldActivities) => {
+    // Only auto-generate if we have new activities and no recent summary
+    if (newActivities.length > 0 && newActivities.length !== oldActivities?.length) {
+      if (!summary.value || needsRefresh()) {
+        debouncedGenerate()
+      }
     }
-  }
-}, { deep: true })
+  },
+  { deep: true }
+)
 
 const needsRefresh = () => {
   if (!summary.value) return true
-  
+
   // Refresh if summary is older than 5 minutes
   const summaryAge = Date.now() - new Date(summary.value.generatedAt).getTime()
   return summaryAge > 5 * 60 * 1000
@@ -189,12 +195,14 @@ let activitySavedHandler: (() => void) | null = null
 onMounted(async () => {
   // Load today's activities first
   await getTodaysActivities()
-  
+
   if (activities.value.length > 0) {
     // Try to load cached summary for today
     try {
       const today = new Date().toISOString().split('T')[0]
-      const response = await $fetch<{ data: AISummary | null }>(`/api/ai/daily-summary?date=${today}`)
+      const response = await $fetch<{ data: AISummary | null }>(
+        `/api/ai/daily-summary?date=${today}`
+      )
       if (response.data) {
         summary.value = response.data
       }
@@ -207,7 +215,7 @@ onMounted(async () => {
   activitySavedHandler = async () => {
     await getTodaysActivities()
   }
-  
+
   if (typeof window !== 'undefined') {
     window.addEventListener('activity-saved', activitySavedHandler)
   }

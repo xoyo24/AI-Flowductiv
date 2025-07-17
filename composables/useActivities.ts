@@ -35,8 +35,8 @@ export const useActivities = () => {
           tags: activityInput.tags || [],
           priority: activityInput.priority,
           focusRating: activityInput.focusRating,
-          energyLevel: activityInput.energyLevel
-        }
+          energyLevel: activityInput.energyLevel,
+        },
       })
 
       // Add to local state
@@ -59,7 +59,7 @@ export const useActivities = () => {
     try {
       const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD format
       const response = await $fetch<{ data: Activity[] }>('/api/activities', {
-        query: { date: dateStr }
+        query: { date: dateStr },
       })
 
       return response.data
@@ -81,18 +81,21 @@ export const useActivities = () => {
   }
 
   // Update an existing activity
-  const updateActivity = async (id: string, updates: Partial<ActivityInput>): Promise<Activity | null> => {
+  const updateActivity = async (
+    id: string,
+    updates: Partial<ActivityInput>
+  ): Promise<Activity | null> => {
     loading.value = true
     error.value = null
 
     try {
       const response = await $fetch<{ data: Activity }>(`/api/activities/${id}`, {
         method: 'PATCH',
-        body: updates
+        body: updates,
       })
 
       // Update local state
-      const index = activities.value.findIndex(a => a.id === id)
+      const index = activities.value.findIndex((a) => a.id === id)
       if (index !== -1) {
         activities.value[index] = response.data
       }
@@ -114,11 +117,11 @@ export const useActivities = () => {
 
     try {
       await $fetch(`/api/activities/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       // Remove from local state
-      activities.value = activities.value.filter(a => a.id !== id)
+      activities.value = activities.value.filter((a) => a.id !== id)
       return true
     } catch (err) {
       console.error('Failed to delete activity:', err)
@@ -133,31 +136,36 @@ export const useActivities = () => {
   const getActivityStats = computed(() => {
     const totalTime = activities.value.reduce((sum, activity) => sum + activity.durationMs, 0)
     const activityCount = activities.value.length
-    
+
     // Group by tags
-    const tagStats = activities.value.reduce((acc, activity) => {
-      activity.tags?.forEach(tag => {
-        if (!acc[tag]) {
-          acc[tag] = { count: 0, totalTime: 0 }
-        }
-        acc[tag].count++
-        acc[tag].totalTime += activity.durationMs
-      })
-      return acc
-    }, {} as Record<string, { count: number; totalTime: number }>)
+    const tagStats = activities.value.reduce(
+      (acc, activity) => {
+        activity.tags?.forEach((tag) => {
+          if (!acc[tag]) {
+            acc[tag] = { count: 0, totalTime: 0 }
+          }
+          acc[tag].count++
+          acc[tag].totalTime += activity.durationMs
+        })
+        return acc
+      },
+      {} as Record<string, { count: number; totalTime: number }>
+    )
 
     // Average focus rating
-    const activitiesWithRating = activities.value.filter(a => a.focusRating !== null)
-    const averageFocus = activitiesWithRating.length > 0
-      ? activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) / activitiesWithRating.length
-      : null
+    const activitiesWithRating = activities.value.filter((a) => a.focusRating !== null)
+    const averageFocus =
+      activitiesWithRating.length > 0
+        ? activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) /
+          activitiesWithRating.length
+        : null
 
     return {
       totalTime,
       activityCount,
       tagStats,
       averageFocus,
-      longestSession: Math.max(...activities.value.map(a => a.durationMs), 0)
+      longestSession: Math.max(...activities.value.map((a) => a.durationMs), 0),
     }
   })
 
@@ -181,18 +189,18 @@ export const useActivities = () => {
     activities: readonly(activities),
     loading: readonly(loading),
     error: readonly(error),
-    
+
     // Computed
     getActivityStats,
-    
+
     // Actions
     saveActivity,
     getActivitiesForDate,
     getTodaysActivities,
     updateActivity,
     deleteActivity,
-    
+
     // Utilities
-    formatDuration
+    formatDuration,
   }
 }

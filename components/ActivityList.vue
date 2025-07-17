@@ -195,7 +195,7 @@ const {
   getActivityStats,
   getTodaysActivities,
   deleteActivity,
-  formatDuration
+  formatDuration,
 } = useActivities()
 
 // Format time helper
@@ -217,13 +217,13 @@ const editActivity = (activity: any) => {
 
 const saveEdit = async () => {
   if (!editingActivity.value) return
-  
+
   await updateActivity(editingActivity.value.id, {
     title: editingActivity.value.title,
     focusRating: editingActivity.value.focusRating,
-    energyLevel: editingActivity.value.energyLevel
+    energyLevel: editingActivity.value.energyLevel,
   })
-  
+
   editingActivity.value = null
 }
 
@@ -244,12 +244,12 @@ let activitySavedHandler: (() => void) | null = null
 onMounted(async () => {
   // Load today's activities on mount
   await refreshActivities()
-  
+
   // Create and store event handler for cleanup
   activitySavedHandler = () => {
     refreshActivities()
   }
-  
+
   if (typeof window !== 'undefined') {
     window.addEventListener('activity-saved', activitySavedHandler)
   }

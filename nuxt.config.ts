@@ -1,19 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  
+
   modules: [
     '@nuxtjs/tailwindcss',
     // '@nuxtjs/supabase', // Disabled for Phase 0 - local SQLite only
     '@vueuse/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
   ],
 
   css: ['~/assets/css/main.css'],
 
   typescript: {
     strict: true,
-    typeCheck: false // Disable for faster dev startup
+    typeCheck: false, // Disable for faster dev startup
   },
 
   runtimeConfig: {
@@ -21,13 +21,13 @@ export default defineNuxtConfig({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     openaiApiKey: process.env.OPENAI_API_KEY,
     googleApiKey: process.env.GOOGLE_API_KEY,
-    
+
     // Public keys (exposed to client-side)
     public: {
       // Supabase disabled for Phase 0 - using local SQLite only
       // supabaseUrl: process.env.SUPABASE_URL,
       // supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    }
+    },
   },
 
   // supabase: {
@@ -42,11 +42,11 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}']
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {
       installPrompt: true,
-      periodicSyncForUpdates: 20
+      periodicSyncForUpdates: 20,
     },
     manifest: {
       name: 'Flowductiv',
@@ -62,30 +62,30 @@ export default defineNuxtConfig({
         {
           src: '/icon-192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icon-512.png',
           sizes: '512x512',
-          type: 'image/png'
-        }
-      ]
-    }
+          type: 'image/png',
+        },
+      ],
+    },
   },
 
   tailwindcss: {
     cssPath: '~/assets/css/main.css',
-    configPath: 'tailwind.config.js'
+    configPath: 'tailwind.config.js',
   },
 
   experimental: {
-    typedPages: true
+    typedPages: true,
   },
 
   // Nitro configuration for clean development
   nitro: {
     experimental: {
-      wasm: false
-    }
-  }
+      wasm: false,
+    },
+  },
 })

@@ -1,5 +1,5 @@
-import { db, activities } from '~/server/database'
 import { eq } from 'drizzle-orm'
+import { activities, db } from '~/server/database'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -9,13 +9,13 @@ export default defineEventHandler(async (event) => {
     if (!id) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Activity ID is required'
+        statusMessage: 'Activity ID is required',
       })
     }
 
     // Build update data from provided fields
     const updateData: any = {
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     if (body.title !== undefined) {
@@ -47,23 +47,23 @@ export default defineEventHandler(async (event) => {
     if (result.length === 0) {
       throw createError({
         statusCode: 404,
-        statusMessage: 'Activity not found'
+        statusMessage: 'Activity not found',
       })
     }
 
     return {
       data: result[0],
-      message: 'Activity updated successfully'
+      message: 'Activity updated successfully',
     }
   } catch (error) {
     if (error.statusCode) {
       throw error
     }
-    
+
     console.error('Database error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to update activity'
+      statusMessage: 'Failed to update activity',
     })
   }
 })

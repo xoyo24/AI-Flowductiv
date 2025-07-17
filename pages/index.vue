@@ -42,8 +42,6 @@
 // Page metadata
 useHead({
   title: 'Dashboard - Flowductiv',
-  meta: [
-    { name: 'description', content: 'Track your productivity with AI-enhanced insights' }
-  ]
+  meta: [{ name: 'description', content: 'Track your productivity with AI-enhanced insights' }],
 })
 </script>

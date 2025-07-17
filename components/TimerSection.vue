@@ -147,7 +147,7 @@ const {
   pauseTimer,
   resumeTimer,
   finishTimer,
-  resetTimer
+  resetTimer,
 } = useTimer()
 
 // Local reactive state
@@ -162,12 +162,12 @@ const timerStatus = computed(() => {
 
 const extractedTags = computed(() => {
   const tagRegex = /#(\w+)/g
-  return Array.from(activityInput.value.matchAll(tagRegex), match => match[1])
+  return Array.from(activityInput.value.matchAll(tagRegex), (match) => match[1])
 })
 
 const extractedPriority = computed(() => {
   const priorityMatch = activityInput.value.match(/!([1-3])/)
-  return priorityMatch ? parseInt(priorityMatch[1]) : null
+  return priorityMatch ? Number.parseInt(priorityMatch[1]) : null
 })
 
 const quickSuggestions = ref([
@@ -175,7 +175,7 @@ const quickSuggestions = ref([
   'Meeting #work !2',
   'Code review #development !2',
   'Learning #education !1',
-  'Planning #strategic !3'
+  'Planning #strategic !3',
 ])
 
 // Actions

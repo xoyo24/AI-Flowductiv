@@ -10,17 +10,15 @@ useHead({
   title: 'Flowductiv',
   meta: [
     { name: 'description', content: 'Privacy-first, AI-enhanced productivity tool' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
   ],
-  link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-  ]
+  link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
 })
 
 // Enable dark mode support
 const colorMode = useColorMode({
   preference: 'system',
-  fallback: 'light'
+  fallback: 'light',
 })
 </script>
 

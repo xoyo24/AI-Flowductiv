@@ -143,7 +143,7 @@ onMounted(async () => {
   activitySavedHandler = async () => {
     await getTodaysActivities()
   }
-  
+
   if (typeof window !== 'undefined') {
     window.addEventListener('activity-saved', activitySavedHandler)
   }
@@ -165,40 +165,51 @@ const sortedTagStats = computed(() => {
   const tagStats = getActivityStats.value.tagStats
   return Object.entries(tagStats)
     .sort(([, a], [, b]) => b.totalTime - a.totalTime)
-    .reduce((acc, [tag, stats]) => {
-      acc[tag] = stats
-      return acc
-    }, {} as Record<string, { count: number; totalTime: number }>)
+    .reduce(
+      (acc, [tag, stats]) => {
+        acc[tag] = stats
+        return acc
+      },
+      {} as Record<string, { count: number; totalTime: number }>
+    )
 })
 
 const untaggedTime = computed(() => {
-  const totalTaggedTime = Object.values(getActivityStats.value.tagStats)
-    .reduce((sum, stat) => sum + stat.totalTime, 0)
+  const totalTaggedTime = Object.values(getActivityStats.value.tagStats).reduce(
+    (sum, stat) => sum + stat.totalTime,
+    0
+  )
   return getActivityStats.value.totalTime - totalTaggedTime
 })
 
 const priorityStats = computed(() => {
-  const stats = [1, 2, 3].map(level => {
-    const activitiesAtLevel = activities.value.filter(a => a.priority === level)
-    const totalTime = activitiesAtLevel.reduce((sum, a) => sum + a.durationMs, 0)
-    return { level, totalTime, count: activitiesAtLevel.length }
-  }).filter(stat => stat.count > 0)
-  
+  const stats = [1, 2, 3]
+    .map((level) => {
+      const activitiesAtLevel = activities.value.filter((a) => a.priority === level)
+      const totalTime = activitiesAtLevel.reduce((sum, a) => sum + a.durationMs, 0)
+      return { level, totalTime, count: activitiesAtLevel.length }
+    })
+    .filter((stat) => stat.count > 0)
+
   return stats.sort((a, b) => b.totalTime - a.totalTime)
 })
 
 const focusInsights = computed(() => {
-  const activitiesWithRating = activities.value.filter(a => a.focusRating !== null && a.focusRating !== undefined)
-  
+  const activitiesWithRating = activities.value.filter(
+    (a) => a.focusRating !== null && a.focusRating !== undefined
+  )
+
   if (activitiesWithRating.length === 0) {
     return { averageRating: null, bestSession: null }
   }
-  
-  const averageRating = activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) / activitiesWithRating.length
-  const bestSession = activitiesWithRating.reduce((best, current) => 
+
+  const averageRating =
+    activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) /
+    activitiesWithRating.length
+  const bestSession = activitiesWithRating.reduce((best, current) =>
     (current.focusRating || 0) > (best.focusRating || 0) ? current : best
   )
-  
+
   return { averageRating, bestSession }
 })
 
