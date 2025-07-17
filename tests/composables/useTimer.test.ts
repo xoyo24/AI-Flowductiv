@@ -16,7 +16,7 @@ const mockUseActivities = vi.fn(() => ({
 }))
 
 // Mock getCurrentInstance to simulate non-component context
-vi.mocked(getCurrentInstance).mockReturnValue(null)
+vi.fn(getCurrentInstance).mockReturnValue(null)
 
 // Setup global Vue functions for the timer
 global.ref = ref

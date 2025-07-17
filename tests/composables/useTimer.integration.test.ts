@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, readonly, ref } from 'vue'
-import { useActivities } from './useActivities'
-import { useTimer } from './useTimer'
+import { useActivities } from '../../composables/useActivities'
+import { useTimer } from '../../composables/useTimer'
 
 // Mock the activities composable
-vi.mock('./useActivities')
+vi.mock('../../composables/useActivities')
 
 // Mock VueUse composables
 const mockInterval = vi.fn()

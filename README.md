@@ -29,7 +29,7 @@ Flowductiv is a fresh implementation focusing on manual time tracking enhanced b
 
 ## 📚 Documentation
 
-- [`docs/ENHANCED_PRD.md`](./docs/ENHANCED_PRD.md) - Product requirements and roadmap
+- [`docs/PRD.md`](./docs/ENHANCED_PRD.md) - Product requirements and roadmap
 - [`docs/IMPLEMENTATION_PLAN.md`](./docs/IMPLEMENTATION_PLAN.md) - Technical architecture details
 - [`docs/COLLABORATION_PLAN.md`](./docs/COLLABORATION_PLAN.md) - Development workflow
 - [`CLAUDE.md`](./CLAUDE.md) - AI coding assistant instructions
