@@ -89,19 +89,51 @@ export const useTimer = () => {
 
 ## Collaboration Workflow
 
-### Human Tasks: 
-Project decisions, code reviews, user testing, debugging
+### **AI Role (Core Responsibilities)**
+- **Boilerplate code generation** and scaffolding
+- **Component implementation** following established patterns
+- **Documentation writing** and maintenance
+- **Test case creation** and comprehensive implementation
+- **Configuration file setup** and optimization
 
-### AI Tasks: 
-Code generation, documentation, tests, configuration
+### **Human Role (Strategic Responsibilities)**
+- **Project decisions** and feature prioritization
+- **Code reviews** and architectural choices
+- **User testing** and feedback collection
+- **Environment setup** and tooling configuration
+- **Complex debugging** and performance optimization
 
-### Session Types:
-- **30min**: Quick wins (single component)
-- **45min**: Feature blocks (complete feature + tests)  
-- **60min**: Deep work (complex features)
-- **Weekend**: Sprint completion
+### **Collaborative Areas**
+- **Design discussions** for complex features
+- **Code refactoring** and improvement suggestions
+- **Problem-solving** when stuck on implementation
+- **Best practice reviews** and pattern establishment
 
-*See `docs/COLLABORATION_PLAN.md` for detailed handoff patterns*
+### **Session Flow Best Practices**
+- **Start each session** by reviewing SESSION_NOTES.md current status
+- **Update documentation proactively** during significant decisions, not just when asked
+- **Include testing** alongside feature implementation, not as afterthought
+- **Validate deployment readiness** regularly throughout development
+
+### **Quality & Environment Standards**
+- **Verify prerequisites** before task planning (Bun installation, tool availability)
+- **Flag quality gaps** proactively (missing tests, environment issues)
+- **Capture architectural decisions** with reasoning in SESSION_NOTES.md
+- **Link decisions to future impact** for better project context
+
+### **Session Types & Time Management**
+- **30min**: Quick wins (single component, utility functions, bug fixes)
+- **45min**: Feature blocks (complete feature + tests, API endpoints, composables)
+- **60min**: Deep work (complex features, architecture changes, integrations)
+- **Weekend**: Sprint completion (phase milestones, end-to-end testing)
+
+### **Documentation Management Strategy**
+- **SESSION_NOTES.md** is the **living document** - update during sessions for real progress
+- **COLLABORATION_PLAN.md** for workflow patterns - stable reference
+- **TodoWrite** for immediate session tracking - complement documentation
+- **Always verify environment** before suggesting commands (check tools are installed)
+
+*See `docs/COLLABORATION_PLAN.md` for detailed handoff patterns and sprint management*
 
 ## Performance Standards
 
@@ -126,3 +158,6 @@ Code generation, documentation, tests, configuration
 *For collaboration principles and session flow best practices, see `docs/COLLABORATION_PLAN.md`*
 
 Remember: This is a fresh implementation focusing on modern best practices and optimized collaboration workflows with living documentation.
+
+## Development Best Practices
+- Commit changes from time to time after successfully verified

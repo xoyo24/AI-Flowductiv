@@ -201,7 +201,14 @@
 - Session Duration: 20+ minutes average
 - Return Rate: 70% next-day return
 
-#### **Phase 1A**: 
+#### **Phase 1A Private Beta**: 
+- Daily Active Users: 5-10 (colleagues/close contacts)
+- Activities per User: 5+ daily average
+- AI Engagement: 80% view daily summary (higher with small group)
+- Retention Rate: 60% use for 5+ consecutive days
+- Feedback Quality: 100% provide detailed feedback
+
+#### **Phase 1B Public Beta**: 
 - Daily Active Users: 50-100
 - Activities per User: 5+ daily average
 - AI Engagement: 60% view daily summary

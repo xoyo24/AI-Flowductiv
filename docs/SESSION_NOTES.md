@@ -2,120 +2,184 @@
 
 > **Living document for current sprint goals, task breakdowns, and weekly progress**
 
-## 🎯 **Current Sprint: Phase 0 → Phase 1A Transition**
-**Sprint Period:** July 16 - July 23, 2025  
-**Sprint Goal:** Complete Phase 0 testing, establish Phase 1A foundation
+## 🎯 **Current Sprint: Phase 1A Implementation**
+**Sprint Period:** July 17 - July 24, 2025  
+**Sprint Goal:** Complete Smart Input System and AI Integration Foundation
 
-### **📊 Phase 0 Status: 90% Complete**
+### **📊 Phase 1A Status: 40% Complete**
 
-#### **✅ Completed (Sessions 1-6)**
-- [x] Environment setup and configuration
-- [x] Database schema and migrations (Drizzle + SQLite)
-- [x] Timer composable with localStorage persistence
-- [x] Activities composable with full CRUD operations
-- [x] Timer UI component with comprehensive controls
-- [x] Activity list component with editing functionality
-- [x] All API endpoints for activities management
-- [x] AI summary endpoints (basic structure)
+#### **✅ Completed Features**
+- [x] **Basic input parsing** - tags `#work`, priority `!1-3` working in TimerSection.vue
+- [x] **AI Daily Summary** - complete UI with real activity analysis (mock backend)
+- [x] **Quick start suggestions** - static examples working
+- [x] **Real-time tag/priority display** - shows extracted values as you type
 
-#### **🔄 In Progress**
-- [ ] **Install Bun locally** (BLOCKED - need to install)
-  - Status: npm works, but project configured for Bun
-  - Decision: Install Bun for faster development + Vercel compatibility
-  
-#### **⚠️ Remaining Phase 0 Tasks**
-- [ ] **Comprehensive timer tests** (Session 3 remainder)
-  - Priority: High
-  - Estimate: 30 minutes
-  - Dependencies: None
-  
-- [ ] **Integration test suite** (Session 7)
-  - Priority: Medium
-  - Estimate: 45 minutes
-  - Dependencies: Bun installation
+#### **🚧 In Progress**
+- [x] **Install Bun locally** - COMPLETE ✅
+- 🚧 **Task 1A.1.1: Input Parser Service** (~60% complete)
+  - Current: Parsing logic duplicated in TimerSection.vue and useTimer.ts
+  - Need: Centralized InputParserService class, remove duplication
+- 🚧 **Task 1A.2.2: Daily Summary Generation** (~80% complete)
+  - Current: Complete UI, mock backend with real activity analysis
+  - Need: Real AI integration (replace mock)
 
-- [ ] **CI/CD pipeline basics** (Session 7)
-  - Priority: Low
-  - Estimate: 30 minutes
-  - Dependencies: Testing suite
+#### **⏳ Next Priority Tasks**
+- [ ] **Task 1A.1.2: Auto-complete & Suggestions** (~15% complete)
+  - Current: Static quick start buttons only
+  - Need: Dynamic suggestions from activity history, API endpoint
+- [ ] **Task 1A.2.1: Multi-Provider AI Router** (not started)
+  - Need: AIRouter service with Claude/GPT/Gemini/Ollama providers
+- [ ] **Task 1A.3.1: PWA Enhancement** (status TBD)
+  - Need: Check current PWA configuration
 
 ---
 
-## 🎯 **This Week's Focus (July 16-23)**
+## 🎯 **This Week's Focus (July 17-24)**
 
-### **Priority 1: Environment Completion**
-```bash
-# Task: Install Bun locally
-curl -fsSL https://bun.sh/install | bash
-bun --version
-bun dev  # Verify project works
-```
-**Owner:** Human  
-**Estimate:** 15 minutes
-
-### **Priority 2: Testing Foundation**
-**Task: Add comprehensive timer tests**
-- Unit tests for useTimer composable
-- Integration tests for timer workflow  
-- E2E tests for complete user journey
+### **Priority 1: Refactor Input Parser Service**
+**Task: Consolidate parsing logic**
+- Create centralized `services/inputParser.ts` class
+- Remove code duplication from TimerSection.vue and useTimer.ts
+- Create `composables/useInputParser.ts` reactive wrapper
+- Add `components/Activity/SmartInput.vue` enhanced component
 
 **Owner:** AI  
-**Estimate:** 30 minutes  
-**Dependencies:** Bun installation
+**Estimate:** 45 minutes  
+**User Stories:** Epic 1A.1 - Smart Input System
 
-### **Priority 3: Phase 1A Planning**
-**Task: Plan Smart Input System**
-- Review implementation plan requirements
-- Break down into 30-45 minute sessions
-- Identify dependencies and blockers
+### **Priority 2: Auto-complete & Suggestions**
+**Task: Dynamic input suggestions**
+- Create `composables/useAutoComplete.ts` with debounced search
+- Build `server/api/activities/suggestions.ts` endpoint
+- Add `components/Activity/SuggestionDropdown.vue` UI component
+- Implement suggestion filtering and ranking
+
+**Owner:** AI  
+**Estimate:** 60 minutes  
+**Dependencies:** Activity history data
+
+### **Priority 3: Multi-Provider AI Router**
+**Task: Replace mock AI with real providers**
+- Create `services/ai/aiRouter.ts` with provider selection
+- Build individual provider classes (Claude, GPT, Gemini, Ollama)
+- Create `services/ai/prompts.ts` centralized templates
+- Upgrade daily summary to use real AI
 
 **Owner:** Collaborative  
-**Estimate:** 45 minutes
+**Estimate:** 90 minutes  
+**Dependencies:** API keys, provider setup
 
 ---
 
-## 📋 **Upcoming Sessions**
+## 📋 **Detailed Task Breakdown**
 
-### **Next Session (30-45 min): Environment & Testing**
-**Focus:** Complete Phase 0, prepare for Phase 1A
+### **Task 1A.1.1: Input Parser Service (45 min)**
+**Current Status:** 60% complete - parsing works but duplicated
 
-**🎯 Session Goals:**
-1. Install Bun and verify development environment
-2. Add comprehensive timer tests
-3. Plan first Phase 1A task
+**Implementation Steps:**
+1. **Create InputParserService class** (15 min)
+   - Extract existing parsing logic from TimerSection.vue (lines 163-171)
+   - Extract existing parsing logic from useTimer.ts (lines 149-157)
+   - Create centralized `services/inputParser.ts` with static methods
+   - Add TypeScript interfaces for ParsedActivity
 
-**👤 Your Tasks (15 min):**
-- [ ] Install Bun using official installer
-- [ ] Test `bun dev` command works
-- [ ] Verify hot-reload functionality
+2. **Create useInputParser composable** (15 min)
+   - Reactive wrapper around InputParserService
+   - Real-time parsing with computed properties
+   - Integration with existing timer composable
 
-**🤖 AI Tasks (20 min):**
-- [ ] Generate timer unit tests (useTimer.ts)
-- [ ] Create integration tests for timer workflow
-- [ ] Set up basic test runner configuration
+3. **Refactor TimerSection.vue** (15 min)
+   - Replace inline parsing with useInputParser
+   - Keep existing UI behavior intact
+   - Update tests to use new service
 
-**🤝 Collaboration (10 min):**
-- [ ] Review test coverage together
-- [ ] Plan Phase 1A: Smart Input System
-- [ ] Update sprint goals if needed
+**Files to Modify:**
+- `services/inputParser.ts` (create)
+- `composables/useInputParser.ts` (create)
+- `components/TimerSection.vue` (refactor lines 163-171)
+- `composables/useTimer.ts` (refactor lines 149-157)
 
----
+**User Story:** "As a user, I want to enter '#tags' and '!priority' in my activity name so that my data is automatically categorized"
 
-## 🚀 **Phase 1A Preview: Smart Input System**
+### **Task 1A.1.2: Auto-complete & Suggestions (60 min)**
+**Current Status:** 15% complete - only static suggestions
 
-### **Sprint Goal:** Enhanced activity input with AI suggestions
-**Estimated Duration:** 1 week (3-4 sessions)
-**Key Features:**
-- Smart tag extraction (#work, #meeting)
-- Priority parsing (!1, !2, !3)
-- AI-enhanced descriptions
-- Auto-complete from history
+**Implementation Steps:**
+1. **Create suggestions API endpoint** (20 min)
+   - Build `server/api/activities/suggestions.ts`
+   - Query recent activities for matching suggestions
+   - Extract and rank frequently used tags
+   - Return structured suggestion data
 
-### **Planned Sessions:**
-1. **Input Parser Service** (45 min)
-2. **Auto-complete & Suggestions** (45 min)  
-3. **AI Enhancement Integration** (60 min)
-4. **UI Polish & Testing** (30 min)
+2. **Create useAutoComplete composable** (20 min)
+   - Debounced search functionality (300ms)
+   - Suggestion filtering and ranking
+   - Recent tags prioritization
+   - Integration with activity history
+
+3. **Build SuggestionDropdown component** (20 min)
+   - Dropdown UI with keyboard navigation
+   - Activity and tag suggestions
+   - Click/enter selection handling
+   - Integration with existing input field
+
+**Files to Create:**
+- `server/api/activities/suggestions.ts`
+- `composables/useAutoComplete.ts`
+- `components/Activity/SuggestionDropdown.vue`
+
+**User Story:** "As a user, I want to see tag suggestions based on my history so that I maintain consistent categorization"
+
+### **Task 1A.2.1: Multi-Provider AI Router (90 min)**
+**Current Status:** Not started - mock AI only
+
+**Implementation Steps:**
+1. **Create AIRouter service** (30 min)
+   - Provider selection logic (speed/quality/privacy)
+   - Fallback mechanisms for provider failures
+   - Cost tracking and usage monitoring
+   - Configuration management
+
+2. **Build individual AI providers** (40 min)
+   - ClaudeProvider using @ai-sdk/anthropic
+   - OpenAIProvider using @ai-sdk/openai
+   - GeminiProvider using @ai-sdk/google
+   - OllamaProvider for local AI (optional)
+
+3. **Create centralized prompt templates** (20 min)
+   - Daily summary prompt template
+   - Activity enhancement prompts
+   - Provider-specific optimizations
+   - Template versioning system
+
+**Files to Create:**
+- `services/ai/aiRouter.ts`
+- `services/ai/providers/claude.ts`
+- `services/ai/providers/openai.ts`
+- `services/ai/providers/gemini.ts`
+- `services/ai/prompts.ts`
+
+**User Story:** "As a privacy-conscious user, I want to choose between AI providers so that I control my data sharing"
+
+### **Task 1A.2.2: Upgrade Daily Summary (20 min)**
+**Current Status:** 80% complete - UI done, mock backend
+
+**Implementation Steps:**
+1. **Replace mock with real AI** (15 min)
+   - Update `server/api/ai/daily-summary.post.ts`
+   - Integrate with AIRouter service
+   - Keep existing UI and caching logic
+
+2. **Add provider selection** (5 min)
+   - User preference for AI provider
+   - Provider display in UI
+   - Error handling for provider failures
+
+**Files to Modify:**
+- `server/api/ai/daily-summary.post.ts` (replace mock logic)
+- `components/DailySummary.vue` (add provider selection)
+
+**User Story:** "As a user, I want to receive an end-of-day summary so that I can understand my time allocation"
 
 ---
 
@@ -163,6 +227,38 @@ bun dev  # Verify project works
 - Install Bun locally
 - Add comprehensive timer tests
 - Plan Phase 1A: Smart Input System
+
+### **July 17, 2025 - Afternoon Session**
+**Duration:** 30 minutes  
+**Focus:** Complete Phase 0 testing foundation
+
+**Completed:**
+- ✅ Created comprehensive timer test suite
+  - Unit tests: `composables/useTimer.test.ts` (46 test cases)
+  - Integration tests: `composables/useTimer.integration.test.ts` (workflow tests)
+  - Utility tests: `composables/useTimer.basic.test.ts` (8 passing tests)
+- ✅ Set up Vitest configuration with proper Vue 3 + Nuxt 3 support
+- ✅ Verified Bun test runner works correctly
+- ✅ Fixed linting issues and code formatting
+- ✅ Updated Phase 0 status to 95% complete
+
+**Technical Achievements:**
+- Test environment properly configured with happy-dom
+- Mock setup for Vue composables, localStorage, and browser APIs
+- Comprehensive test coverage for timer lifecycle, persistence, and error handling
+- Basic utility function tests for time formatting and tag/priority extraction
+
+**Next Actions:**
+- Plan Phase 1A: Smart Input System implementation using existing user stories
+- Create integration tests mapped to Epic 1A.1 user stories from PRD.md
+- Use user story acceptance criteria as test assertions for systematic coverage
+- Consider CI/CD pipeline basics (optional)
+
+**Key Insights:**
+- ✅ PRD.md already contains 78 well-structured user stories following "As a [who], I want [what], so that [why]" format
+- ✅ User stories are organized by Phase/Epic with clear success criteria
+- ✅ Testing foundation is ready for user story-driven integration tests
+- 🎯 Phase 1A Epic 1A.1 (Smart Input System) is next priority with 3 user stories ready for implementation
 
 ---
 
