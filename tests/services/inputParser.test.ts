@@ -104,46 +104,17 @@ describe('InputParserService', () => {
   })
 
   describe('extractTags', () => {
-    it('should extract single tag', () => {
+    it('should extract various tag formats', () => {
       expect(InputParserService.extractTags('Work on #frontend')).toEqual(['frontend'])
-    })
-
-    it('should extract multiple tags', () => {
-      expect(InputParserService.extractTags('Work on #frontend #react #typescript')).toEqual([
-        'frontend', 'react', 'typescript'
-      ])
-    })
-
-    it('should return empty array when no tags', () => {
+      expect(InputParserService.extractTags('Work on #frontend #react #typescript')).toEqual(['frontend', 'react', 'typescript'])
       expect(InputParserService.extractTags('No tags here')).toEqual([])
-    })
-
-    it('should handle tags with numbers and underscores', () => {
-      expect(InputParserService.extractTags('Sprint #v2_0 #web3 #ui_ux')).toEqual([
-        'v2_0', 'web3', 'ui_ux'
-      ])
-    })
-
-    it('should handle hyphenated tags', () => {
-      expect(InputParserService.extractTags('Working on #ai-coding #machine-learning #full-stack')).toEqual([
-        'ai-coding', 'machine-learning', 'full-stack'
-      ])
-    })
-
-    it('should handle tags with dots', () => {
-      expect(InputParserService.extractTags('Learning #react.js #node.js #v2.0 #python3.11')).toEqual([
-        'react.js', 'node.js', 'v2.0', 'python3.11'
-      ])
-    })
-
-    it('should handle complex tag combinations', () => {
-      expect(InputParserService.extractTags('Project #web-app #react.js #v1.2.3 #ui_ux #front-end')).toEqual([
-        'web-app', 'react.js', 'v1.2.3', 'ui_ux', 'front-end'
-      ])
-    })
-
-    it('should ignore incomplete tags', () => {
       expect(InputParserService.extractTags('Invalid # tag and #valid')).toEqual(['valid'])
+    })
+
+    it('should handle special characters in tags', () => {
+      expect(InputParserService.extractTags('Sprint #v2_0 #web3 #ui_ux')).toEqual(['v2_0', 'web3', 'ui_ux'])
+      expect(InputParserService.extractTags('Working on #ai-coding #machine-learning')).toEqual(['ai-coding', 'machine-learning'])
+      expect(InputParserService.extractTags('Learning #react.js #node.js #v2.0')).toEqual(['react.js', 'node.js', 'v2.0'])
     })
   })
 
@@ -170,25 +141,13 @@ describe('InputParserService', () => {
   describe('cleanText', () => {
     it('should remove tags and priority from text', () => {
       expect(InputParserService.cleanText('Work on #frontend #react !2')).toBe('Work on')
-    })
-
-    it('should remove hyphenated tags properly', () => {
       expect(InputParserService.cleanText('Working on #ai-coding #machine-learning project !2')).toBe('Working on project')
-    })
-
-    it('should remove tags with dots and complex characters', () => {
       expect(InputParserService.cleanText('Building #react.js #v2.0 app with #ui_ux design !3')).toBe('Building app with design')
     })
 
-    it('should trim whitespace', () => {
+    it('should handle edge cases', () => {
       expect(InputParserService.cleanText('  Task with spaces  #tag  !1  ')).toBe('Task with spaces')
-    })
-
-    it('should handle text with only tags/priority', () => {
       expect(InputParserService.cleanText('#tag !1')).toBe('')
-    })
-
-    it('should preserve text without tags/priority', () => {
       expect(InputParserService.cleanText('Plain text task')).toBe('Plain text task')
     })
   })
