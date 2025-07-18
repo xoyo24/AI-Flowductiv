@@ -33,7 +33,7 @@
         :aria-selected="index === selectedIndex"
         :aria-describedby="index === selectedIndex ? `suggestion-${index}-desc` : undefined"
         tabindex="-1"
-        @click="selectSuggestion(suggestion)"
+        @click.stop="selectSuggestion(suggestion)"
         @mouseenter="$emit('hover', index)"
       >
         <div class="flex items-center justify-between">

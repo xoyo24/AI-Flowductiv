@@ -15,10 +15,10 @@
               placeholder="Enter activity name (use #tags and !1-3 for priority)"
               class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               :disabled="isRunning || isPaused"
-              @keyup.enter="handleStart"
+              @keyup.enter="handleEnterKey"
               @keydown="handleKeydown"
               @focus="handleInputFocus"
-              @blur="() => { inputFocused = false }"
+              @blur="handleInputBlur"
               data-testid="activity-input"
             />
             
@@ -148,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, triggerRef } from 'vue'
 import { useInputParser } from '~/composables/useInputParser'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
@@ -231,8 +231,12 @@ const quickSuggestions = ref([
   'Planning #strategic !3',
 ])
 
+// Track if we just made a selection to prevent immediate timer start
+const justSelectedSuggestion = ref(false)
+
 // Suggestion handling
 const handleSuggestionSelect = (suggestion) => {
+  // Force reactive update with explicit triggering
   if (suggestion.type === 'activity') {
     activityInput.value = suggestion.text
   } else {
@@ -244,18 +248,27 @@ const handleSuggestionSelect = (suggestion) => {
     }
   }
   
+  // Force reactivity trigger
+  triggerRef(activityInput)
+  
+  // Mark that we just selected a suggestion
+  justSelectedSuggestion.value = true
+  
   // Auto-close dropdown after selection
   hideDropdown()
+  
   // Keep input focused for further editing
   nextTick(() => {
     const input = document.getElementById('activity-input')
     if (input) {
       input.focus()
-      // Trigger a new search after selection to show additional suggestions
-      if (activityInput.value.trim()) {
-        performSearch(activityInput.value.trim())
-      }
+      // Make sure the input value is synced
+      input.value = activityInput.value
     }
+    // Reset the selection flag after a short delay
+    setTimeout(() => {
+      justSelectedSuggestion.value = false
+    }, 200)
   })
 }
 
@@ -323,6 +336,33 @@ const handleInputFocus = () => {
   if (suggestions.value.length > 0) {
     showDropdown()
   }
+}
+
+// Handle input blur with delay for click handling
+const handleInputBlur = () => {
+  // Delay hiding dropdown to allow click events to complete
+  setTimeout(() => {
+    if (!justSelectedSuggestion.value) {
+      inputFocused.value = false
+      hideDropdown()
+    }
+  }, 150) // Give enough time for click events
+}
+
+// Handle Enter key press on input
+const handleEnterKey = () => {
+  // Don't start timer if we just selected a suggestion
+  if (justSelectedSuggestion.value) {
+    return
+  }
+  
+  // Don't start timer if dropdown is visible with suggestions
+  if (showSuggestions.value && suggestions.value.length > 0) {
+    return
+  }
+  
+  // Start timer normally
+  handleStart()
 }
 
 // Actions  
