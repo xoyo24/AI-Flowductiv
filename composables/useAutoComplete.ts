@@ -118,6 +118,12 @@ export const useAutoComplete = (
     return selectedSuggestion.value
   }
 
+  const selectIndex = (index: number) => {
+    if (index >= -1 && index < suggestions.value.length) {
+      selectedIndex.value = index
+    }
+  }
+
   // Manual retry function
   const retry = () => {
     if (!isLoading.value) {
@@ -163,6 +169,7 @@ export const useAutoComplete = (
     selectNext,
     selectPrevious,
     selectCurrent,
+    selectIndex,
     retry,
     cleanup,
     

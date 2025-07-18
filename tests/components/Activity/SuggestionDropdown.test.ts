@@ -1,8 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
 import { ref } from 'vue'
+// Note: Component testing would require @vue/test-utils setup
+// For now, we'll test the component integration through the composable
 
-// Import will be added after we create the component
+// import { mount } from '@vue/test-utils'
 // import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 
 describe('SuggestionDropdown.vue', () => {

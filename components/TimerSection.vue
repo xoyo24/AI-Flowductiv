@@ -16,7 +16,21 @@
               class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               :disabled="isRunning || isPaused"
               @keyup.enter="handleStart"
+              @keydown="handleKeydown"
+              @focus="inputFocused = true"
+              @blur="() => setTimeout(() => { inputFocused = false }, 150)"
               data-testid="activity-input"
+            />
+            
+            <!-- Dynamic suggestions dropdown -->
+            <SuggestionDropdown
+              :suggestions="suggestions"
+              :visible="showSuggestions"
+              :selected-index="selectedIndex"
+              :loading="suggestionsLoading"
+              @select="handleSuggestionSelect"
+              @hover="selectIndex"
+              @close="inputFocused = false"
             />
             <div v-if="activityInput" class="absolute right-2 top-2 flex space-x-1">
               <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
@@ -135,6 +149,8 @@
 
 <script setup lang="ts">
 import { useInputParser } from '~/composables/useInputParser'
+import { useAutoComplete } from '~/composables/useAutoComplete'
+import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 
 const {
   isRunning,
@@ -165,13 +181,74 @@ const timerStatus = computed(() => {
 // Use centralized input parser
 const { tags: extractedTags, priority: extractedPriority, cleanText } = useInputParser(activityInput)
 
+// Dynamic auto-complete suggestions
+const {
+  suggestions,
+  isLoading: suggestionsLoading,
+  selectedIndex,
+  selectNext,
+  selectPrevious,
+  selectCurrent,
+  selectIndex
+} = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
+
+// Input field focus and suggestion dropdown state
+const inputFocused = ref(false)
+const showSuggestions = computed(() => 
+  inputFocused.value && (suggestions.value.length > 0 || suggestionsLoading.value)
+)
+
+// Static fallback suggestions for empty input
 const quickSuggestions = ref([
   'Deep work #focus !3',
-  'Meeting #work !2',
+  'Meeting #work !2', 
   'Code review #development !2',
   'Learning #education !1',
   'Planning #strategic !3',
 ])
+
+// Suggestion handling
+const handleSuggestionSelect = (suggestion) => {
+  if (suggestion.type === 'activity') {
+    activityInput.value = suggestion.text
+  } else {
+    // For tags, append to current input
+    const currentText = activityInput.value.trim()
+    const hasTag = currentText.includes(`#${suggestion.text}`)
+    if (!hasTag) {
+      activityInput.value = currentText ? `${currentText} #${suggestion.text}` : `#${suggestion.text}`
+    }
+  }
+  inputFocused.value = false
+}
+
+const handleKeydown = (event) => {
+  if (!showSuggestions.value) return
+  
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault()
+      selectNext()
+      break
+    case 'ArrowUp':
+      event.preventDefault()
+      selectPrevious()
+      break
+    case 'Enter':
+      if (selectedIndex.value >= 0) {
+        event.preventDefault()
+        const selected = selectCurrent()
+        if (selected) {
+          handleSuggestionSelect(selected)
+        }
+      }
+      break
+    case 'Escape':
+      event.preventDefault()
+      inputFocused.value = false
+      break
+  }
+}
 
 // Actions
 const handleStart = () => {
