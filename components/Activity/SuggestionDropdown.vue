@@ -115,7 +115,7 @@ interface Emits {
   (e: 'close'): void
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // Selection handlers
@@ -124,15 +124,14 @@ const selectSuggestion = (suggestion: ActivitySuggestion) => {
 }
 
 const handleEnterKey = () => {
-  // This method can be called from parent to handle enter key
-  const props = defineProps<Props>()
+  // Handle enter key to select current suggestion
   if (props.selectedIndex >= 0 && props.selectedIndex < props.suggestions.length) {
     emit('select', props.suggestions[props.selectedIndex])
   }
 }
 
 const handleEscapeKey = () => {
-  // This method can be called from parent to handle escape key
+  // Handle escape key to close dropdown
   emit('close')
 }
 
@@ -162,16 +161,7 @@ defineExpose({
   background: hsl(var(--muted-foreground));
 }
 
-/* Loading animation */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
+/* Loading animation - using Tailwind's built-in spin animation */
 
 /* Screen reader only content */
 .sr-only {

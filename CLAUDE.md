@@ -161,3 +161,6 @@ Remember: This is a fresh implementation focusing on modern best practices and o
 
 ## Development Best Practices
 - Commit changes from time to time after successfully verified
+
+## Testing Guidelines
+- Never use `expect(true).toBe(true)` in test cases
