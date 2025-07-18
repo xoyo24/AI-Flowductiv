@@ -35,7 +35,7 @@
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-3">
             <div class="flex-1">
-              <h3 class="font-medium text-foreground truncate">
+              <h3 class="font-medium text-foreground break-words">
                 {{ activity.title }}
               </h3>
               <div class="flex items-center space-x-4 mt-1">

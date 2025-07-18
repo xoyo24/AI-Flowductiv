@@ -325,12 +325,9 @@ const handleInputFocus = () => {
     nextTick(() => {
       performSearch(activityInput.value.trim())
     })
-  } else {
-    // For empty input, show popular suggestions
-    nextTick(() => {
-      performSearch('')
-    })
   }
+  // Note: Don't automatically search for empty input on focus
+  // This prevents dropdown from appearing and blocking Enter key
   
   // If we already have suggestions, show them immediately
   if (suggestions.value.length > 0) {
@@ -356,8 +353,8 @@ const handleEnterKey = () => {
     return
   }
   
-  // Don't start timer if dropdown is visible with suggestions
-  if (showSuggestions.value && suggestions.value.length > 0) {
+  // Don't start timer if dropdown is visible with suggestions  
+  if (dropdownVisible.value && suggestions.value.length > 0) {
     return
   }
   
