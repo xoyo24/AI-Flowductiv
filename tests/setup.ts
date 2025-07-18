@@ -1,4 +1,19 @@
 import { vi } from 'vitest'
+import { config } from '@vue/test-utils'
+
+// Configure Vue Test Utils for Nuxt
+config.global.mocks = {
+  $fetch: vi.fn(),
+  $router: {
+    push: vi.fn(),
+    replace: vi.fn(),
+  },
+  $route: {
+    params: {},
+    query: {},
+    path: '/',
+  },
+}
 
 // Mock Nuxt composables
 vi.mock('#app', () => ({
@@ -10,16 +25,8 @@ vi.mock('#app', () => ({
   }),
 }))
 
-// Mock Vue composables that are auto-imported
-global.ref = vi.fn()
-global.reactive = vi.fn()
-global.computed = vi.fn()
-global.readonly = vi.fn()
-global.watch = vi.fn()
-global.watchEffect = vi.fn()
-global.onMounted = vi.fn()
-global.onUnmounted = vi.fn()
-global.nextTick = vi.fn()
+// Don't mock Vue composables when using Vue Test Utils
+// Vue Test Utils needs real Vue reactivity system
 
 // Mock browser APIs
 Object.defineProperty(window, 'localStorage', {

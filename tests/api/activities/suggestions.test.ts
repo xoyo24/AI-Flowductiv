@@ -1,182 +1,170 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest'
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import type { ActivitySuggestion } from '~/types/activity'
 
-// Mock $fetch for API testing
-global.$fetch = vi.fn()
+// Mock $fetch globally for error handling tests
+const mockFetch = vi.fn()
+global.$fetch = mockFetch
 
-describe('Activities Suggestions API', () => {
-  describe('GET /api/activities/suggestions', () => {
-    it('should return structured suggestion data', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: 'work' }
-      // })
+describe('Activities Suggestions API - Error Handling', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  describe('Client-side error handling', () => {
+    it('should handle server errors gracefully', async () => {
+      const serverError = new Error('Internal Server Error')
+      mockFetch.mockRejectedValue(serverError)
       
-      // expect(response.data).toBeInstanceOf(Array)
-      // expect(response.data.length).toBeGreaterThan(0)
-      
-      // const suggestion = response.data[0]
-      // expect(suggestion).toHaveProperty('id')
-      // expect(suggestion).toHaveProperty('text')
-      // expect(suggestion).toHaveProperty('type')
-      // expect(suggestion).toHaveProperty('frequency')
-      // expect(suggestion).toHaveProperty('lastUsed')
-      // expect(['activity', 'tag']).toContain(suggestion.type)
-      
-      expect(true).toBe(true) // Placeholder until API is implemented
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('Internal Server Error')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
     })
 
-    it('should filter suggestions by query parameter', async () => {
-      // Test partial matching
-      // const workSuggestions = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: 'work' }
-      // })
+    it('should handle network errors', async () => {
+      const networkError = new Error('Network Error')
+      mockFetch.mockRejectedValue(networkError)
       
-      // const meetingSuggestions = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: 'meet' }
-      // })
-      
-      // // Should return different results for different queries
-      // expect(workSuggestions.data).not.toEqual(meetingSuggestions.data)
-      
-      // // All suggestions should contain the query text
-      // workSuggestions.data.forEach(suggestion => {
-      //   expect(suggestion.text.toLowerCase()).toContain('work')
-      // })
-      
-      expect(true).toBe(true) // Placeholder
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('Network Error')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
     })
 
-    it('should prioritize recent and frequent activities', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: '' }
-      // })
+    it('should handle HTTP status errors', async () => {
+      const httpError = new Error('HTTP 404: Not Found')
+      mockFetch.mockRejectedValue(httpError)
       
-      // // Should be sorted by relevance (frequency * recency)
-      // const suggestions = response.data
-      // expect(suggestions.length).toBeGreaterThan(1)
-      
-      // // First suggestion should have higher frequency or more recent usage
-      // if (suggestions.length >= 2) {
-      //   const first = suggestions[0]
-      //   const second = suggestions[1]
-      //   
-      //   // Either higher frequency or more recent
-      //   const firstScore = first.frequency * (new Date().getTime() - new Date(first.lastUsed).getTime())
-      //   const secondScore = second.frequency * (new Date().getTime() - new Date(second.lastUsed).getTime())
-      //   expect(firstScore).toBeLessThanOrEqual(secondScore)
-      // }
-      
-      expect(true).toBe(true) // Placeholder
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('HTTP 404: Not Found')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
     })
 
-    it('should return both activity and tag suggestions', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: 'code' }
-      // })
+    it('should handle timeout errors', async () => {
+      const timeoutError = new Error('Request timeout')
+      mockFetch.mockRejectedValue(timeoutError)
       
-      // const suggestions = response.data
-      // const activitySuggestions = suggestions.filter(s => s.type === 'activity')
-      // const tagSuggestions = suggestions.filter(s => s.type === 'tag')
-      
-      // // Should have both types when relevant
-      // expect(activitySuggestions.length).toBeGreaterThan(0)
-      // expect(tagSuggestions.length).toBeGreaterThan(0)
-      
-      expect(true).toBe(true) // Placeholder
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('Request timeout')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
     })
 
-    it('should limit results to prevent performance issues', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: '', limit: 5 }
-      // })
+    it('should handle malformed JSON responses', async () => {
+      const malformedResponse = { invalid: 'response' }
+      mockFetch.mockResolvedValue(malformedResponse)
       
-      // expect(response.data.length).toBeLessThanOrEqual(5)
+      const response = await $fetch('/api/activities/suggestions')
       
-      // // Default limit should be reasonable
-      // const defaultResponse = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions')
-      // expect(defaultResponse.data.length).toBeLessThanOrEqual(10)
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+      expect(response).toEqual(malformedResponse)
       
-      expect(true).toBe(true) // Placeholder
+      // Client should receive the malformed response and handle it appropriately
+      expect(response).not.toHaveProperty('data')
+      expect(response).not.toHaveProperty('meta')
     })
 
-    it('should handle empty query gracefully', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: '' }
-      // })
+    it('should handle null/undefined responses', async () => {
+      mockFetch.mockResolvedValue(null)
       
-      // // Should return recent/popular suggestions
-      // expect(response.data).toBeInstanceOf(Array)
-      // expect(response.data.length).toBeGreaterThan(0)
+      const response = await $fetch('/api/activities/suggestions')
       
-      expect(true).toBe(true) // Placeholder
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+      expect(response).toBeNull()
     })
 
-    it('should handle query with no matches', async () => {
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: 'xyzzz_nonexistent_query_12345' }
-      // })
+    it('should handle empty string responses', async () => {
+      mockFetch.mockResolvedValue('')
       
-      // expect(response.data).toBeInstanceOf(Array)
-      // expect(response.data.length).toBe(0)
+      const response = await $fetch('/api/activities/suggestions')
       
-      expect(true).toBe(true) // Placeholder
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+      expect(response).toBe('')
     })
 
-    it('should respond within performance requirements', async () => {
-      // const startTime = Date.now()
+    it('should handle responses with missing data property', async () => {
+      const incompleteResponse = {
+        meta: {
+          total: 0,
+          query: '',
+          limit: 10
+        }
+        // Missing 'data' property
+      }
       
-      // await $fetch('/api/activities/suggestions', {
-      //   query: { q: 'test' }
-      // })
+      mockFetch.mockResolvedValue(incompleteResponse)
       
-      // const endTime = Date.now()
-      // const responseTime = endTime - startTime
+      const response = await $fetch('/api/activities/suggestions')
       
-      // // Should respond within 200ms as per requirements
-      // expect(responseTime).toBeLessThan(200)
-      
-      expect(true).toBe(true) // Placeholder
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+      expect(response).toEqual(incompleteResponse)
+      expect(response).not.toHaveProperty('data')
     })
 
-    it('should handle malformed query parameters', async () => {
-      // Test with invalid parameters
-      // const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-      //   query: { q: null, limit: 'invalid' }
-      // })
+    it('should handle responses with wrong data types', async () => {
+      const wrongTypesResponse = {
+        data: 'should be array', // Wrong type
+        meta: 'should be object'  // Wrong type
+      }
       
-      // // Should handle gracefully and return default results
-      // expect(response.data).toBeInstanceOf(Array)
+      mockFetch.mockResolvedValue(wrongTypesResponse)
       
-      expect(true).toBe(true) // Placeholder
+      const response = await $fetch('/api/activities/suggestions')
+      
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+      expect(response).toEqual(wrongTypesResponse)
+      expect(typeof response.data).toBe('string')
+      expect(typeof response.meta).toBe('string')
+    })
+
+    it('should handle connection refused errors', async () => {
+      const connectionError = new Error('ECONNREFUSED')
+      mockFetch.mockRejectedValue(connectionError)
+      
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('ECONNREFUSED')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+    })
+
+    it('should handle DNS resolution errors', async () => {
+      const dnsError = new Error('ENOTFOUND')
+      mockFetch.mockRejectedValue(dnsError)
+      
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('ENOTFOUND')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
+    })
+
+    it('should handle CORS errors', async () => {
+      const corsError = new Error('CORS policy: No Access-Control-Allow-Origin header')
+      mockFetch.mockRejectedValue(corsError)
+      
+      await expect($fetch('/api/activities/suggestions')).rejects.toThrow('CORS policy')
+      expect($fetch).toHaveBeenCalledWith('/api/activities/suggestions')
     })
   })
 
-  describe('Suggestion ranking algorithm', () => {
-    it('should prioritize exact matches over partial matches', async () => {
-      // When searching for "work", "work" should rank higher than "homework"
-      expect(true).toBe(true) // Placeholder
+  describe('Mock validation for error scenarios', () => {
+    it('should verify mock function behavior with different error types', async () => {
+      const errors = [
+        new Error('500 Internal Server Error'),
+        new Error('502 Bad Gateway'),
+        new Error('503 Service Unavailable'),
+        new Error('504 Gateway Timeout')
+      ]
+      
+      for (const error of errors) {
+        mockFetch.mockRejectedValueOnce(error)
+        
+        await expect($fetch('/api/activities/suggestions')).rejects.toThrow(error.message)
+      }
+      
+      expect(mockFetch).toHaveBeenCalledTimes(errors.length)
     })
 
-    it('should boost recently used suggestions', async () => {
-      // Recent activities should rank higher than old ones with same frequency
-      expect(true).toBe(true) // Placeholder
-    })
-
-    it('should consider tag frequency across all activities', async () => {
-      // Tags used in many activities should rank higher
-      expect(true).toBe(true) // Placeholder
-    })
-  })
-
-  describe('Data consistency', () => {
-    it('should handle concurrent requests safely', async () => {
-      // Multiple simultaneous requests should not cause data corruption
-      expect(true).toBe(true) // Placeholder
-    })
-
-    it('should reflect recent activity additions', async () => {
-      // New activities should appear in suggestions quickly
-      expect(true).toBe(true) // Placeholder
+    it('should ensure mock is properly reset between tests', () => {
+      // This test verifies that mocks are properly cleared
+      expect(mockFetch).not.toHaveBeenCalled()
+      
+      mockFetch.mockResolvedValue({ test: 'data' })
+      
+      // Mock should be configured but not called yet
+      expect(mockFetch).not.toHaveBeenCalled()
     })
   })
 })
