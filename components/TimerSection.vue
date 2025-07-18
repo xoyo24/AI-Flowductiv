@@ -129,20 +129,7 @@
         </button>
       </div>
 
-      <!-- Quick Actions -->
-      <div v-if="!isRunning && !isPaused" class="border-t border-border pt-4">
-        <div class="text-sm text-muted-foreground mb-2">Quick Start:</div>
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="suggestion in quickSuggestions"
-            :key="suggestion"
-            @click="activityInput = suggestion"
-            class="px-3 py-1 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
-          >
-            {{ suggestion }}
-          </button>
-        </div>
-      </div>
+      <!-- Note: Quick Actions removed - dynamic suggestions provide better UX -->
     </div>
   </div>
 </template>
@@ -194,14 +181,14 @@ const {
   performSearch
 } = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
 
-// Input field focus and suggestion dropdown state
+// Simplified dropdown state management
 const inputFocused = ref(false)
 const dropdownVisible = ref(false)
+
 const showSuggestions = computed(() => 
   dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
 )
 
-// Better dropdown visibility control
 const showDropdown = () => {
   if (suggestions.value.length > 0 || suggestionsLoading.value) {
     dropdownVisible.value = true
@@ -212,24 +199,12 @@ const hideDropdown = () => {
   dropdownVisible.value = false
 }
 
-// Auto-show dropdown when input gets focus and has suggestions
-watch([inputFocused, suggestions], ([focused, newSuggestions]) => {
-  if (focused && newSuggestions.length > 0) {
+// Show dropdown when new suggestions arrive and input is focused
+watch(suggestions, (newSuggestions) => {
+  if (inputFocused.value && newSuggestions.length > 0) {
     showDropdown()
   }
-  if (!focused) {
-    hideDropdown()
-  }
 })
-
-// Static fallback suggestions for empty input
-const quickSuggestions = ref([
-  'Deep work #focus !3',
-  'Meeting #work !2', 
-  'Code review #development !2',
-  'Learning #education !1',
-  'Planning #strategic !3',
-])
 
 // Track if we just made a selection to prevent immediate timer start
 const justSelectedSuggestion = ref(false)
@@ -286,12 +261,17 @@ const handleKeydown = (event) => {
         break
       case 'Enter':
         if (selectedIndex.value >= 0) {
+          // User has navigated to a suggestion - select it
           event.preventDefault()
           const selected = selectCurrent()
           if (selected) {
             handleSuggestionSelect(selected)
           }
           return // Don't trigger timer start when selecting suggestion
+        } else {
+          // No suggestion selected - close dropdown and start timer
+          hideDropdown()
+          // Don't preventDefault - let handleEnterKey handle timer start
         }
         break
       case 'Escape':
@@ -326,10 +306,8 @@ const handleInputFocus = () => {
       performSearch(activityInput.value.trim())
     })
   }
-  // Note: Don't automatically search for empty input on focus
-  // This prevents dropdown from appearing and blocking Enter key
   
-  // If we already have suggestions, show them immediately
+  // Show existing suggestions if available
   if (suggestions.value.length > 0) {
     showDropdown()
   }
@@ -343,7 +321,7 @@ const handleInputBlur = () => {
       inputFocused.value = false
       hideDropdown()
     }
-  }, 150) // Give enough time for click events
+  }, 150)
 }
 
 // Handle Enter key press on input
@@ -353,12 +331,7 @@ const handleEnterKey = () => {
     return
   }
   
-  // Don't start timer if dropdown is visible with suggestions  
-  if (dropdownVisible.value && suggestions.value.length > 0) {
-    return
-  }
-  
-  // Start timer normally
+  // Start timer normally (dropdown logic handled in handleKeydown)
   handleStart()
 }
 
