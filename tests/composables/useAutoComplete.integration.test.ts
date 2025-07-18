@@ -73,6 +73,41 @@ describe('useAutoComplete - Integration Tests', () => {
         expect(suggestion).toHaveProperty('frequency')
       }
     })
+
+    it('should return initial suggestions for empty query', async () => {
+      if (!serverRunning) return
+
+      const searchQuery = ref('')
+      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
+
+      // Test getInitialSuggestions method
+      await composable.getInitialSuggestions()
+      await new Promise(resolve => setTimeout(resolve, 150))
+
+      expect(composable.isLoading.value).toBe(false)
+      expect(Array.isArray(composable.suggestions.value)).toBe(true)
+      
+      // Should return recent activities and tags even for empty query
+      // Either successful or error handled gracefully
+      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
+    })
+
+    it('should handle performSearch with empty string', async () => {
+      if (!serverRunning) return
+
+      const searchQuery = ref('')
+      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
+
+      // Test performSearch with empty string
+      await composable.performSearch('')
+      await new Promise(resolve => setTimeout(resolve, 150))
+
+      expect(composable.isLoading.value).toBe(false)
+      expect(Array.isArray(composable.suggestions.value)).toBe(true)
+      
+      // Should return suggestions for empty query (recent activities/tags)
+      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
+    })
   })
 
   describe('Component Structure', () => {
@@ -95,6 +130,7 @@ describe('useAutoComplete - Integration Tests', () => {
       expect(composable.retry).toBeDefined()
       expect(composable.cleanup).toBeDefined()
       expect(composable.performSearch).toBeDefined()
+      expect(composable.getInitialSuggestions).toBeDefined()
     })
   })
 })

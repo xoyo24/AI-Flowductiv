@@ -45,7 +45,9 @@ export const useAutoComplete = (
 
   // Search function
   const performSearch = async (query: string) => {
-    if (query.length < minQueryLength) {
+    if (query.length < minQueryLength && query.length > 0) {
+      // Only skip search if there's text but it's too short
+      // Always search when empty to get recent activities/tags
       suggestions.value = []
       return
     }
@@ -131,6 +133,11 @@ export const useAutoComplete = (
     }
   }
 
+  // Get initial suggestions (recent activities/tags)
+  const getInitialSuggestions = () => {
+    performSearch('')
+  }
+
   // Cleanup function
   const cleanup = () => {
     if (debounceTimer) {
@@ -174,6 +181,7 @@ export const useAutoComplete = (
     cleanup,
     
     // Manual search (for testing)
-    performSearch
+    performSearch,
+    getInitialSuggestions
   }
 }

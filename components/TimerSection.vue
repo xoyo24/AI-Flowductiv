@@ -12,7 +12,7 @@
               id="activity-input"
               v-model="activityInput"
               type="text"
-              placeholder="Enter activity name (use #tags and !1-3 for priority)"
+              placeholder="Enter activity or click for suggestions"
               class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               :disabled="isRunning || isPaused"
               @keyup.enter="handleEnterKey"
@@ -178,7 +178,8 @@ const {
   selectPrevious,
   selectCurrent,
   selectIndex,
-  performSearch
+  performSearch,
+  getInitialSuggestions
 } = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
 
 // Simplified dropdown state management
@@ -186,7 +187,7 @@ const inputFocused = ref(false)
 const dropdownVisible = ref(false)
 
 const showSuggestions = computed(() => 
-  dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
+  inputFocused.value && dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
 )
 
 const showDropdown = () => {
@@ -203,6 +204,13 @@ const hideDropdown = () => {
 watch(suggestions, (newSuggestions) => {
   if (inputFocused.value && newSuggestions.length > 0) {
     showDropdown()
+  }
+})
+
+// Show dropdown when loading starts (for immediate feedback)
+watch(suggestionsLoading, (loading) => {
+  if (loading && inputFocused.value) {
+    dropdownVisible.value = true
   }
 })
 
@@ -300,12 +308,15 @@ const handleKeydown = (event) => {
 const handleInputFocus = () => {
   inputFocused.value = true
   
-  // If input has content, trigger search immediately
-  if (activityInput.value.trim()) {
-    nextTick(() => {
+  // If input is empty, get initial suggestions (recent activities/tags)
+  // If input has content, search for matching suggestions
+  nextTick(() => {
+    if (activityInput.value.trim()) {
       performSearch(activityInput.value.trim())
-    })
-  }
+    } else {
+      getInitialSuggestions()
+    }
+  })
   
   // Show existing suggestions if available
   if (suggestions.value.length > 0) {

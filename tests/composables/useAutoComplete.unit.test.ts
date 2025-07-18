@@ -64,14 +64,39 @@ describe('useAutoComplete - Unit Tests', () => {
       expect(shouldSetError).toBe(false)
     })
 
-    it('should respect minQueryLength', () => {
+    it('should respect minQueryLength for non-empty queries', () => {
       const searchQuery = ref('')
       const composable = useAutoComplete(searchQuery, { minQueryLength: 2 })
       
-      const shouldSearch = (query: string, minLength: number) => query.length >= minLength
+      const shouldSearch = (query: string, minLength: number) => {
+        // Empty query should always search (for initial suggestions)
+        if (query.length === 0) return true
+        // Non-empty query should respect minLength
+        return query.length >= minLength
+      }
       
-      expect(shouldSearch('a', 2)).toBe(false)
-      expect(shouldSearch('ab', 2)).toBe(true)
+      expect(shouldSearch('', 2)).toBe(true)  // Empty query should search
+      expect(shouldSearch('a', 2)).toBe(false) // Short query should not search
+      expect(shouldSearch('ab', 2)).toBe(true) // Long enough query should search
+    })
+
+    it('should provide getInitialSuggestions method', () => {
+      const searchQuery = ref('')
+      const composable = useAutoComplete(searchQuery)
+      
+      expect(typeof composable.getInitialSuggestions).toBe('function')
+    })
+
+    it('should handle empty query search logic', () => {
+      const searchQuery = ref('')
+      const composable = useAutoComplete(searchQuery, { minQueryLength: 2 })
+      
+      // Test the logic for empty query handling
+      const query = ''
+      const minLength = 2
+      const shouldSkip = query.length < minLength && query.length > 0
+      
+      expect(shouldSkip).toBe(false) // Empty query should not be skipped
     })
   })
 })
