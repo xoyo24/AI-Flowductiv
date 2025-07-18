@@ -1,7 +1,7 @@
-import { computed, readonly, type Ref } from 'vue'
+import { type Ref, computed, readonly } from 'vue'
+import type { ActivityInput } from '~/composables/useActivities'
 import { InputParserService } from '~/services/inputParser'
 import type { ParsedActivity } from '~/types/activity'
-import type { ActivityInput } from '~/composables/useActivities'
 
 export const useInputParser = (inputRef: Ref<string>) => {
   // Reactive parsed activity

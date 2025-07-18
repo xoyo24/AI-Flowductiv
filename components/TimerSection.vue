@@ -134,6 +134,8 @@
 </template>
 
 <script setup lang="ts">
+import { useInputParser } from '~/composables/useInputParser'
+
 const {
   isRunning,
   isPaused,
@@ -160,15 +162,8 @@ const timerStatus = computed(() => {
   return 'Stopped'
 })
 
-const extractedTags = computed(() => {
-  const tagRegex = /#(\w+)/g
-  return Array.from(activityInput.value.matchAll(tagRegex), (match) => match[1])
-})
-
-const extractedPriority = computed(() => {
-  const priorityMatch = activityInput.value.match(/!([1-3])/)
-  return priorityMatch ? Number.parseInt(priorityMatch[1]) : null
-})
+// Use centralized input parser
+const { tags: extractedTags, priority: extractedPriority, cleanText } = useInputParser(activityInput)
 
 const quickSuggestions = ref([
   'Deep work #focus !3',

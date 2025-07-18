@@ -1,4 +1,5 @@
 import { getCurrentInstance } from 'vue'
+import { InputParserService } from '~/services/inputParser'
 
 export interface TimerState {
   isRunning: boolean
@@ -145,16 +146,8 @@ export const useTimer = () => {
     clearTimerState()
   }
 
-  // Utility functions
-  const extractTags = (text: string): string[] => {
-    const tagRegex = /#(\w+)/g
-    return Array.from(text.matchAll(tagRegex), (match) => match[1])
-  }
-
-  const extractPriority = (text: string): number | null => {
-    const priorityMatch = text.match(/!([1-3])/)
-    return priorityMatch ? Number.parseInt(priorityMatch[1]) : null
-  }
+  // Import centralized parsing utilities
+  const { extractTags, extractPriority, parseActivity } = InputParserService
 
   // Persistence
   const saveTimerState = () => {
