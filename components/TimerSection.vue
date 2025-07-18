@@ -7,7 +7,7 @@
           What are you working on?
         </label>
         <div class="flex space-x-2">
-          <div class="relative flex-1">
+          <div ref="dropdownContainer" class="relative flex-1">
             <input
               id="activity-input"
               v-model="activityInput"
@@ -17,8 +17,8 @@
               :disabled="isRunning || isPaused"
               @keyup.enter="handleStart"
               @keydown="handleKeydown"
-              @focus="inputFocused = true"
-              @blur="() => setTimeout(() => { inputFocused = false }, 150)"
+              @focus="() => { inputFocused = true; if (suggestions.length > 0) showDropdown() }"
+              @blur="() => { inputFocused = false }"
               data-testid="activity-input"
             />
             
@@ -30,7 +30,7 @@
               :loading="suggestionsLoading"
               @select="handleSuggestionSelect"
               @hover="selectIndex"
-              @close="inputFocused = false"
+              @close="hideDropdown"
             />
             <div v-if="activityInput" class="absolute right-2 top-2 flex space-x-1">
               <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
@@ -148,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useInputParser } from '~/composables/useInputParser'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
@@ -194,9 +195,31 @@ const {
 
 // Input field focus and suggestion dropdown state
 const inputFocused = ref(false)
+const dropdownVisible = ref(false)
 const showSuggestions = computed(() => 
-  inputFocused.value && (suggestions.value.length > 0 || suggestionsLoading.value)
+  dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
 )
+
+// Better dropdown visibility control
+const showDropdown = () => {
+  if (suggestions.value.length > 0 || suggestionsLoading.value) {
+    dropdownVisible.value = true
+  }
+}
+
+const hideDropdown = () => {
+  dropdownVisible.value = false
+}
+
+// Auto-show dropdown when input gets focus and has suggestions
+watch([inputFocused, suggestions], ([focused, newSuggestions]) => {
+  if (focused && newSuggestions.length > 0) {
+    showDropdown()
+  }
+  if (!focused) {
+    hideDropdown()
+  }
+})
 
 // Static fallback suggestions for empty input
 const quickSuggestions = ref([
@@ -219,41 +242,81 @@ const handleSuggestionSelect = (suggestion) => {
       activityInput.value = currentText ? `${currentText} #${suggestion.text}` : `#${suggestion.text}`
     }
   }
-  inputFocused.value = false
+  // Auto-close dropdown after selection
+  hideDropdown()
+  // Keep input focused for further editing
+  nextTick(() => {
+    const input = document.getElementById('activity-input')
+    if (input) input.focus()
+  })
 }
 
 const handleKeydown = (event) => {
-  if (!showSuggestions.value) return
-  
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault()
-      selectNext()
-      break
-    case 'ArrowUp':
-      event.preventDefault()
-      selectPrevious()
-      break
-    case 'Enter':
-      if (selectedIndex.value >= 0) {
+  // Handle dropdown-specific keys
+  if (showSuggestions.value) {
+    switch (event.key) {
+      case 'ArrowDown':
         event.preventDefault()
-        const selected = selectCurrent()
-        if (selected) {
-          handleSuggestionSelect(selected)
+        selectNext()
+        break
+      case 'ArrowUp':
+        event.preventDefault()
+        selectPrevious()
+        break
+      case 'Enter':
+        if (selectedIndex.value >= 0) {
+          event.preventDefault()
+          const selected = selectCurrent()
+          if (selected) {
+            handleSuggestionSelect(selected)
+          }
         }
+        break
+      case 'Escape':
+        event.preventDefault()
+        hideDropdown()
+        break
+      case 'Tab':
+        // Close dropdown on tab to next field
+        hideDropdown()
+        break
+    }
+  }
+  
+  // Handle typing that should show suggestions
+  if (!showSuggestions.value && event.key.length === 1) {
+    // User is typing, show dropdown if we have suggestions
+    nextTick(() => {
+      if (suggestions.value.length > 0) {
+        showDropdown()
       }
-      break
-    case 'Escape':
-      event.preventDefault()
-      inputFocused.value = false
-      break
+    })
   }
 }
 
 // Actions
+// Click outside to dismiss dropdown
+const dropdownContainer = ref(null)
+
+const handleClickOutside = (event) => {
+  if (dropdownContainer.value && !dropdownContainer.value.contains(event.target)) {
+    hideDropdown()
+  }
+}
+
+// Set up click outside listener
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 const handleStart = () => {
   if (activityInput.value.trim() && startTimer(activityInput.value)) {
     // Successfully started
+    hideDropdown() // Close dropdown when starting timer
   }
 }
 
