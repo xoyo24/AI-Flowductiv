@@ -124,6 +124,24 @@ describe('InputParserService', () => {
       ])
     })
 
+    it('should handle hyphenated tags', () => {
+      expect(InputParserService.extractTags('Working on #ai-coding #machine-learning #full-stack')).toEqual([
+        'ai-coding', 'machine-learning', 'full-stack'
+      ])
+    })
+
+    it('should handle tags with dots', () => {
+      expect(InputParserService.extractTags('Learning #react.js #node.js #v2.0 #python3.11')).toEqual([
+        'react.js', 'node.js', 'v2.0', 'python3.11'
+      ])
+    })
+
+    it('should handle complex tag combinations', () => {
+      expect(InputParserService.extractTags('Project #web-app #react.js #v1.2.3 #ui_ux #front-end')).toEqual([
+        'web-app', 'react.js', 'v1.2.3', 'ui_ux', 'front-end'
+      ])
+    })
+
     it('should ignore incomplete tags', () => {
       expect(InputParserService.extractTags('Invalid # tag and #valid')).toEqual(['valid'])
     })
@@ -152,19 +170,27 @@ describe('InputParserService', () => {
   describe('cleanText', () => {
     it('should remove tags and priority from text', () => {
       expect(InputParserService.cleanText('Work on #frontend #react !2')).toBe('Work on')
-      expect('Work on').toBe('Work on')    })
+    })
+
+    it('should remove hyphenated tags properly', () => {
+      expect(InputParserService.cleanText('Working on #ai-coding #machine-learning project !2')).toBe('Working on project')
+    })
+
+    it('should remove tags with dots and complex characters', () => {
+      expect(InputParserService.cleanText('Building #react.js #v2.0 app with #ui_ux design !3')).toBe('Building app with design')
+    })
 
     it('should trim whitespace', () => {
       expect(InputParserService.cleanText('  Task with spaces  #tag  !1  ')).toBe('Task with spaces')
-      expect('Task with spaces').toBe('Task with spaces')    })
+    })
 
     it('should handle text with only tags/priority', () => {
       expect(InputParserService.cleanText('#tag !1')).toBe('')
-      expect('').toBe('')    })
+    })
 
     it('should preserve text without tags/priority', () => {
       expect(InputParserService.cleanText('Plain text task')).toBe('Plain text task')
-      expect('Plain text task').toBe('Plain text task')    })
+    })
   })
 
   describe('edge cases', () => {

@@ -18,10 +18,10 @@ export class InputParserService {
   }
 
   /**
-   * Extract tags from input text (e.g., #work #urgent)
+   * Extract tags from input text (e.g., #work #urgent #ai-coding #v2.0)
    */
   static extractTags(text: string): string[] {
-    const tagRegex = /#(\w+)/g
+    const tagRegex = /#([\w.-]+)/g
     return Array.from(text.matchAll(tagRegex), (match) => match[1])
   }
 
@@ -38,7 +38,7 @@ export class InputParserService {
    */
   static cleanText(text: string): string {
     return text
-      .replace(/#\w+/g, '') // Remove tags
+      .replace(/#[\w.-]+/g, '') // Remove tags (including hyphens, dots, underscores)
       .replace(/!\d+/g, '') // Remove all priority markers (valid and invalid)
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim() // Remove leading/trailing whitespace
