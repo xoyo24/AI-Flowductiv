@@ -36,7 +36,7 @@
           <div class="flex items-center space-x-3">
             <div class="flex-1">
               <h3 class="font-medium text-foreground break-words">
-                {{ activity.title }}
+                {{ getCleanTitle(activity.title) }}
               </h3>
               <div class="flex items-center space-x-4 mt-1">
                 <span class="text-sm text-muted-foreground">
@@ -188,6 +188,8 @@
 </template>
 
 <script setup lang="ts">
+import { InputParserService } from '~/services/inputParser'
+
 const {
   activities,
   loading,
@@ -204,6 +206,11 @@ const formatTime = (timestamp: string | Date): string => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+// Clean activity title (remove tags and priority)
+const getCleanTitle = (title: string): string => {
+  return InputParserService.cleanText(title)
+}
+
 // Actions
 const refreshActivities = async () => {
   await getTodaysActivities()
@@ -212,7 +219,11 @@ const refreshActivities = async () => {
 const editingActivity = ref<any>(null)
 
 const editActivity = (activity: any) => {
-  editingActivity.value = { ...activity }
+  editingActivity.value = { 
+    ...activity,
+    // Show clean title for editing (without tags/priority)
+    title: getCleanTitle(activity.title)
+  }
 }
 
 const saveEdit = async () => {
