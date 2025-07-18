@@ -6,8 +6,12 @@ import type { ActivitySuggestion } from '~/types/activity'
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event)
-    const searchQuery = (query.q as string) || ''
+    const rawSearchQuery = (query.q as string) || ''
     const limit = Math.min(Number(query.limit) || 10, 50) // Max 50 suggestions
+    
+    // Handle tag search - strip # prefix for tag matching
+    const isTagSearch = rawSearchQuery.startsWith('#')
+    const searchQuery = isTagSearch ? rawSearchQuery.slice(1) : rawSearchQuery
 
     // Get recent activities for suggestion generation
     const recentActivities = await db
@@ -31,8 +35,8 @@ export default defineEventHandler(async (event) => {
       const title = activity.title.trim()
       const activityDate = new Date(activity.startTime)
 
-      // Add activity suggestion
-      if (title && (!searchQuery || title.toLowerCase().includes(searchQuery.toLowerCase()))) {
+      // Add activity suggestion (skip if doing tag search)
+      if (!isTagSearch && title && (!searchQuery || title.toLowerCase().includes(searchQuery.toLowerCase()))) {
         const key = title.toLowerCase()
         if (!activitySuggestions.has(key)) {
           activitySuggestions.set(key, {
@@ -86,7 +90,7 @@ export default defineEventHandler(async (event) => {
     const sortedSuggestions = allSuggestions
       .map(suggestion => ({
         ...suggestion,
-        score: calculateRelevanceScore(suggestion, now, searchQuery)
+        score: calculateRelevanceScore(suggestion, now, searchQuery, isTagSearch)
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
@@ -116,7 +120,8 @@ export default defineEventHandler(async (event) => {
 function calculateRelevanceScore(
   suggestion: ActivitySuggestion, 
   now: number, 
-  searchQuery: string
+  searchQuery: string,
+  isTagSearch: boolean = false
 ): number {
   const dayMs = 24 * 60 * 60 * 1000
   const daysSinceUsed = (now - suggestion.lastUsed.getTime()) / dayMs
@@ -138,9 +143,17 @@ function calculateRelevanceScore(
     score *= 2
   }
   
-  // Activity vs tag preference (slight preference for activities)
-  if (suggestion.type === 'activity') {
-    score *= 1.1
+  // Tag search preference
+  if (isTagSearch) {
+    // Strongly prefer tag suggestions when doing tag search
+    if (suggestion.type === 'tag') {
+      score *= 5
+    }
+  } else {
+    // Slight preference for activities in normal search
+    if (suggestion.type === 'activity') {
+      score *= 1.1
+    }
   }
   
   return score

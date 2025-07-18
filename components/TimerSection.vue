@@ -17,7 +17,7 @@
               :disabled="isRunning || isPaused"
               @keyup.enter="handleStart"
               @keydown="handleKeydown"
-              @focus="() => { inputFocused = true; if (suggestions.length > 0) showDropdown() }"
+              @focus="handleInputFocus"
               @blur="() => { inputFocused = false }"
               data-testid="activity-input"
             />
@@ -190,7 +190,8 @@ const {
   selectNext,
   selectPrevious,
   selectCurrent,
-  selectIndex
+  selectIndex,
+  performSearch
 } = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
 
 // Input field focus and suggestion dropdown state
@@ -242,12 +243,19 @@ const handleSuggestionSelect = (suggestion) => {
       activityInput.value = currentText ? `${currentText} #${suggestion.text}` : `#${suggestion.text}`
     }
   }
+  
   // Auto-close dropdown after selection
   hideDropdown()
   // Keep input focused for further editing
   nextTick(() => {
     const input = document.getElementById('activity-input')
-    if (input) input.focus()
+    if (input) {
+      input.focus()
+      // Trigger a new search after selection to show additional suggestions
+      if (activityInput.value.trim()) {
+        performSearch(activityInput.value.trim())
+      }
+    }
   })
 }
 
@@ -270,6 +278,7 @@ const handleKeydown = (event) => {
           if (selected) {
             handleSuggestionSelect(selected)
           }
+          return // Don't trigger timer start when selecting suggestion
         }
         break
       case 'Escape':
@@ -294,7 +303,29 @@ const handleKeydown = (event) => {
   }
 }
 
-// Actions
+// Input focus handling
+const handleInputFocus = () => {
+  inputFocused.value = true
+  
+  // If input has content, trigger search immediately
+  if (activityInput.value.trim()) {
+    nextTick(() => {
+      performSearch(activityInput.value.trim())
+    })
+  } else {
+    // For empty input, show popular suggestions
+    nextTick(() => {
+      performSearch('')
+    })
+  }
+  
+  // If we already have suggestions, show them immediately
+  if (suggestions.value.length > 0) {
+    showDropdown()
+  }
+}
+
+// Actions  
 // Click outside to dismiss dropdown
 const dropdownContainer = ref(null)
 
