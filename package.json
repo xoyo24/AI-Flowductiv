@@ -18,7 +18,6 @@
     "test:unit": "vitest tests/unit",
     "test:integration": "vitest tests/integration",
     "test:component": "vitest tests/integration/components",
-    "test:api": "vitest tests/integration/api",
     "test:e2e": "playwright test tests/e2e",
     "test:e2e:ui": "playwright test tests/e2e --ui",
     "test:ui": "vitest --ui",

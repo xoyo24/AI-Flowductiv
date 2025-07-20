@@ -26,6 +26,31 @@ vi.mock('#app', () => ({
   }),
 }))
 
+// Mock input parser service
+vi.mock('~/services/inputParser', () => ({
+  InputParserService: {
+    cleanText: (title: string) => title.replace(/#\w+/g, '').replace(/!\d/g, '').trim(),
+    parseActivity: vi.fn(() => ({
+      title: 'Test Activity',
+      tags: [],
+      priority: null
+    }))
+  }
+}))
+
+// Mock composables
+vi.mock('~/composables/useActivities', () => ({
+  useActivities: vi.fn(() => ({
+    activities: { value: [] },
+    loading: { value: false },
+    error: { value: null },
+    getActivityStats: { value: { totalTime: 0, activityCount: 0, longestSession: 0 } },
+    getTodaysActivities: vi.fn(),
+    deleteActivity: vi.fn(),
+    formatDuration: vi.fn(() => '0m'),
+  }))
+}))
+
 // Don't mock Vue composables when using Vue Test Utils
 // Vue Test Utils needs real Vue reactivity system
 

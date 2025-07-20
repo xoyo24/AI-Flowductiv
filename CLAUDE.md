@@ -169,8 +169,8 @@ Remember: This is a fresh implementation focusing on modern best practices and o
 - Use **data-testid** attributes for reliable element selection
 - Never use `expect(true).toBe(true)` in test cases
 - **Target 75% coverage** for critical paths (timer, activities, API)
-- **Run tests** before commits: `bun test` for full suite
 - Use --run with test command (like bun test:integration --run) so the test can terminate after completion
+- Never skip test, ask what to do when getting stuck.
 
 ## Development Workflow
 - Commit every step(Todo) after confirmed it works as expected

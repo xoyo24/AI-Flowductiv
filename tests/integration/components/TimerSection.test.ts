@@ -1,23 +1,64 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import TimerSection from '~/components/TimerSection.vue'
-import { setupApiMocks } from '../../helpers/apiMocks'
 
-// Following Vue Test Utils best practices
-const apiMocks = setupApiMocks()
+// Simple mocking approach for component testing
+const mockFetch = vi.fn()
+globalThis.$fetch = mockFetch
+
+// Mock useTimer composable
+const mockIsRunning = ref(false)
+const mockIsPaused = ref(false)
+const mockFormattedTime = ref('00:00')
+const mockActivityTitle = ref('')
+const mockStartTimer = vi.fn()
+const mockPauseTimer = vi.fn()
+const mockResumeTimer = vi.fn()
+const mockFinishTimer = vi.fn()
+const mockResetTimer = vi.fn()
+
+globalThis.useTimer = vi.fn(() => ({
+  isRunning: mockIsRunning,
+  isPaused: mockIsPaused,
+  formattedTime: mockFormattedTime,
+  activityTitle: mockActivityTitle,
+  startTimer: mockStartTimer,
+  pauseTimer: mockPauseTimer,
+  resumeTimer: mockResumeTimer,
+  finishTimer: mockFinishTimer,
+  resetTimer: mockResetTimer,
+}))
+
+// Mock useAutoComplete composable
+globalThis.useAutoComplete = vi.fn(() => ({
+  suggestions: ref([]),
+  isLoading: ref(false),
+  selectedIndex: ref(-1),
+  selectNext: vi.fn(),
+  selectPrevious: vi.fn(),
+  selectCurrent: vi.fn(),
+}))
 
 describe('TimerSection Component', () => {
   beforeEach(() => {
-    apiMocks.reset()
+    mockFetch.mockReset()
+    mockStartTimer.mockReset()
+    mockPauseTimer.mockReset()
+    mockResumeTimer.mockReset()
+    mockFinishTimer.mockReset()
+    mockResetTimer.mockReset()
+    
+    // Reset reactive states
+    mockIsRunning.value = false
+    mockIsPaused.value = false
+    mockFormattedTime.value = '00:00'
+    mockActivityTitle.value = ''
     
     // Mock successful API responses
-    apiMocks.mockSuccess({ 
+    mockFetch.mockResolvedValue({ 
       data: { id: 'test-activity-1', title: 'Test Activity', durationMs: 1800000 } 
     })
-  })
-
-  afterEach(() => {
-    apiMocks.restore()
   })
 
   describe('User Interface Rendering', () => {

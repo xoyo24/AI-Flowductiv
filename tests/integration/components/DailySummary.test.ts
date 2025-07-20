@@ -3,17 +3,16 @@ import { ref, computed } from 'vue'
 import { mount } from '@vue/test-utils'
 import DailySummary from '~/components/DailySummary.vue'
 
-// Mock the composables
+// Simple mocking approach - mock composables directly
 const mockActivities = ref([])
 const mockSummary = ref(null)
 const mockLoading = ref(false)
 const mockError = ref(null)
 const mockGenerateSummary = vi.fn()
 
-vi.mock('~/composables/useActivities', () => ({
-  useActivities: () => ({
-    activities: mockActivities,
-  })
+// Set up global mock for useActivities
+globalThis.useActivities = vi.fn(() => ({
+  activities: mockActivities,
 }))
 
 // Mock a composable for AI summary functionality
