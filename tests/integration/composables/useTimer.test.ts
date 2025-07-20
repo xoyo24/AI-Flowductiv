@@ -186,10 +186,6 @@ describe('useTimer Composable', () => {
       expect(timer.currentActivity.value).toBe('')
     })
 
-    // NOTE: Activity save failure test removed due to complex mocking requirements
-    // The core error handling logic exists in the implementation (try/catch in finishTimer)
-    // This edge case is better tested via E2E tests where actual network failures can occur
-
     it('should not finish if timer is not running or paused', async () => {
       const timer = useTimer()
       
