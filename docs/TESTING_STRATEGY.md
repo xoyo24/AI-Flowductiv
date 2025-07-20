@@ -93,20 +93,27 @@ test('user can track time for an activity', async ({ page }) => {
 ```
 tests/
 ├── unit/                   # Fast, isolated logic tests
-│   ├── composables/       # Composable logic testing
 │   ├── services/          # Business logic testing
-│   └── components/        # Component unit tests
-├── integration/            # Component + API integration tests
+│   └── components/        # Component unit tests (pure logic only)
+├── integration/            # Component + composable integration tests
 │   ├── components/        # Component integration tests
-│   ├── composables/       # Composable integration tests
-│   └── api/              # API endpoint testing
+│   └── composables/       # Composable integration tests (includes unit logic)
 ├── e2e/                   # End-to-end user workflows
 │   └── workflows/         # Complete user flows
+├── helpers/               # Test utilities and mocks
+│   ├── apiMocks.ts       # Simple API mocking utilities
+│   └── testDatabase.ts   # Test database setup
 └── setup.ts              # Global test setup
 ```
 
+**Simplified Structure Benefits:**
+- **📁 Consolidated composable tests**: Both unit logic and integration in `tests/integration/composables/`
+- **🎯 No redundant API tests**: Removed separate API tests, covered in composable integration tests
+- **⚡ Faster execution**: Eliminated duplicate test coverage
+- **🔧 Simpler mocking**: Direct `vi.fn()` approach instead of complex helpers
+
 **Naming Convention**: `[module].test.ts` (folder indicates test type)
-- `tests/unit/composables/useTimer.test.ts` - Unit test for useTimer composable
+- `tests/integration/composables/useTimer.test.ts` - Integration + unit tests for useTimer composable
 - `tests/integration/components/TimerSection.test.ts` - Integration test for TimerSection component
 - `tests/e2e/timer-workflow.test.ts` - E2E test for timer workflow
 
@@ -149,49 +156,66 @@ describe('ComponentName', () => {
 
 ### **Integration Testing Patterns**
 
-#### **Component Integration Tests**
+#### **Simplified Mocking Approach**
 ```typescript
-// Test components with real composables, mock only APIs
-import { mockApiCalls } from '~/tests/helpers/apiMocks'
+// Simple, direct mocking following Vue Test Utils best practices
+import { vi } from 'vitest'
 
-describe('TimerSection Component', () => {
-  const { mockApiSuccess } = mockApiCalls()
-  
+const mockFetch = vi.fn()
+globalThis.$fetch = mockFetch
+
+describe('useActivities Integration Tests', () => {
   beforeEach(() => {
-    // Mock API responses, but use real composables
-    mockApiSuccess({
-      'POST /api/activities': { data: { id: 'test-1', title: 'Test' } }
-    })
+    mockFetch.mockReset()
   })
-  
-  it('should start timer when user clicks button', async () => {
-    const wrapper = mount(TimerSection)
-    
-    // Uses real useTimer composable
-    await wrapper.find('[data-testid="start-timer"]').trigger('click')
-    expect(wrapper.emitted('timer-started')).toBeTruthy()
-  })
-})
-```
-
-#### **Composable Integration Tests**
-```typescript
-// Test composables with real Vue reactivity, mock only external APIs
-describe('useActivities Composable', () => {
-  const { mockApiSuccess } = mockApiCalls()
   
   it('should save activity and update local state', async () => {
-    mockApiSuccess({
-      'POST /api/activities': { data: { id: 'new-1', title: 'Work' } }
+    // Simple mock setup
+    mockFetch.mockResolvedValue({ 
+      data: { id: 'test-1', title: 'Work', durationMs: 1800000 } 
     })
     
     const { saveActivity, activities } = useActivities()
     
     await saveActivity({ title: 'Work', durationMs: 1800000 })
     
-    // Real Vue reactivity
+    // Verify API call
+    expect(mockFetch).toHaveBeenCalledWith('/api/activities', {
+      method: 'POST',
+      body: expect.objectContaining({ title: 'Work' })
+    })
+    
+    // Test real Vue reactivity
     expect(activities.value).toHaveLength(1)
     expect(activities.value[0].title).toBe('Work')
+  })
+})
+```
+
+#### **Consolidated Testing Approach**
+```typescript
+// Combine unit logic tests with integration tests in same file
+describe('useActivities - Comprehensive Tests', () => {
+  // Integration tests with API mocking
+  describe('API Integration', () => {
+    it('should handle API calls correctly', async () => {
+      // Test with mocked API...
+    })
+  })
+  
+  // Pure logic tests (former unit tests)
+  describe('Utility Functions', () => {
+    it('should format duration correctly', () => {
+      const { formatDuration } = useActivities()
+      expect(formatDuration(90000)).toBe('1m 30s')
+    })
+  })
+  
+  // Reactive state logic tests
+  describe('State Management', () => {
+    it('should handle reactive state correctly', () => {
+      // Test Vue reactivity without API calls...
+    })
   })
 })
 ```
@@ -272,23 +296,25 @@ process.env.DATABASE_URL = 'file:./test.db'
 process.env.AI_PROVIDER = 'mock'
 ```
 
-### **Mock Strategy**
+### **Simplified Mock Strategy**
 
-**Unit Tests**: Mock everything external
-- **External APIs**: Mock $fetch, HTTP calls
-- **Browser APIs**: Mock localStorage, fetch, etc.
-- **Composables**: Mock other composables when testing in isolation
-
-**Integration Tests**: Only mock external dependencies
-- **External APIs**: Mock $fetch, HTTP calls  
-- **Database**: Use real test database or direct function calls
+**Integration Tests** (Primary approach - covers both unit and integration concerns):
+- **External APIs**: Mock $fetch using simple `vi.fn()` approach
+- **Browser APIs**: Use setup.ts global mocks (localStorage, etc.)
 - **Internal Composables**: Use real composables (useTimer, useActivities, etc.)
 - **Vue Reactivity**: Use real Vue reactivity system
+- **Pure Functions**: Test directly without mocking
+
+**Unit Tests** (Only for isolated services/utilities):
+- **External Dependencies**: Mock everything external
+- **Focus**: Pure business logic without Vue dependencies
 
 **E2E Tests**: Real everything
 - **APIs**: Real server with real endpoints
 - **Database**: Real test database
 - **Browser**: Real browser environment
+
+**Key Simplification**: Consolidate most testing into integration tests that combine unit logic testing with API integration, reducing test file duplication and maintenance overhead.
 
 ### **Data Test IDs**
 All interactive elements must include `data-testid` attributes:
@@ -314,13 +340,16 @@ All interactive elements must include `data-testid` attributes:
 6. **Coverage Report**: `bun test:coverage` - Generate and upload coverage
 
 ### **Available Test Commands**
-- `bun test` - Run all Vitest tests (unit + integration)
+- `bun test` - Run all Vitest tests (unit + integration, excludes E2E)
 - `bun test:unit` - Run only unit tests (`tests/unit/`)
 - `bun test:integration` - Run only integration tests (`tests/integration/`)
 - `bun test:component` - Run only component integration tests
-- `bun test:api` - Run only API integration tests
 - `bun test:e2e` - Run E2E tests with Playwright
 - `bun test:all` - Run complete test suite (unit + integration + e2e)
+
+**Simplified Workflow**:
+- **Development**: `bun test tests/integration/composables/` - Fast feedback for composable changes
+- **CI/CD**: `bun test` → `bun test:e2e` - Complete validation pipeline
 
 ## 🐛 **Debugging & Troubleshooting**
 
