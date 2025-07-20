@@ -1,26 +1,24 @@
-import { describe, expect, it, beforeEach, afterEach } from 'vitest'
+import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { ref } from 'vue'
 import { useAutoComplete } from '~/composables/useAutoComplete'
-import { setupApiMocks } from '../../helpers/apiMocks'
 
-// Following Vue Test Utils best practices
-const apiMocks = setupApiMocks()
+// Mock $fetch directly like other tests
+const mockFetch = vi.fn()
+globalThis.$fetch = mockFetch
 
 describe('useAutoComplete - Integration Tests', () => {
   beforeEach(() => {
-    apiMocks.reset()
+    vi.clearAllMocks()
     
-    // Mock successful API response with simple data
-    apiMocks.mockSuccess([
-      { id: 'sug-1', text: 'Work on project', type: 'activity', frequency: 5 },
-      { id: 'sug-2', text: 'Team meeting', type: 'activity', frequency: 3 },
-      { id: 'tag-1', text: 'work', type: 'tag', frequency: 8 },
-      { id: 'tag-2', text: 'urgent', type: 'tag', frequency: 4 }
-    ])
-  })
-
-  afterEach(() => {
-    apiMocks.restore()
+    // Mock successful API response with correct structure (wrapped in data property)
+    mockFetch.mockResolvedValue({
+      data: [
+        { id: 'sug-1', text: 'Work on project', type: 'activity', frequency: 5 },
+        { id: 'sug-2', text: 'Team meeting', type: 'activity', frequency: 3 },
+        { id: 'tag-1', text: 'work', type: 'tag', frequency: 8 },
+        { id: 'tag-2', text: 'urgent', type: 'tag', frequency: 4 }
+      ]
+    })
   })
 
   describe('Suggestion API Integration', () => {
