@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     // '@nuxtjs/supabase', // Disabled for Phase 0 - local SQLite only
     '@vueuse/nuxt',
     '@vite-pwa/nuxt',
+    ...(process.env.NODE_ENV === 'test' ? ['@nuxt/test-utils/module'] : []),
   ],
 
   css: ['~/assets/css/main.css'],

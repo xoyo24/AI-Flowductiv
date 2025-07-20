@@ -1,11 +1,8 @@
-import { resolve } from 'path'
-import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
+import { defineVitestConfig } from '@nuxt/test-utils/config'
 
-export default defineConfig({
-  plugins: [vue()],
+export default defineVitestConfig({
   test: {
-    environment: 'jsdom',
+    environment: 'nuxt',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.ts'],
@@ -14,14 +11,6 @@ export default defineConfig({
       NODE_ENV: 'test',
       DATABASE_URL: ':memory:',
       NUXT_API_BASE_URL: 'http://localhost:3001',
-    },
-  },
-  resolve: {
-    alias: {
-      '~': resolve(__dirname, '.'),
-      '@': resolve(__dirname, '.'),
-      '#app': resolve(__dirname, 'node_modules/nuxt/dist/app'),
-      '#imports': resolve(__dirname, '.nuxt/imports.d.ts'),
     },
   },
 })
