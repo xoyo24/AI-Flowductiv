@@ -340,16 +340,15 @@ All interactive elements must include `data-testid` attributes:
 ### **CI/CD Pipeline**
 1. **Lint Check**: `bun run lint` - Biome linting
 2. **Unit Tests**: `bun test:unit` - Fast isolated logic tests
-3. **Integration Tests**: `bun test:integration` - Component and API tests
-4. **Build Check**: `bun run build` - Nuxt build verification
-5. **E2E Tests**: `bun test:e2e` - Full workflow tests
-6. **Coverage Report**: `bun test:coverage` - Generate and upload coverage
+6. **Build Check**: `bun run build` - Nuxt build verification
+7. **E2E Tests**: `bun test:e2e` - Full workflow tests
+8. **Coverage Report**: `bun test:coverage` - Generate and upload coverage
 
 ### **Available Test Commands**
 - `bun test` - Run all Vitest tests (unit + integration, excludes E2E)
-- `bun test:unit` - Run only unit tests (`tests/unit/`)
-- `bun test:integration` - Run only integration tests (`tests/integration/`)
-- `bun test:component` - Run only component integration tests
+- `bun test:unit` - Run all unit tests (`tests/unit/`)
+- `bun test:composable` - Run only composable tests (`tests/unit/composables`)
+- `bun test:component` - Run only component tests (`tests/unit/components`)
 - `bun test:e2e` - Run E2E tests with Playwright
 - `bun test:all` - Run complete test suite (unit + integration + e2e)
 
