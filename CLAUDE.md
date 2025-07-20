@@ -2,175 +2,248 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Project Context
 
-**Flowductiv** is a privacy-first, AI-enhanced productivity tool built with modern web technologies. Fresh implementation using Nuxt 3, focusing on manual time tracking enhanced by multi-modal AI insights.
+**Flowductiv** is a privacy-first, AI-enhanced productivity tool built with Nuxt 3. Focus: Manual time tracking enhanced by multi-modal AI insights.
 
-📚 **Full Documentation**: See `docs/` for detailed specifications
+**Current Phase**: Testing infrastructure setup and component integration
+
+📚 **Detailed Documentation**: See `docs/` directory:
 - `docs/PRD.md` - Product requirements and roadmap
-- `docs/IMPLEMENTATION_PLAN.md` - Technical architecture details  
-- `docs/COLLABORATION_PLAN.md` - Development workflow and collaboration
-- `docs/SESSION_NOTES.md` - Current sprint goals and session tracking
-- `docs/TESTING_STRATEGY.md` - Vue.js testing best practices and guidelines
+- `docs/IMPLEMENTATION_PLAN.md` - Technical architecture and database schema  
+- `docs/COLLABORATION_PLAN.md` - Development workflow and session management
+- `docs/TESTING_STRATEGY.md` - Vue.js testing patterns and best practices
+- `docs/SESSION_NOTES.md` - Current sprint status and progress
 
-## Essential Commands
+## Critical Commands & Environment
 
-### Core Development
-- `bun install` - Install dependencies (3x faster than npm)
-- `bun dev` - Start Nuxt 3 development server
-- `bun test` - Run Vitest testing suite
-- `bun run lint` - Run Biome linting (10x faster than ESLint)
-- `bun run build` - Production build
+**Always use Bun** (3x faster than npm):
+```bash
+bun install          # Install dependencies
+bun dev             # Start Nuxt 3 development server  
+bun test            # Run Vitest test suite
+bun run vitest run  # Run tests without watch mode
+bun run lint        # Run Biome linting (10x faster than ESLint)
+bun run build       # Production build
 
-### Database Management
-- `bun run db:generate` - Generate Drizzle migrations
-- `bun run db:migrate` - Run database migrations
-- `bun run db:studio` - Open Drizzle Studio
+# Database (Drizzle ORM)
+bun run db:generate # Generate migrations
+bun run db:migrate  # Run migrations
+bun run db:studio   # Open Drizzle Studio
+```
 
-## Tech Stack (Quick Reference)
+**Tech Stack**: Nuxt 3 + TypeScript + shadcn-vue + Tailwind + Drizzle ORM + SQLite + Vitest + Bun + Biome
 
-**Frontend**: Nuxt 3 + TypeScript + shadcn-vue + Tailwind  
-**Database**: Drizzle ORM + SQLite/Supabase  
-**AI**: Multi-provider router (Claude, GPT-4, Gemini, Ollama)  
-**Testing**: Vitest + Playwright  
-**Tooling**: Bun + Biome  
+## Essential Development Rules
 
-*See `docs/IMPLEMENTATION_PLAN.md` for complete architecture details*
+### **Testing Standards** 
+- Follow Vue.js testing best practices in `docs/TESTING_STRATEGY.md`
+- Test **user behavior**, not implementation details
+- Use `data-testid` attributes for reliable element selection
+- **Never skip tests** - ask for guidance when stuck
+- Use `--run` flag with test commands for CI/automation
+- **Never use `expect(true).toBe(true)`** in test cases
+- Target 75% coverage for critical paths (timer, activities, API)
 
-## Key Development Patterns
+### **Code Quality**
+- **Vue 3 Composition API** exclusively (no Options API)
+- Use `<script setup>` syntax for all components
+- Follow shadcn-vue component patterns
+- Include proper TypeScript types
+- **Commit verified changes** after each working step
+- Verify environment (Bun installation) before suggesting commands
 
-### Vue 3 Composables (Replace Stores)
+### **Workflow Pattern**
+1. **Explore** - Read existing code and understand context
+2. **Plan** - Break down tasks, identify dependencies  
+3. **Code** - Implement following established patterns
+4. **Test** - Verify functionality works as expected
+5. **Commit** - Save working changes with clear messages
+
+## Key Patterns & Examples
+
+### **Vue 3 Composables (Replace Stores)**
 ```typescript
-// ✅ Good: Readonly state exposure
+// ✅ Correct: Readonly state exposure
 export const useTimer = () => {
   const isRunning = ref(false)
+  const currentActivity = ref('')
+  
   return {
+    // Readonly state
     isRunning: readonly(isRunning),
-    startTimer: () => { /* implementation */ }
+    currentActivity: readonly(currentActivity),
+    // Actions
+    startTimer: () => { /* implementation */ },
+    stopTimer: () => { /* implementation */ }
   }
 }
 ```
 
-### Component Standards
-- Use `<script setup>` syntax
-- Follow shadcn-vue patterns
-- Include proper TypeScript types
-- Add `data-testid` for E2E testing
+### **Component Standards**
+```vue
+<template>
+  <button 
+    data-testid="start-timer" 
+    @click="handleStart"
+    class="px-4 py-2 bg-primary text-primary-foreground"
+  >
+    Start Timer
+  </button>
+</template>
 
-### API Design (Nuxt 3)
-- Use `server/api/` routes
-- Implement `createError()` for error handling
-- Use Drizzle ORM for type-safe operations
+<script setup lang="ts">
+interface Props {
+  disabled?: boolean
+}
 
-### AI Integration
-- Check cache before API calls
-- Use provider selection based on task requirements
-- Implement graceful fallbacks
-- Track token usage and costs
+interface Emits {
+  (e: 'timer-started'): void
+}
 
-## Database Schema (Quick Reference)
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
-**Activities Table**: id, title, description, durationMs, startTime, endTime, tags, priority, focusRating, energyLevel, userId  
-**AI Summaries Table**: id, date, content, provider, activitiesHash, tokensUsed, generatedAt  
-
-*See `docs/IMPLEMENTATION_PLAN.md` for complete schema definitions*
-
-*For current phase status and sprint progress, see `docs/SESSION_NOTES.md`*
-
-## File Structure (Modern Nuxt 3)
-```
-├── components/          # Vue components (auto-imports)
-├── composables/        # Business logic (replaces stores)
-├── server/api/         # API endpoints
-├── server/database/    # Schema and utilities
-├── pages/              # File-based routing
-├── types/              # TypeScript definitions
-└── docs/               # Project documentation
+const handleStart = () => {
+  // Implementation
+  emit('timer-started')
+}
+</script>
 ```
 
-## Collaboration Workflow
+### **API Design (Nuxt 3)**
+```typescript
+// server/api/activities.post.ts
+export default defineEventHandler(async (event) => {
+  try {
+    const body = await readBody(event)
+    const result = await db.insert(activities).values(body)
+    return { data: result }
+  } catch (error) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid activity data'
+    })
+  }
+})
+```
 
-### **AI Role (Core Responsibilities)**
-- **Boilerplate code generation** and scaffolding
-- **Component implementation** following established patterns
-- **Documentation writing** and maintenance
-- **Test case creation** and comprehensive implementation
-- **Configuration file setup** and optimization
+### **Testing Patterns (Nuxt 3)**
+```typescript
+import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 
-### **Human Role (Strategic Responsibilities)**
-- **Project decisions** and feature prioritization
-- **Code reviews** and architectural choices
-- **User testing** and feedback collection
-- **Environment setup** and tooling configuration
-- **Complex debugging** and performance optimization
+// Mock composables at top level
+mockNuxtImport('useTimer', () => {
+  return () => ({
+    isRunning: ref(false),
+    startTimer: vi.fn()
+  })
+})
 
-### **Collaborative Areas**
-- **Design discussions** for complex features
-- **Code refactoring** and improvement suggestions
-- **Problem-solving** when stuck on implementation
-- **Best practice reviews** and pattern establishment
+describe('TimerSection Component', () => {
+  it('should start timer when button clicked', async () => {
+    const wrapper = await mountSuspended(TimerSection)
+    await wrapper.find('[data-testid="start-timer"]').trigger('click')
+    expect(wrapper.emitted('timer-started')).toBeTruthy()
+  })
+})
+```
 
-### **Session Flow Best Practices**
-- **Start each session** by reviewing SESSION_NOTES.md current status
-- **Update documentation proactively** during significant decisions, not just when asked
-- **Include testing** alongside feature implementation, not as afterthought
-- **Validate deployment readiness** regularly throughout development
+## Safety & Quality Standards
 
-### **Quality & Environment Standards**
-- **Verify prerequisites** before task planning (Bun installation, tool availability)
-- **Flag quality gaps** proactively (missing tests, environment issues)
-- **Capture architectural decisions** with reasoning in SESSION_NOTES.md
-- **Link decisions to future impact** for better project context
+### **Security**
+- **Defensive tasks only** - No malicious code creation
+- Validate user inputs and sanitize outputs
+- Never commit secrets or API keys
+- Use environment variables for sensitive data
 
-### **Session Types & Time Management**
-- **30min**: Quick wins (single component, utility functions, bug fixes)
-- **45min**: Feature blocks (complete feature + tests, API endpoints, composables)
-- **60min**: Deep work (complex features, architecture changes, integrations)
-- **Weekend**: Sprint completion (phase milestones, end-to-end testing)
+### **Performance Targets**
+- **Development**: Dev start <2s, Hot reload <200ms, Tests <30s
+- **Production**: Page load <1s, Timer ops <200ms, AI summaries <5s
 
-### **Documentation Management Strategy**
-- **SESSION_NOTES.md** is the **living document** - update during sessions for real progress
-- **COLLABORATION_PLAN.md** for workflow patterns - stable reference
-- **TodoWrite** for immediate session tracking - complement documentation
-- **Always verify environment** before suggesting commands (check tools are installed)
+### **Code Quality Gates**
+- TypeScript compilation passes
+- Biome linting passes  
+- Tests pass (75% coverage minimum)
+- No console.errors in production
 
-*See `docs/COLLABORATION_PLAN.md` for detailed handoff patterns and sprint management*
+## Custom Slash Commands
 
-## Performance Standards
+Create custom slash commands for frequent workflows:
 
-**Development**: Dev start <2s, Hot reload <200ms, Tests <30s  
-**Production**: Page load <1s, Timer ops <200ms, AI summaries <5s  
+### `/fix-test` - Fix Component Tests
+```markdown
+Fix failing component tests using:
+- Vue Test Utils + Nuxt 3 patterns (`mountSuspended`, `mockNuxtImport`)
+- Test user behavior, not implementation
+- Use `data-testid` for element selection
+- Follow patterns in `docs/TESTING_STRATEGY.md`
+```
 
-## Privacy & Security
+### `/component` - Generate Vue Component  
+```markdown
+Generate Vue 3 component following:
+- `<script setup>` syntax
+- shadcn-vue design patterns
+- Proper TypeScript interfaces
+- `data-testid` attributes for testing
+- Tailwind CSS classes
+```
 
-**Local-first**: Primary SQLite storage  
-**AI Privacy Levels**: Local-only → Encrypted cloud → Full cloud  
-**No tracking** without explicit consent  
+### `/api-endpoint` - Create API Endpoint
+```markdown
+Create Nuxt 3 API endpoint with:
+- Proper error handling (`createError`)
+- Drizzle ORM for database operations
+- TypeScript types
+- Input validation
+- RESTful conventions
+```
 
-## Important Notes
+### `/review-code` - Code Review
+```markdown
+Review code for:
+- Vue 3 Composition API best practices
+- TypeScript type safety
+- Testing coverage gaps
+- Performance considerations
+- Security vulnerabilities
+```
 
-- Use **Bun** for all package management (verify installation first)
-- Follow **Vue 3 Composition API** exclusively  
-- **Biome** for linting (configured for speed)
-- **Type-safe** database operations with Drizzle
-- **30-60 minute** optimized development sessions
-- **Dynamic documentation** - SESSION_NOTES.md reflects real progress
+### `/update-docs` - Documentation Update
+```markdown
+Update `docs/SESSION_NOTES.md` with:
+- Current task progress
+- Completed features
+- Next session priorities  
+- Any blockers or decisions needed
+- Testing status
+```
 
-*For collaboration principles and session flow best practices, see `docs/COLLABORATION_PLAN.md`*
+## Quick Reference
 
-Remember: This is a fresh implementation focusing on modern best practices and optimized collaboration workflows with living documentation.
+### **File Structure**
+```
+├── components/         # Auto-imported Vue components
+├── composables/       # Business logic (replaces Pinia stores)  
+├── server/api/        # Nuxt 3 API endpoints
+├── server/database/   # Drizzle schema and utilities
+├── pages/             # File-based routing
+├── types/             # TypeScript definitions
+├── tests/             # Testing (unit, integration, e2e)
+└── docs/              # Project documentation
+```
 
-## Development Best Practices
-- Commit changes from time to time after successfully verified
+### **Database Schema**
+- **Activities**: id, title, durationMs, startTime, endTime, tags, priority, focusRating, energyLevel
+- **AI Summaries**: id, date, content, provider, activitiesHash, tokensUsed, generatedAt
 
-## Testing Guidelines
-- Follow **Vue.js testing best practices** documented in `docs/TESTING_STRATEGY.md`
-- Test **user behavior**, not implementation details
-- Use **data-testid** attributes for reliable element selection
-- Never use `expect(true).toBe(true)` in test cases
-- **Target 75% coverage** for critical paths (timer, activities, API)
-- Use --run with test command (like bun test:integration --run) so the test can terminate after completion
-- Never skip test, ask what to do when getting stuck.
+### **Key Dependencies**
+- **UI**: shadcn-vue, Tailwind CSS, Lucide icons
+- **Database**: Drizzle ORM, SQLite (dev) / Supabase (prod)
+- **Testing**: Vitest, Vue Test Utils, Playwright, @nuxt/test-utils
+- **AI**: Multi-provider router (Claude, GPT-4, Gemini, Ollama)
 
-## Development Workflow
-- Commit every step(Todo) after confirmed it works as expected
+---
+
+**Remember**: Always verify environment setup (Bun), follow established patterns, test thoroughly, and commit working changes incrementally.
