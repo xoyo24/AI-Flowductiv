@@ -281,10 +281,16 @@ test.describe('Timer Workflow', () => {
 - **Full Test Suite**: < 30s total
 
 ### **Test Quality Metrics**
-- **Coverage Target**: 75% for critical paths
+- **Coverage Target**: 75% for critical paths (timer, activities, API)
 - **Test Reliability**: > 99% pass rate
 - **Flaky Test Tolerance**: < 1%
 - **Test Maintenance**: Update with feature changes
+
+### **Critical Testing Constraints**
+- **Never use `expect(true).toBe(true)`** or similar meaningless assertions
+- **Never skip tests** - ask for guidance when stuck on implementation
+- **Always commit verified changes** - tests must pass before commits
+- **Use `--run` flag** with test commands for CI/automation (prevents watch mode)
 
 ## 🔧 **Configuration & Setup**
 

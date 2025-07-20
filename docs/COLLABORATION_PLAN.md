@@ -43,6 +43,7 @@
 - **Flag quality gaps** proactively (missing tests, environment issues)
 - **Capture architectural decisions** with reasoning in SESSION_NOTES.md
 - **Link decisions to future impact** for better context
+- **Commit verified changes** after each working step/todo completion
 
 ## 📅 **Daily Session Optimization (30-60 minutes)**
 
