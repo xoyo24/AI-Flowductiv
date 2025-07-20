@@ -1,6 +1,7 @@
 import { ref, computed, readonly, getCurrentInstance } from 'vue'
 import { useIntervalFn } from '@vueuse/core'
 import { InputParserService } from '~/services/inputParser'
+import { useActivities } from '~/composables/useActivities'
 
 export interface TimerState {
   isRunning: boolean
