@@ -1,58 +1,23 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ref } from 'vue'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import TimerSection from '~/components/TimerSection.vue'
+import { setupApiMocks } from '../../helpers/apiMocks'
 
-// Mock composables
-const mockTimer = {
-  isRunning: ref(false),
-  isPaused: ref(false),
-  currentActivity: ref(''),
-  formattedTime: ref('00:00'),
-  canStart: ref(true),
-  canPause: ref(false),
-  canResume: ref(false),
-  canFinish: ref(false),
-  startTimer: vi.fn().mockReturnValue(true),
-  pauseTimer: vi.fn().mockReturnValue(true),
-  resumeTimer: vi.fn().mockReturnValue(true),
-  finishTimer: vi.fn().mockResolvedValue(true),
-  resetTimer: vi.fn(),
-}
-
-vi.mock('~/composables/useTimer', () => ({
-  useTimer: () => mockTimer
-}))
-
-vi.mock('~/composables/useInputParser', () => ({
-  useInputParser: () => ({
-    extractedTags: ref([]),
-    extractedPriority: ref(null),
-    cleanTitle: ref(''),
-  })
-}))
-
-vi.mock('~/composables/useAutoComplete', () => ({
-  useAutoComplete: () => ({
-    suggestions: ref([]),
-    suggestionsLoading: ref(false),
-    performSearch: vi.fn(),
-    getInitialSuggestions: vi.fn(),
-  })
-}))
+// Following Vue Test Utils best practices
+const apiMocks = setupApiMocks()
 
 describe('TimerSection Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    // Reset timer state
-    mockTimer.isRunning.value = false
-    mockTimer.isPaused.value = false
-    mockTimer.currentActivity.value = ''
-    mockTimer.formattedTime.value = '00:00'
-    mockTimer.canStart.value = true
-    mockTimer.canPause.value = false
-    mockTimer.canResume.value = false
-    mockTimer.canFinish.value = false
+    apiMocks.reset()
+    
+    // Mock successful API responses
+    apiMocks.mockSuccess({ 
+      data: { id: 'test-activity-1', title: 'Test Activity', durationMs: 1800000 } 
+    })
+  })
+
+  afterEach(() => {
+    apiMocks.restore()
   })
 
   describe('User Interface Rendering', () => {

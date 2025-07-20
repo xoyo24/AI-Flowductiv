@@ -147,29 +147,76 @@ describe('ComponentName', () => {
 })
 ```
 
-### **API Testing Patterns**
+### **Integration Testing Patterns**
 
+#### **Component Integration Tests**
 ```typescript
-// Standard API test structure
-describe('Activities API', () => {
+// Test components with real composables, mock only APIs
+import { mockApiCalls } from '~/tests/helpers/apiMocks'
+
+describe('TimerSection Component', () => {
+  const { mockApiSuccess } = mockApiCalls()
+  
+  beforeEach(() => {
+    // Mock API responses, but use real composables
+    mockApiSuccess({
+      'POST /api/activities': { data: { id: 'test-1', title: 'Test' } }
+    })
+  })
+  
+  it('should start timer when user clicks button', async () => {
+    const wrapper = mount(TimerSection)
+    
+    // Uses real useTimer composable
+    await wrapper.find('[data-testid="start-timer"]').trigger('click')
+    expect(wrapper.emitted('timer-started')).toBeTruthy()
+  })
+})
+```
+
+#### **Composable Integration Tests**
+```typescript
+// Test composables with real Vue reactivity, mock only external APIs
+describe('useActivities Composable', () => {
+  const { mockApiSuccess } = mockApiCalls()
+  
+  it('should save activity and update local state', async () => {
+    mockApiSuccess({
+      'POST /api/activities': { data: { id: 'new-1', title: 'Work' } }
+    })
+    
+    const { saveActivity, activities } = useActivities()
+    
+    await saveActivity({ title: 'Work', durationMs: 1800000 })
+    
+    // Real Vue reactivity
+    expect(activities.value).toHaveLength(1)
+    expect(activities.value[0].title).toBe('Work')
+  })
+})
+```
+
+#### **API Logic Tests**
+```typescript
+// Test API logic directly, no HTTP layer
+import { createActivity } from '~/server/api/activities.post'
+
+describe('Activities API Logic', () => {
   beforeEach(async () => {
-    // Set up test database
     await setupTestDatabase()
   })
   
-  afterEach(async () => {
-    // Clean up test data
-    await cleanupTestDatabase()
-  })
-  
-  it('should create activity successfully', async () => {
-    const response = await $fetch('/api/activities', {
-      method: 'POST',
-      body: { title: 'Test Activity', tags: ['work'] }
+  it('should create activity in database', async () => {
+    const result = await createActivity({
+      title: 'Test Activity',
+      durationMs: 1800000
     })
     
-    expect(response.success).toBe(true)
-    expect(response.data.title).toBe('Test Activity')
+    expect(result.data.title).toBe('Test Activity')
+    
+    // Verify in test database
+    const saved = await getActivityById(result.data.id)
+    expect(saved.title).toBe('Test Activity')
   })
 })
 ```
@@ -226,10 +273,22 @@ process.env.AI_PROVIDER = 'mock'
 ```
 
 ### **Mock Strategy**
-- **External APIs**: Always mock in unit/component tests
-- **Database**: Use test database for integration tests
+
+**Unit Tests**: Mock everything external
+- **External APIs**: Mock $fetch, HTTP calls
 - **Browser APIs**: Mock localStorage, fetch, etc.
-- **AI Providers**: Mock responses for consistent testing
+- **Composables**: Mock other composables when testing in isolation
+
+**Integration Tests**: Only mock external dependencies
+- **External APIs**: Mock $fetch, HTTP calls  
+- **Database**: Use real test database or direct function calls
+- **Internal Composables**: Use real composables (useTimer, useActivities, etc.)
+- **Vue Reactivity**: Use real Vue reactivity system
+
+**E2E Tests**: Real everything
+- **APIs**: Real server with real endpoints
+- **Database**: Real test database
+- **Browser**: Real browser environment
 
 ### **Data Test IDs**
 All interactive elements must include `data-testid` attributes:

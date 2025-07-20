@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from 'vue'
-import type { Activity, NewActivity } from '~/server/database/schema'
+import type { Activity } from '~/server/database/schema'
 
 export interface ActivityInput {
   title: string

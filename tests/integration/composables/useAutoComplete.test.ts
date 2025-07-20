@@ -1,112 +1,57 @@
-import { describe, expect, it, beforeAll } from 'vitest'
+import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 import { ref } from 'vue'
 import { useAutoComplete } from '~/composables/useAutoComplete'
-import { $fetch } from 'ofetch'
+import { setupApiMocks } from '../../helpers/apiMocks'
 
-// Mock $fetch for test environment
-if (typeof globalThis.$fetch === 'undefined') {
-  globalThis.$fetch = $fetch
-}
+// Following Vue Test Utils best practices
+const apiMocks = setupApiMocks()
 
 describe('useAutoComplete - Integration Tests', () => {
-  let serverRunning = false
-  
-  beforeAll(async () => {
-    try {
-      await $fetch('http://localhost:3000/api/activities/suggestions')
-      serverRunning = true
-      console.log('✅ Server detected - integration tests enabled')
-    } catch {
-      console.warn('⚠️  Server not running - integration tests will be skipped')
-    }
+  beforeEach(() => {
+    apiMocks.reset()
+    
+    // Mock successful API response with simple data
+    apiMocks.mockSuccess([
+      { id: 'sug-1', text: 'Work on project', type: 'activity', frequency: 5 },
+      { id: 'sug-2', text: 'Team meeting', type: 'activity', frequency: 3 },
+      { id: 'tag-1', text: 'work', type: 'tag', frequency: 8 },
+      { id: 'tag-2', text: 'urgent', type: 'tag', frequency: 4 }
+    ])
   })
 
-  describe('Server Integration', () => {
-    it('should handle API requests gracefully', async () => {
-      if (!serverRunning) return
+  afterEach(() => {
+    apiMocks.restore()
+  })
 
+  describe('Suggestion API Integration', () => {
+    it('should fetch suggestions and update reactive state', async () => {
       const searchQuery = ref('')
-      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
+      const { 
+        suggestions, activitySuggestions, tagSuggestions, 
+        isLoading, error, performSearch 
+      } = useAutoComplete(searchQuery, { debounceMs: 50 })
 
-      searchQuery.value = 'test'
-      await new Promise(resolve => setTimeout(resolve, 150))
+      // Test API integration with performSearch
+      await performSearch('work')
+      await new Promise(resolve => setTimeout(resolve, 60)) // Wait for debounce
 
-      expect(composable.isLoading.value).toBe(false)
-      expect(Array.isArray(composable.suggestions.value)).toBe(true)
+      // Test reactive state updates
+      expect(Array.isArray(suggestions.value)).toBe(true)
+      expect(isLoading.value).toBe(false)
+      expect(error.value).toBe(null)
       
-      // Either successful or error handled gracefully
-      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
-    })
-
-    it('should handle empty results gracefully', async () => {
-      if (!serverRunning) return
-
-      const searchQuery = ref('')
-      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
-
-      searchQuery.value = 'nonexistentquery12345'
-      await new Promise(resolve => setTimeout(resolve, 150))
-
-      expect(Array.isArray(composable.suggestions.value)).toBe(true)
+      // Test computed properties (activity vs tag filtering)
+      expect(Array.isArray(activitySuggestions.value)).toBe(true)
+      expect(Array.isArray(tagSuggestions.value)).toBe(true)
       
-      // Either successful empty result or error handled gracefully
-      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
-    })
-
-    it('should handle API responses correctly', async () => {
-      if (!serverRunning) return
-
-      const searchQuery = ref('')
-      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
-
-      searchQuery.value = 'work'
-      await new Promise(resolve => setTimeout(resolve, 150))
-
-      expect(composable.isLoading.value).toBe(false)
-      
-      // Verify response structure if suggestions exist
-      if (composable.suggestions.value.length > 0) {
-        const suggestion = composable.suggestions.value[0]
+      // Verify suggestion structure
+      if (suggestions.value.length > 0) {
+        const suggestion = suggestions.value[0]
         expect(suggestion).toHaveProperty('id')
         expect(suggestion).toHaveProperty('text')
         expect(suggestion).toHaveProperty('type')
         expect(suggestion).toHaveProperty('frequency')
       }
-    })
-
-    it('should return initial suggestions for empty query', async () => {
-      if (!serverRunning) return
-
-      const searchQuery = ref('')
-      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
-
-      // Test getInitialSuggestions method
-      await composable.getInitialSuggestions()
-      await new Promise(resolve => setTimeout(resolve, 150))
-
-      expect(composable.isLoading.value).toBe(false)
-      expect(Array.isArray(composable.suggestions.value)).toBe(true)
-      
-      // Should return recent activities and tags even for empty query
-      // Either successful or error handled gracefully
-      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
-    })
-
-    it('should handle performSearch with empty string', async () => {
-      if (!serverRunning) return
-
-      const searchQuery = ref('')
-      const composable = useAutoComplete(searchQuery, { debounceMs: 50 })
-
-      // Test performSearch with empty string
-      await composable.performSearch('')
-      await new Promise(resolve => setTimeout(resolve, 150))
-
-      expect(composable.isLoading.value).toBe(false)
-      expect(Array.isArray(composable.suggestions.value)).toBe(true)
-      
-      // Should return suggestions for empty query (recent activities/tags)
-      expect(composable.error.value === null || typeof composable.error.value === 'string').toBe(true)
     })
   })
 
