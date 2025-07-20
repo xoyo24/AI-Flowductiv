@@ -92,26 +92,29 @@ test('user can track time for an activity', async ({ page }) => {
 
 ```
 tests/
-├── unit/
-│   ├── services/           # Business logic testing
-│   ├── utils/             # Utility function testing
-│   └── composables/       # Composable logic testing
-├── components/
-│   ├── integration/       # Component integration tests
-│   └── unit/             # Component unit tests
-├── api/
-│   ├── activities/       # API endpoint testing
-│   └── ai/              # AI integration testing
-├── e2e/
-│   ├── workflows/        # Complete user flows
-│   └── pages/           # Page-specific testing
-└── setup.ts             # Global test setup
+├── unit/                   # Fast, isolated logic tests
+│   ├── composables/       # Composable logic testing
+│   ├── services/          # Business logic testing
+│   └── components/        # Component unit tests
+├── integration/            # Component + API integration tests
+│   ├── components/        # Component integration tests
+│   ├── composables/       # Composable integration tests
+│   └── api/              # API endpoint testing
+├── e2e/                   # End-to-end user workflows
+│   └── workflows/         # Complete user flows
+└── setup.ts              # Global test setup
 ```
 
-**Naming Convention**: `[module].[type].test.ts`
-- `useTimer.unit.test.ts` - Unit test for useTimer composable
-- `TimerSection.integration.test.ts` - Integration test for TimerSection component
-- `timer-workflow.e2e.test.ts` - E2E test for timer workflow
+**Naming Convention**: `[module].test.ts` (folder indicates test type)
+- `tests/unit/composables/useTimer.test.ts` - Unit test for useTimer composable
+- `tests/integration/components/TimerSection.test.ts` - Integration test for TimerSection component
+- `tests/e2e/timer-workflow.test.ts` - E2E test for timer workflow
+
+**Benefits of Folder-Based Organization:**
+- **🎯 Clear Intent** - Folder name indicates test type, no redundant suffixes
+- **⚡ Fast Feedback** - Run `bun test:unit` for quick development cycles
+- **🔧 Targeted Testing** - Run specific test types as needed
+- **📁 Clean Names** - Simpler file names without type suffixes
 
 ## 🛠️ **Testing Standards & Patterns**
 
@@ -244,12 +247,21 @@ All interactive elements must include `data-testid` attributes:
 - Check TypeScript compilation
 
 ### **CI/CD Pipeline**
-1. **Lint Check**: Biome linting
-2. **Unit Tests**: Vitest unit test suite
-3. **Component Tests**: Vitest component tests
-4. **Build Check**: Nuxt build verification
-5. **E2E Tests**: Playwright test suite
-6. **Coverage Report**: Generate and upload coverage
+1. **Lint Check**: `bun run lint` - Biome linting
+2. **Unit Tests**: `bun test:unit` - Fast isolated logic tests
+3. **Integration Tests**: `bun test:integration` - Component and API tests
+4. **Build Check**: `bun run build` - Nuxt build verification
+5. **E2E Tests**: `bun test:e2e` - Full workflow tests
+6. **Coverage Report**: `bun test:coverage` - Generate and upload coverage
+
+### **Available Test Commands**
+- `bun test` - Run all Vitest tests (unit + integration)
+- `bun test:unit` - Run only unit tests (`tests/unit/`)
+- `bun test:integration` - Run only integration tests (`tests/integration/`)
+- `bun test:component` - Run only component integration tests
+- `bun test:api` - Run only API integration tests
+- `bun test:e2e` - Run E2E tests with Playwright
+- `bun test:all` - Run complete test suite (unit + integration + e2e)
 
 ## 🐛 **Debugging & Troubleshooting**
 

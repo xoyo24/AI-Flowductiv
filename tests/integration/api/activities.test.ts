@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { eq } from 'drizzle-orm'
+import { $fetch } from 'ofetch'
 import { db } from '~/server/database'
 import { activities } from '~/server/database/schema'
 
