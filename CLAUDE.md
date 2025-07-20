@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture details  
 - `docs/COLLABORATION_PLAN.md` - Development workflow and collaboration
 - `docs/SESSION_NOTES.md` - Current sprint goals and session tracking
+- `docs/TESTING_STRATEGY.md` - Vue.js testing best practices and guidelines
 
 ## Essential Commands
 
@@ -163,4 +164,12 @@ Remember: This is a fresh implementation focusing on modern best practices and o
 - Commit changes from time to time after successfully verified
 
 ## Testing Guidelines
+- Follow **Vue.js testing best practices** documented in `docs/TESTING_STRATEGY.md`
+- Test **user behavior**, not implementation details
+- Use **data-testid** attributes for reliable element selection
 - Never use `expect(true).toBe(true)` in test cases
+- **Target 75% coverage** for critical paths (timer, activities, API)
+- **Run tests** before commits: `bun test` for full suite
+
+## Development Workflow
+- Commit every step(Todo) after confirmed it works as expected

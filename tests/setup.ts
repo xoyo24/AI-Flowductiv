@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 import { config } from '@vue/test-utils'
 
+
 // Configure Vue Test Utils for Nuxt
 config.global.mocks = {
   $fetch: vi.fn(),
