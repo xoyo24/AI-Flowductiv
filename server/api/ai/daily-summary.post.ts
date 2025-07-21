@@ -1,4 +1,5 @@
 import { aiSummaries, db } from '~/server/database'
+import { AIRouter } from '~/services/ai/aiRouter'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -18,29 +19,64 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // For Phase 0, we'll create a simple mock AI summary
-    // In Phase 1A, this will integrate with actual AI providers
-    const summary = generateMockSummary(body.activities)
+    // Use the AI Router to generate real AI summaries
+    const aiRouter = new AIRouter()
+    
+    try {
+      const aiResponse = await aiRouter.generateDailySummary(body.activities)
+      
+      // Save to database
+      const today = new Date().toISOString().split('T')[0]
+      const activitiesHash = generateActivitiesHash(body.activities)
+      const tokensUsed = (aiResponse.usage.input_tokens || aiResponse.usage.prompt_tokens || 0) + 
+                         (aiResponse.usage.output_tokens || aiResponse.usage.completion_tokens || 0)
 
-    // Save to database
-    const today = new Date().toISOString().split('T')[0]
-    const activitiesHash = generateActivitiesHash(body.activities)
+      const summaryData = {
+        date: today,
+        content: aiResponse.content,
+        provider: aiResponse.provider,
+        activitiesHash,
+        tokensUsed,
+        userId: null, // For now, no auth required
+      }
 
-    const summaryData = {
-      date: today,
-      content: summary,
-      provider: 'mock',
-      activitiesHash,
-      tokensUsed: 0,
-      userId: null, // For now, no auth required
+      const result = await db.insert(aiSummaries).values(summaryData).returning()
+
+      return {
+        data: result[0],
+        message: 'Summary generated successfully',
+        usage: {
+          provider: aiResponse.provider,
+          tokens: tokensUsed
+        }
+      }
+      
+    } catch (aiError) {
+      console.warn('AI generation failed, falling back to mock:', aiError)
+      
+      // Fallback to mock if AI fails
+      const summary = generateMockSummary(body.activities)
+      
+      const today = new Date().toISOString().split('T')[0]
+      const activitiesHash = generateActivitiesHash(body.activities)
+
+      const summaryData = {
+        date: today,
+        content: summary,
+        provider: 'mock-fallback',
+        activitiesHash,
+        tokensUsed: 0,
+        userId: null,
+      }
+
+      const result = await db.insert(aiSummaries).values(summaryData).returning()
+
+      return {
+        data: result[0],
+        message: 'Summary generated using fallback (AI unavailable)',
+      }
     }
-
-    const result = await db.insert(aiSummaries).values(summaryData).returning()
-
-    return {
-      data: result[0],
-      message: 'Summary generated successfully',
-    }
+    
   } catch (error) {
     if (error.statusCode) {
       throw error
