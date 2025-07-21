@@ -2,9 +2,7 @@
   <div class="bg-card rounded-lg border border-border p-6">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-foreground">Daily Summary</h2>
-      <div v-if="!loading && summary" class="text-xs text-muted-foreground">
-        AI {{ summary.provider }}
-      </div>
+      <AISettingsDropdown v-if="!loading" />
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-8">
@@ -24,15 +22,24 @@
 
     <div v-else-if="!summary && activities.length === 0" class="text-center py-8 text-muted-foreground">
       <div class="mb-2">Start tracking activities</div>
-      <div class="text-sm">AI insights will appear here</div>
+      <div class="text-sm">
+        <span v-if="isEnabled">AI insights will appear here</span>
+        <span v-else>Enable AI in settings to get insights</span>
+      </div>
     </div>
 
     <div v-else-if="!summary && activities.length > 0" class="text-center py-4">
       <button 
         @click="generateSummary"
-        class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+        :disabled="!isEnabled"
+        :class="[
+          'px-4 py-2 rounded-md font-medium transition-colors',
+          isEnabled 
+            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+            : 'bg-muted text-muted-foreground cursor-not-allowed'
+        ]"
       >
-        Generate AI Summary
+        {{ isEnabled ? 'Generate AI Summary' : 'Enable AI to Generate Summary' }}
       </button>
     </div>
 
@@ -71,6 +78,8 @@
 </template>
 
 <script setup lang="ts">
+import AISettingsDropdown from '~/components/AI/SettingsDropdown.vue'
+
 interface AISummary {
   id: string
   content: string
@@ -79,6 +88,7 @@ interface AISummary {
 }
 
 const { activities, getTodaysActivities } = useActivities()
+const { isEnabled, currentProvider } = useAISettings()
 
 // Local state
 const summary = ref<AISummary | null>(null)
@@ -137,6 +147,11 @@ const timeAgo = computed(() => {
 // Actions
 const generateSummary = async () => {
   if (activities.value.length === 0) return
+
+  if (!isEnabled.value) {
+    error.value = 'AI features are disabled. Enable them in settings to generate summaries.'
+    return
+  }
 
   loading.value = true
   error.value = null
