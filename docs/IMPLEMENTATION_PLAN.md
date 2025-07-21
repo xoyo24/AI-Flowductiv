@@ -210,57 +210,24 @@ bun run db:migrate:prod
 - ✅ **Scalable** production (Supabase)
 - ✅ **Industry standard** stack for portfolio
 
-## 🧪 **Verification & Testing Strategy**
+## 🧪 **Testing & Quality Strategy**
 
-### **Current Testing Approach (Phase 1A)**
-- **Unit Tests**: 13 stable tests covering core parsing logic and utility functions
-- **Focus**: Essential functionality validation for 5-10 colleague private beta
-- **Strategy**: Prioritize feature development over comprehensive test coverage
-
-### **Future Testing Roadmap**
-
-#### **Phase 1B: Integration Testing (Public Beta)**
-```typescript
-// tests/integration/timer.spec.ts
-import { test, expect } from '@playwright/test'
-
-test.describe('Timer Functionality', () => {
-  test('complete timer workflow', async ({ page }) => {
-    await page.goto('/')
-    
-    // Start timer
-    await page.fill('[data-testid=activity-input]', 'Test task #work !2')
-    await page.click('[data-testid=start-timer]')
-    
-    // Verify timer is running
-    await expect(page.locator('[data-testid=timer-status]')).toContainText('Running')
-    
-    // Wait and finish timer
-    await page.waitForTimeout(2000)
-    await page.click('[data-testid=finish-timer]')
-    
-    // Verify activity was saved
-    await expect(page.locator('[data-testid=activity-list]')).toContainText('Test task')
-  })
-})
-```
-
-#### **Phase 2: Comprehensive Testing**
-- **E2E Tests**: Complete user workflows and journeys
-- **API Integration Tests**: Backend reliability and data consistency
-- **Performance Tests**: Load testing and optimization validation
+### **Testing Approach**
+- **Integration Tests**: Primary approach combining unit + API testing
+- **Component Tests**: User behavior focus with Playwright/Vue Test Utils
+- **E2E Tests**: Complete workflows for critical paths
 
 ### **Performance Benchmarks**
 - **Page Load**: <1 second initial load
-- **Timer Start**: <200ms response time  
+- **Timer Operations**: <200ms response time
 - **AI Summary**: <5 seconds generation
-- **Offline Mode**: Core features work without internet
+- **Test Suite**: <30 seconds total execution
 
-### **User Acceptance Criteria**
-- [ ] New user can complete onboarding in <3 minutes
-- [ ] Daily active usage session lasts 15+ minutes
-- [ ] User returns for 5+ consecutive days
-- [ ] AI insights are rated useful by 70%+ of users
+### **Quality Standards**
+- **Coverage**: 75% for critical paths (timer, activities, AI)
+- **TypeScript**: Strict compilation with proper interfaces
+- **Accessibility**: ARIA attributes and keyboard navigation
+- **Security**: Input validation and parameterized queries
 
 **Ready to start implementation?** This plan provides:
 

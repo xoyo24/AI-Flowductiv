@@ -123,153 +123,18 @@ tests/
 - **🔧 Targeted Testing** - Run specific test types as needed
 - **📁 Clean Names** - Simpler file names without type suffixes
 
-## 🛠️ **Testing Standards & Patterns**
+## 🛠️ **Testing Standards**
 
-### **Component Testing Patterns**
+### **Required Patterns**
+- **User Behavior Focus**: Test what users see and do, not implementation
+- **Reliable Selection**: Use `data-testid` attributes for element targeting
+- **Meaningful Assertions**: No `expect(true).toBe(true)` - test actual behavior
+- **Proper Cleanup**: `beforeEach()` for mock resets and component cleanup
 
-```typescript
-// Standard component test structure
-describe('ComponentName', () => {
-  describe('User Interactions', () => {
-    it('should handle user action correctly', async () => {
-      // Arrange: Set up component
-      const wrapper = mount(Component, { props: { ... } })
-      
-      // Act: Simulate user action
-      await wrapper.find('[data-testid="action-button"]').trigger('click')
-      
-      // Assert: Verify expected outcome
-      expect(wrapper.emitted('action-performed')).toBeTruthy()
-    })
-  })
-  
-  describe('Props & Rendering', () => {
-    it('should display correct content based on props', () => {
-      const wrapper = mount(Component, {
-        props: { title: 'Test Title' }
-      })
-      expect(wrapper.text()).toContain('Test Title')
-    })
-  })
-})
-```
-
-### **Integration Testing Patterns**
-
-#### **Simplified Mocking Approach**
-```typescript
-// Simple, direct mocking following Vue Test Utils best practices
-import { vi } from 'vitest'
-
-const mockFetch = vi.fn()
-globalThis.$fetch = mockFetch
-
-describe('useActivities Integration Tests', () => {
-  beforeEach(() => {
-    mockFetch.mockReset()
-  })
-  
-  it('should save activity and update local state', async () => {
-    // Simple mock setup
-    mockFetch.mockResolvedValue({ 
-      data: { id: 'test-1', title: 'Work', durationMs: 1800000 } 
-    })
-    
-    const { saveActivity, activities } = useActivities()
-    
-    await saveActivity({ title: 'Work', durationMs: 1800000 })
-    
-    // Verify API call
-    expect(mockFetch).toHaveBeenCalledWith('/api/activities', {
-      method: 'POST',
-      body: expect.objectContaining({ title: 'Work' })
-    })
-    
-    // Test real Vue reactivity
-    expect(activities.value).toHaveLength(1)
-    expect(activities.value[0].title).toBe('Work')
-  })
-})
-```
-
-#### **Consolidated Testing Approach**
-```typescript
-// Combine unit logic tests with integration tests in same file
-describe('useActivities - Comprehensive Tests', () => {
-  // Integration tests with API mocking
-  describe('API Integration', () => {
-    it('should handle API calls correctly', async () => {
-      // Test with mocked API...
-    })
-  })
-  
-  // Pure logic tests (former unit tests)
-  describe('Utility Functions', () => {
-    it('should format duration correctly', () => {
-      const { formatDuration } = useActivities()
-      expect(formatDuration(90000)).toBe('1m 30s')
-    })
-  })
-  
-  // Reactive state logic tests
-  describe('State Management', () => {
-    it('should handle reactive state correctly', () => {
-      // Test Vue reactivity without API calls...
-    })
-  })
-})
-```
-
-#### **API Logic Tests**
-```typescript
-// Test API logic directly, no HTTP layer
-import { createActivity } from '~/server/api/activities.post'
-
-describe('Activities API Logic', () => {
-  beforeEach(async () => {
-    await setupTestDatabase()
-  })
-  
-  it('should create activity in database', async () => {
-    const result = await createActivity({
-      title: 'Test Activity',
-      durationMs: 1800000
-    })
-    
-    expect(result.data.title).toBe('Test Activity')
-    
-    // Verify in test database
-    const saved = await getActivityById(result.data.id)
-    expect(saved.title).toBe('Test Activity')
-  })
-})
-```
-
-### **E2E Testing Patterns**
-
-```typescript
-// Standard E2E test structure
-test.describe('Timer Workflow', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/')
-  })
-  
-  test('complete timer session', async ({ page }) => {
-    // Start timer
-    await page.fill('[data-testid="activity-input"]', 'Work task')
-    await page.click('[data-testid="start-timer"]')
-    
-    // Verify timer is running
-    await expect(page.locator('[data-testid="timer-status"]')).toContainText('Running')
-    
-    // Finish timer
-    await page.click('[data-testid="finish-timer"]')
-    
-    // Verify activity is saved
-    await expect(page.locator('[data-testid="activity-list"]')).toContainText('Work task')
-  })
-})
-```
+### **Three-Layer Implementation**
+1. **Integration Tests**: Primary approach combining unit logic + API integration
+2. **Component Tests**: User interactions with `mountSuspended()` + `mockNuxtImport()`  
+3. **E2E Tests**: Complete workflows with Playwright for critical paths
 
 ## 🚀 **Performance & Quality Standards**
 
@@ -292,89 +157,22 @@ test.describe('Timer Workflow', () => {
 - **Always commit verified changes** - tests must pass before commits
 - **Use `--run` flag** with test commands for CI/automation (prevents watch mode)
 
-## 🔧 **Configuration & Setup**
+## 🔧 **Configuration**
 
-### **Test Environment Variables**
-```typescript
-// tests/setup.ts
-process.env.NODE_ENV = 'test'
-process.env.DATABASE_URL = 'file:./test.db'
-process.env.AI_PROVIDER = 'mock'
-```
+### **Mock Strategy**
+- **Integration Tests**: Mock $fetch with `vi.fn()`, use real Vue composables
+- **Component Tests**: `mockNuxtImport()` for composables, `mountSuspended()` for components
+- **E2E Tests**: Real APIs, database, and browser environment
 
-### **Simplified Mock Strategy**
-
-**Integration Tests** (Primary approach - covers both unit and integration concerns):
-- **External APIs**: Mock $fetch using simple `vi.fn()` approach
-- **Browser APIs**: Use setup.ts global mocks (localStorage, etc.)
-- **Internal Composables**: Use real composables (useTimer, useActivities, etc.)
-- **Vue Reactivity**: Use real Vue reactivity system
-- **Pure Functions**: Test directly without mocking
-
-**Unit Tests** (Only for isolated services/utilities):
-- **External Dependencies**: Mock everything external
-- **Focus**: Pure business logic without Vue dependencies
-
-**E2E Tests**: Real everything
-- **APIs**: Real server with real endpoints
-- **Database**: Real test database
-- **Browser**: Real browser environment
-
-**Key Simplification**: Consolidate most testing into integration tests that combine unit logic testing with API integration, reducing test file duplication and maintenance overhead.
-
-### **Data Test IDs**
-All interactive elements must include `data-testid` attributes:
-```vue
-<button data-testid="start-timer" @click="startTimer">
-  Start Timer
-</button>
-```
-
-## 📈 **Continuous Integration**
-
-### **Pre-commit Hooks**
-- Run linting (Biome)
-- Run unit tests
-- Check TypeScript compilation
+### **Test Commands**
+- `bun test` - Integration tests (fast development feedback)
+- `bun test:e2e` - End-to-end workflows
+- `bun test --run` - All tests without watch mode (CI/CD)
 
 ### **CI/CD Pipeline**
-1. **Lint Check**: `bun run lint` - Biome linting
-2. **Unit Tests**: `bun test:unit` - Fast isolated logic tests
-6. **Build Check**: `bun run build` - Nuxt build verification
-7. **E2E Tests**: `bun test:e2e` - Full workflow tests
-8. **Coverage Report**: `bun test:coverage` - Generate and upload coverage
-
-### **Available Test Commands**
-- `bun test` - Run all Vitest tests (unit + integration, excludes E2E)
-- `bun test:unit` - Run all unit tests (`tests/unit/`)
-- `bun test:composable` - Run only composable tests (`tests/unit/composables`)
-- `bun test:component` - Run only component tests (`tests/unit/components`)
-- `bun test:e2e` - Run E2E tests with Playwright
-- `bun test:all` - Run complete test suite (unit + integration + e2e)
-
-**Simplified Workflow**:
-- **Development**: `bun test tests/integration/composables/` - Fast feedback for composable changes
-- **CI/CD**: `bun test` → `bun test:e2e` - Complete validation pipeline
-
-## 🐛 **Debugging & Troubleshooting**
-
-### **Common Testing Issues**
-- **Async/Await**: Always await user interactions and API calls
-- **Vue Reactivity**: Use `nextTick()` when testing reactive updates
-- **Timer Testing**: Use `vi.useFakeTimers()` for time-dependent tests
-- **Component Cleanup**: Ensure proper component unmounting
-
-### **Test Debugging Tools**
-- **Vitest UI**: `bun test:ui` for interactive debugging
-- **Playwright Inspector**: `npx playwright test --debug`
-- **Vue DevTools**: Available in test environment
-
-## 📚 **Resources & References**
-
-- [Vue.js Testing Guide](https://vuejs.org/guide/scaling-up/testing.html)
-- [Vue Test Utils Documentation](https://test-utils.vuejs.org/)
-- [Vitest Documentation](https://vitest.dev/)
-- [Playwright Documentation](https://playwright.dev/)
+1. `bun run lint` - Biome linting
+2. `bun test --run` - All test suites
+3. `bun run build` - TypeScript compilation
 
 ---
 
