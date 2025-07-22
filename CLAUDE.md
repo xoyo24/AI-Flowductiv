@@ -189,55 +189,53 @@ describe('TimerSection Component', () => {
 
 ## Custom Slash Commands
 
-Create custom slash commands for frequent workflows:
+Available slash commands defined in `.claude/commands/`:
 
-### `/fix-test` - Fix Component Tests
+### `/test` - Generate Tests
 ```markdown
-Fix failing component tests using:
-- Vue Test Utils + Nuxt 3 patterns (`mountSuspended`, `mockNuxtImport`)
-- Test user behavior, not implementation
-- Use `data-testid` for element selection
-- Follow patterns in `docs/TESTING_STRATEGY.md`
+Generate tests following co-located structure and Vue.js best practices from `docs/TESTING_STRATEGY.md`.
+
+**Core Principles:**
+- Test user behavior, not implementation details
+- Use `data-testid` for reliable element selection
+- `mountSuspended()` + `mockNuxtImport()` for Nuxt 3 components
+
+**Co-located Structure:**
+- Unit Tests: Next to source (e.g., `composables/useTimer.test.ts`)
+- Component Tests: Next to components (e.g., `components/TimerSection.test.ts`)
+- E2E Tests: Centralized in `tests/e2e/`
+
+**Commands:**
+- `bun run test:unit:run` (91 tests, ~2s)
+- `bun run test:composables:run` (45 tests)
+- `bun run test:services:run` (31 tests)
 ```
 
-### `/component` - Generate Vue Component  
+### `/implement` - Generate Code
 ```markdown
-Generate Vue 3 component following:
-- `<script setup>` syntax
-- shadcn-vue design patterns
-- Proper TypeScript interfaces
-- `data-testid` attributes for testing
-- Tailwind CSS classes
+Generate code following established project patterns for Vue 3 components, Nuxt 3 APIs, composables, and services.
+
+**Core Patterns:**
+- Vue 3: `<script setup>` with TypeScript, `data-testid` attributes, shadcn-vue + Tailwind
+- Nuxt 3 API: Zod validation, `defineEventHandler`, Drizzle ORM, `createError`
+- Composables: Readonly state exposure, async actions, Vue 3 reactivity
+- Services: Static methods, input validation, TypeScript types
+
+**Integration:**
+- Use existing Drizzle schema, integrate with `useAuth`, follow shadcn-vue patterns
 ```
 
-### `/api-endpoint` - Create API Endpoint
+### `/task` - Task Management
 ```markdown
-Create Nuxt 3 API endpoint with:
-- Proper error handling (`createError`)
-- Drizzle ORM for database operations
-- TypeScript types
-- Input validation
-- RESTful conventions
-```
+Unified task management with TDD workflow orchestration:
 
-### `/review-code` - Code Review
-```markdown
-Review code for:
-- Vue 3 Composition API best practices
-- TypeScript type safety
-- Testing coverage gaps
-- Performance considerations
-- Security vulnerabilities
-```
+- `/task create` - Break down Phase tasks into session-sized chunks (30/45/60 min)
+- `/task execute` - Orchestrate `/implement` + `/test` + verification with TDD cycles
+- `/task status` - TodoWrite + Sprint progress + session context view
+- `/task validate` - Completion evidence + code review + quality gates
 
-### `/update-docs` - Documentation Update
-```markdown
-Update documentation following 3-file structure:
-- `docs/SESSION_NOTES.md` - Current sprint status, this week's priorities, last session summary
-- `docs/FEATURE_BACKLOG.md` - Future planning, detailed task breakdowns for Phase 1C+
-- `docs/SESSION_HISTORY.md` - Archive completed sessions, key decisions, learning insights
-
-Keep SESSION_NOTES.md focused (50-100 lines max) for quick current status access.
+**TDD Integration:**
+Red Phase (`/test`) → Green Phase (`/implement`) → Refactor → Verify → Update
 ```
 
 ## Quick Reference
