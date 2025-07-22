@@ -6,14 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Flowductiv** is a privacy-first, AI-enhanced productivity tool built with Nuxt 3. Focus: Manual time tracking enhanced by multi-modal AI insights.
 
-**Current Phase**: Testing infrastructure setup and component integration
+**Current Phase**: Phase 1B Mobile-First UX + Security implementation
 
-📚 **Detailed Documentation**: See `docs/` directory:
+📚 **Documentation Structure**: Optimized 3-file system:
+- `docs/SESSION_NOTES.md` - Current sprint focus (Phase 1B status & immediate actions)
+- `docs/FEATURE_BACKLOG.md` - Detailed planning (Phase 1C+ features & task breakdowns)
+- `docs/SESSION_HISTORY.md` - Development archive (completed sessions & key decisions)
+
+📋 **Additional References**:
 - `docs/PRD.md` - Product requirements and roadmap
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture and database schema  
 - `docs/COLLABORATION_PLAN.md` - Development workflow and session management
 - `docs/TESTING_STRATEGY.md` - Vue.js testing patterns and best practices
-- `docs/SESSION_NOTES.md` - Current sprint status and progress
 
 ## Critical Commands & Environment
 
@@ -212,12 +216,12 @@ Review code for:
 
 ### `/update-docs` - Documentation Update
 ```markdown
-Update `docs/SESSION_NOTES.md` with:
-- Current task progress
-- Completed features
-- Next session priorities  
-- Any blockers or decisions needed
-- Testing status
+Update documentation following 3-file structure:
+- `docs/SESSION_NOTES.md` - Current sprint status, this week's priorities, last session summary
+- `docs/FEATURE_BACKLOG.md` - Future planning, detailed task breakdowns for Phase 1C+
+- `docs/SESSION_HISTORY.md` - Archive completed sessions, key decisions, learning insights
+
+Keep SESSION_NOTES.md focused (50-100 lines max) for quick current status access.
 ```
 
 ## Quick Reference

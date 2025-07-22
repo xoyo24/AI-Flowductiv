@@ -20,10 +20,11 @@ Unified task management command for your development workflow. Use with options:
 **Purpose:** Break down complex Phase tasks into session-sized chunks (30/45/60 min)
 
 ### What It Does:
-- Analyze Phase 1A remaining tasks from SESSION_NOTES.md
-- Split complex tasks using your TDD Red→Green→Refactor cycles
-- Create TodoWrite items aligned with your session types
-- Update SESSION_NOTES.md "Next Priority Tasks" section
+- Analyze current Phase tasks from SESSION_NOTES.md (current sprint focus)
+- Reference detailed planning from FEATURE_BACKLOG.md for future phases
+- Split complex tasks using TDD Red→Green→Refactor cycles
+- Create TodoWrite items aligned with session types (30/45/60 min)
+- Update SESSION_NOTES.md immediate priorities
 
 ### Session-Based Breakdown:
 - **30-min:** Single component fixes, utility functions, configurations
@@ -95,10 +96,11 @@ Unified task management command for your development workflow. Use with options:
 
 ### What It Shows:
 1. **Active Session Tasks** (TodoWrite) - current in_progress items
-2. **Sprint Progress** (SESSION_NOTES.md) - Phase 1A completion %
-3. **Recent Completions** - what was accomplished recently
-4. **Next Priorities** - recommended immediate actions
-5. **Current Blockers** - impediments requiring attention
+2. **Current Sprint Progress** (SESSION_NOTES.md) - Phase 1B status & priorities
+3. **Recent Completions** - what was accomplished in last session
+4. **Next Immediate Actions** - this week's priorities from SESSION_NOTES.md
+5. **Future Planning Reference** - link to FEATURE_BACKLOG.md for upcoming phases
+6. **Historical Context** - reference to SESSION_HISTORY.md for decisions
 
 ### Output Format:
 ```markdown
@@ -108,16 +110,21 @@ Unified task management command for your development workflow. Use with options:
 - [in_progress] [high] [Current task]
 - [pending] [medium] [Next 2-3 tasks]
 
-### 🎯 Phase 1A Progress: 80% Complete
+### 🎯 Current Phase Progress: [Phase status from SESSION_NOTES.md]
 **Recently Completed:**
 - ✅ [Feature] - TDD implementation + integration
 - ✅ [Component] - tests passing, committed
 
-**Next Priorities:**
-- [ ] [Task] (30 min) - Ready to start  
-- [ ] [Task] (45 min) - Needs dependency
+**This Week's Priorities:**
+- [ ] [Task] (Day 1-2) - Ready to start  
+- [ ] [Task] (Day 3-4) - Needs dependency
 
 ### 🚧 Blockers: [None/List specific blockers]
+
+### 📚 References:
+- **Current Sprint**: SESSION_NOTES.md  
+- **Future Planning**: FEATURE_BACKLOG.md
+- **Decisions History**: SESSION_HISTORY.md
 
 ### 💡 Recommended Next: [Specific task with time estimate]
 ```
@@ -226,10 +233,11 @@ bun run build       # TypeScript compilation
 - All commands respect available time and recommend appropriate scope
 
 ### Documentation Synchronization:
-- TodoWrite progress automatically synced with SESSION_NOTES.md
+- TodoWrite progress synced with SESSION_NOTES.md (current sprint focus)
+- Completed features archived to SESSION_HISTORY.md  
+- Future planning maintained in FEATURE_BACKLOG.md
 - Implementation evidence verified before marking complete
 - Sprint progress reflects actual working features with test coverage
-- Phase 1A completion tracking based on verified deliverables
 
 ### Quality Standards Integration:
 - **Implementation**: Vue 3 + TypeScript + shadcn-vue patterns from IMPLEMENTATION_PLAN.md

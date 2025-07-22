@@ -19,7 +19,9 @@
 ## 🤝 **Core Principles**
 
 ### **Documentation Strategy**
-- **SESSION_NOTES.md** - living document for current sprint progress
+- **SESSION_NOTES.md** - current sprint focus only (50-100 lines)
+- **FEATURE_BACKLOG.md** - detailed planning for Phase 1C+ features
+- **SESSION_HISTORY.md** - compressed archive of completed development
 - **COLLABORATION_PLAN.md** - stable workflow reference
 - **`/task` command** - real-time session management and orchestration
 
@@ -79,13 +81,17 @@ git status                 # Check current state
 
 ## 📋 **Sprint Management Framework**
 
-> **For current sprint goals and task breakdowns, see [SESSION_NOTES.md](./SESSION_NOTES.md)**
+> **For current sprint status, see [SESSION_NOTES.md](./SESSION_NOTES.md)**  
+> **For detailed feature planning, see [FEATURE_BACKLOG.md](./FEATURE_BACKLOG.md)**  
+> **For development history, see [SESSION_HISTORY.md](./SESSION_HISTORY.md)**
 
 ### **Sprint Planning Approach**
 - **Sprint Duration**: 1 week (4-7 sessions)
-- **Session Tracking**: Dynamic updates in SESSION_NOTES.md
-- **Phase Transitions**: Documented in both files
-- **Retrospectives**: Weekly reviews with action items
+- **Current Sprint**: SESSION_NOTES.md (focus, priorities, immediate actions)
+- **Future Planning**: FEATURE_BACKLOG.md (detailed task breakdowns)
+- **Learning Archive**: SESSION_HISTORY.md (completed sessions, decisions)
+- **Phase Transitions**: Documented across all three files
+- **Retrospectives**: Weekly reviews archived in SESSION_HISTORY.md
 
 ## 🔄 **Workflow Pattern**
 

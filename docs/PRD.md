@@ -117,23 +117,72 @@
 - [ ] 70% of users engage with daily AI summary
 - [ ] Mobile usage accounts for 30%+ of total sessions
 
-### **Phase 1B: Enhanced MVP (2 weeks)**  
-**Goal**: Multi-provider AI and user feedback integration
+### **Phase 1B: Mobile-First UX + Security (3 weeks)**  
+**Goal**: Mobile-optimized experience with enterprise-level security
 
-#### **Epic 1B.1: AI Provider Flexibility**
-- **As a** privacy-conscious user, **I want to** choose between AI providers **so that** I control my data sharing
-- **As a** user, **I want to** optionally use local AI **so that** my data never leaves my device
-- **As a** cost-conscious user, **I want to** see AI usage costs **so that** I can manage my spending
+#### **Epic 1B.1: Mobile-First Core Experience**
+- **As a** mobile user, **I want to** access essential timer controls with minimal taps **so that** I can quickly track activities on-the-go
+- **As a** new user, **I want to** see only core features initially **so that** I'm not overwhelmed by complexity
+- **As a** frequent user, **I want to** unlock advanced features progressively **so that** I can access power features when ready
 
-#### **Epic 1B.2: Enhanced Visualization**
-- **As a** visual learner, **I want to** see my time allocation in charts **so that** patterns are easier to spot
-- **As a** user, **I want to** filter activities by date range **so that** I can analyze specific periods
-- **As a** user, **I want to** export my data **so that** I can use it in other tools
+#### **Epic 1B.2: Swipe Navigation System**
+- **As a** mobile user, **I want to** swipe between different app sections **so that** navigation feels native and intuitive
+- **As a** user, **I want to** discover features through contextual swipe hints **so that** I learn the interface naturally
+- **As a** power user, **I want to** access settings and history through swipe gestures **so that** I can navigate efficiently
+
+#### **Epic 1B.3: Progressive Feature Unlock**
+- **As a** habit-building user, **I want to** earn access to advanced features **so that** I'm motivated to use the app consistently
+- **As a** casual user, **I want to** see my progress toward feature unlocks **so that** I understand the app's growth path
+- **As a** returning user, **I want to** maintain my unlock status **so that** I don't lose access to earned features
+
+#### **Epic 1B.4: Enhanced API Security**
+- **As a** security-conscious user, **I want to** know my API keys are protected **so that** I trust the application with sensitive data
+- **As a** user, **I want to** choose my AI provider **so that** I control data sharing and costs
+- **As a** developer, **I want to** rate-limited API access **so that** the service remains stable and cost-effective
 
 **Success Criteria**:
-- [ ] Users try 2+ AI providers on average
-- [ ] 50% of users engage with data visualization features
-- [ ] Data export used by 20% of active users
+- [ ] Mobile usage accounts for 60%+ of sessions
+- [ ] Users complete onboarding with 90%+ success rate
+- [ ] Progressive feature unlock drives 7+ day retention to 80%
+- [ ] Zero API key security incidents
+- [ ] Provider selection used by 40% of users
+
+### **Phase 1C: Enhanced User Experience (4 weeks)**  
+**Goal**: Comprehensive user experience improvements and advanced features
+
+#### **Epic 1C.1: Activity History & Management**
+- **As a** user, **I want to** view my activity history in multiple formats (calendar/list/timeline) **so that** I can analyze past productivity patterns effectively
+- **As a** user, **I want to** edit previous activities using smart input **so that** I can correct mistakes while preserving timestamps
+- **As a** user, **I want to** search and filter activities by date, tags, and priority **so that** I can find specific sessions quickly
+- **As a** user, **I want to** perform bulk operations on activities **so that** I can efficiently manage large datasets
+
+#### **Epic 1C.2: First-Time User Experience**
+- **As a** new user, **I want to** see helpful starter activity templates **so that** I can begin tracking immediately without analysis paralysis
+- **As a** first-time user, **I want to** experience an interactive walkthrough **so that** I understand the app's core features quickly
+- **As a** new user, **I want to** see sample data and examples **so that** I can visualize the app's potential before creating my own data
+
+#### **Epic 1C.3: Rating & Feedback System**
+- **As a** self-optimizer, **I want to** rate my focus and energy levels after sessions **so that** AI can correlate subjective experience with objective data
+- **As a** user, **I want to** add quick reflection notes **so that** I can capture context and insights while they're fresh
+- **As a** data-driven user, **I want to** see focus/energy patterns over time **so that** I can optimize my schedule and environment
+
+#### **Epic 1C.4: Enhanced Visualization & Export**
+- **As a** visual learner, **I want to** see my time allocation in charts and graphs **so that** patterns are easier to identify
+- **As a** user, **I want to** filter and analyze data by custom date ranges **so that** I can study specific periods in detail
+- **As a** power user, **I want to** export my data in multiple formats **so that** I can use it with other productivity tools
+
+#### **Epic 1C.5: UI Polish & Advanced Features**
+- **As a** user, **I want to** toggle between light and dark themes **so that** I can optimize for my environment and time of day
+- **As a** power user, **I want to** use keyboard shortcuts **so that** I can operate the app efficiently
+- **As a** user, **I want to** receive clear visual feedback and notifications **so that** the interface feels responsive and informative
+
+**Success Criteria**:
+- [ ] History view used by 70% of active users
+- [ ] New user onboarding completion rate >85%
+- [ ] Focus/energy ratings provided for 80% of sessions
+- [ ] Data visualization engagement >50%
+- [ ] Dark mode adoption reaches 40% of users
+- [ ] Export feature used by 25% of active users
 
 ### **Phase 2: Habit Loop (4 weeks)**
 **Goal**: Transform from tracking tool to habit-building system
@@ -214,8 +263,14 @@
 - AI Engagement: 60% view daily summary
 
 #### **Phase 1B**: 
-- Feature Adoption: 80% use smart input, 40% try multiple AI providers
-- Data Quality: 90%+ activities properly tagged
+- Mobile Adoption: 60%+ sessions on mobile devices
+- Progressive Unlock: 80% retention at 7+ days
+- Security: Zero API key incidents, 40% use provider selection
+
+#### **Phase 1C**: 
+- Feature Adoption: 70% use history view, 50% use visualization
+- User Experience: 85%+ onboarding completion, 40% dark mode adoption
+- Data Quality: 80% provide focus/energy ratings, 25% use export
 - User Satisfaction: NPS > 30
 
 #### **Phase 2**: 
