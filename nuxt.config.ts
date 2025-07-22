@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     // '@nuxtjs/supabase', // Disabled for Phase 0 - local SQLite only
     '@vueuse/nuxt',
     '@vite-pwa/nuxt',
+    // 'nuxt-security', // Temporarily disabled due to configuration issues
     ...(process.env.NODE_ENV === 'test' ? ['@nuxt/test-utils/module'] : []),
   ],
 
@@ -78,6 +79,7 @@ export default defineNuxtConfig({
     cssPath: '~/assets/css/main.css',
     configPath: 'tailwind.config.js',
   },
+
 
   experimental: {
     typedPages: true,

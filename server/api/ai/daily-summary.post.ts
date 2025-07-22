@@ -1,5 +1,6 @@
 import { aiSummaries, db } from '~/server/database'
 import { AIRouter } from '~/services/ai/aiRouter'
+import { calculateNewFocusTime, createRateLimitError } from '~/server/utils/focusTimeCalculator'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -17,6 +18,23 @@ export default defineEventHandler(async (event) => {
         statusCode: 400,
         statusMessage: 'No activities to summarize',
       })
+    }
+
+    // Application-level rate limiting: Check focus time gates
+    const focusAnalysis = await calculateNewFocusTime(null, body.activities) // null = no user auth in Phase 1B
+    
+    // Log focus time analytics for monitoring
+    console.log('📊 Focus Time Analytics:', {
+      totalFocusTime: Math.round(focusAnalysis.totalNewFocusTime / (1000 * 60)), // minutes
+      activityCount: focusAnalysis.activityCount,
+      progressPercent: focusAnalysis.progressPercent,
+      canRequest: focusAnalysis.canRequestSummary,
+      timeRemaining: focusAnalysis.timeToNextSummary
+    })
+    
+    if (!focusAnalysis.canRequestSummary) {
+      const rateLimitError = createRateLimitError(focusAnalysis)
+      throw createError(rateLimitError)
     }
 
     // Use the AI Router to generate real AI summaries

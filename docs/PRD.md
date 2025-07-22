@@ -139,6 +139,20 @@
 - **As a** security-conscious user, **I want to** know my API keys are protected **so that** I trust the application with sensitive data
 - **As a** user, **I want to** choose my AI provider **so that** I control data sharing and costs
 - **As a** developer, **I want to** rate-limited API access **so that** the service remains stable and cost-effective
+- **As a** productive user, **I want to** earn AI summaries through focus work **so that** insights are meaningful and I stay motivated
+
+#### **Application-Level Rate Limiting Strategy**
+**Decision**: Focus Time Gates instead of technical rate limiting
+- **Rationale**: Converts rate limiting from a restriction into a productivity feature
+- **Implementation**: Require 1+ hour of new tracked time since last AI summary
+- **Benefits**:
+  - Encourages actual focus work over frequent AI requests
+  - Prevents AI abuse naturally through app engagement
+  - Aligns perfectly with app's core purpose (productivity tracking)
+  - Provides cost control while improving user experience
+  - Creates positive feedback loop: more focus work → better AI insights
+- **User Experience**: Progressive unlock system where focus time "earns" AI features
+- **Fallback**: Technical rate limiting (5 req/hour) for abuse prevention only
 
 **Success Criteria**:
 - [ ] Mobile usage accounts for 60%+ of sessions
@@ -146,6 +160,9 @@
 - [ ] Progressive feature unlock drives 7+ day retention to 80%
 - [ ] Zero API key security incidents
 - [ ] Provider selection used by 40% of users
+- [ ] Average 1.5+ hours focus time per AI summary request
+- [ ] 85%+ user satisfaction with AI summary timing/frequency
+- [ ] Application rate limiting reduces API costs by 60% vs technical limits
 
 ### **Phase 1C: Enhanced User Experience (4 weeks)**  
 **Goal**: Comprehensive user experience improvements and advanced features

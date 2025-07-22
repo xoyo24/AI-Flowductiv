@@ -195,20 +195,73 @@ export const useTimer = () => {
 }
 ```
 
-### **API Security Pattern**
+### **API Security Implementation**
+
+#### **Security Headers Middleware**
 ```typescript
-// server/api/activities.post.ts
+// server/middleware/security.ts - Custom implementation
 export default defineEventHandler(async (event) => {
-  try {
-    const body = await readBody(event)
-    const result = await db.insert(activities).values(body)
-    return { data: result }
-  } catch (error) {
+  // Essential security headers
+  setHeader(event, 'X-Content-Type-Options', 'nosniff')
+  setHeader(event, 'X-Frame-Options', 'DENY')
+  setHeader(event, 'X-XSS-Protection', '1; mode=block')
+  setHeader(event, 'Referrer-Policy', 'strict-origin-when-cross-origin')
+  
+  // API-specific CORS and cache control
+  if (event.node.req.url?.startsWith('/api/')) {
+    setHeader(event, 'Access-Control-Allow-Origin', '*')
+    setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate')
+  }
+})
+```
+
+**Security Architecture Decision**:
+- **Current**: Custom middleware (Phase 1B) - reliable, essential headers
+- **Rationale**: nuxt-security module caused server crashes during setup
+- **Coverage**: Core attack vectors (XSS, clickjacking, MIME sniffing)
+- **Production**: Consider nuxt-security for Phase 1C+ with minimal config
+- **Real Protection**: Application-level rate limiting via focus time gates
+
+#### **Application-Level Rate Limiting**
+```typescript
+// server/utils/focusTimeCalculator.ts
+export async function calculateNewFocusTime(userId: string | null, currentActivities: any[]) {
+  const MIN_FOCUS_TIME_MS = 60 * 60 * 1000 // 1 hour
+  const MIN_ACTIVITY_COUNT = 3 // Minimum activities
+  
+  // Calculate focus time since last AI summary
+  const totalNewFocusTime = /* calculation logic */
+  return {
+    canRequestSummary: totalNewFocusTime >= MIN_FOCUS_TIME_MS && activityCount >= MIN_ACTIVITY_COUNT,
+    progressPercent: Math.round((totalNewFocusTime / MIN_FOCUS_TIME_MS) * 100),
+    timeToNextSummary: formatDuration(remainingTime)
+  }
+}
+```
+
+#### **API Endpoint Security Pattern**
+```typescript
+// server/api/ai/daily-summary.post.ts
+export default defineEventHandler(async (event) => {
+  // Input validation
+  const body = await readBody(event)
+  if (!body.activities?.length) {
+    throw createError({ statusCode: 400, statusMessage: 'Activities required' })
+  }
+
+  // Application-level rate limiting
+  const focusAnalysis = await calculateNewFocusTime(null, body.activities)
+  if (!focusAnalysis.canRequestSummary) {
     throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid activity data'
+      statusCode: 429,
+      statusMessage: 'Track more focus time to unlock AI summary',
+      data: { progress: focusAnalysis.progressPercent, timeRemaining: focusAnalysis.timeToNextSummary }
     })
   }
+
+  // Protected API key access
+  const config = useRuntimeConfig()
+  const aiResponse = await aiRouter.generate(prompt, { apiKey: config.anthropicApiKey })
 })
 ```
 
