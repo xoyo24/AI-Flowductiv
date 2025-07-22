@@ -1,0 +1,30 @@
+// Security headers middleware
+export default defineEventHandler(async (event) => {
+  // Handle CORS preflight requests first
+  if (event.node.req.method === 'OPTIONS') {
+    setHeader(event, 'Access-Control-Allow-Origin', '*')
+    setHeader(event, 'Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    setHeader(event, 'Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+    setHeader(event, 'Access-Control-Max-Age', '86400')
+    setResponseStatus(event, 204)
+    return ''
+  }
+
+  // Set security headers for all responses
+  setHeader(event, 'X-Content-Type-Options', 'nosniff')
+  setHeader(event, 'X-Frame-Options', 'DENY')
+  setHeader(event, 'X-XSS-Protection', '1; mode=block')
+  setHeader(event, 'Referrer-Policy', 'strict-origin-when-cross-origin')
+  
+  // CORS for same-origin
+  setHeader(event, 'Access-Control-Allow-Origin', '*')
+  setHeader(event, 'Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  setHeader(event, 'Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+  
+  // Cache control for API routes
+  if (event.node.req.url?.startsWith('/api/')) {
+    setHeader(event, 'Cache-Control', 'no-store, no-cache, must-revalidate, private')
+  } else {
+    setHeader(event, 'Cache-Control', 'public, max-age=3600')
+  }
+})
