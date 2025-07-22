@@ -5,7 +5,8 @@ import { PromptTemplates } from '../prompts'
 
 export class OpenAIProvider {
   private static getApiKey(): string {
-    const apiKey = process.env.OPENAI_API_KEY
+    const config = useRuntimeConfig()
+    const apiKey = config.openaiApiKey
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY environment variable is required')
     }

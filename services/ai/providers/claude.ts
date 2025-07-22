@@ -1,11 +1,12 @@
-import { anthropic } from '@ai-sdk/anthropic'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import type { Activity, AIResponse, HealthStatus } from '~/types/ai'
 import { PromptTemplates } from '../prompts'
 
 export class ClaudeProvider {
   private static getApiKey(): string {
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const config = useRuntimeConfig()
+    const apiKey = config.anthropicApiKey
     if (!apiKey) {
       throw new Error('ANTHROPIC_API_KEY environment variable is required')
     }
@@ -25,9 +26,10 @@ export class ClaudeProvider {
           }).join('\n')}`
         : prompt
 
-      const model = anthropic('claude-3-5-sonnet-20241022', {
+      const anthropic = createAnthropic({
         apiKey
       })
+      const model = anthropic('claude-3-5-sonnet-20241022')
 
       const result = await generateText({
         model,
@@ -53,7 +55,8 @@ export class ClaudeProvider {
     
     try {
       const apiKey = this.getApiKey()
-      const model = anthropic('claude-3-5-sonnet-20241022', { apiKey })
+      const anthropic = createAnthropic({ apiKey })
+      const model = anthropic('claude-3-5-sonnet-20241022')
 
       await generateText({
         model,

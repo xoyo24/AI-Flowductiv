@@ -83,9 +83,17 @@ export default defineEventHandler(async (event) => {
     }
 
     console.error('AI Summary error:', error)
+    
+    // Enhanced error response with more context
+    const isDev = process.env.NODE_ENV === 'development'
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to generate summary',
+      data: {
+        error: 'Summary generation failed',
+        timestamp: new Date().toISOString(),
+        details: isDev && error instanceof Error ? error.message : undefined
+      }
     })
   }
 })
