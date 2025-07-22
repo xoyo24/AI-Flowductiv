@@ -2,19 +2,19 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $fetch } from '@nuxt/test-utils/runtime'
 
 // Mock AI router to avoid real API calls
-vi.mock('~/services/ai/aiRouter', () => ({
-  AIRouter: class {
-    async generateDailySummary() {
-      return {
-        content: 'Mock AI summary for testing',
-        provider: 'mock-claude',
-        usage: {
-          input_tokens: 100,
-          output_tokens: 200
-        }
-      }
-    }
+const mockGenerateDailySummary = vi.fn().mockResolvedValue({
+  content: 'Mock AI summary for testing',
+  provider: 'mock-claude',
+  usage: {
+    input_tokens: 100,
+    output_tokens: 200
   }
+})
+
+vi.mock('~/services/ai/aiRouter', () => ({
+  AIRouter: vi.fn().mockImplementation(() => ({
+    generateDailySummary: mockGenerateDailySummary
+  }))
 }))
 
 describe('AI Summary Rate Limiting Integration', () => {
@@ -27,6 +27,7 @@ describe('AI Summary Rate Limiting Integration', () => {
 
   afterEach(() => {
     vi.clearAllMocks()
+    mockGenerateDailySummary.mockClear()
   })
 
   describe('Application-Level Rate Limiting', () => {
