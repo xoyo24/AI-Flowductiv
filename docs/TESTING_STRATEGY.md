@@ -88,40 +88,58 @@ test('user can track time for an activity', async ({ page }) => {
 - AI integration flows
 - Error handling and edge cases
 
-## 📁 **File Structure & Naming Conventions**
+## 📁 **Co-located Test Structure & Naming Conventions**
 
 ```
-tests/
-├── unit/                   # Fast, isolated logic tests
-│   ├── services/          # Business logic testing
-│   └── components/        # Component unit tests (pure logic only)
-├── integration/            # Component + composable integration tests
-│   ├── components/        # Component integration tests
-│   └── composables/       # Composable integration tests (includes unit logic)
-├── e2e/                   # End-to-end user workflows
-│   └── workflows/         # Complete user flows
-├── helpers/               # Test utilities and mocks
-│   ├── apiMocks.ts       # Simple API mocking utilities
-│   └── testDatabase.ts   # Test database setup
-└── setup.ts              # Global test setup
+server/
+├── api/
+│   └── ai/
+│       ├── daily-summary.post.ts
+│       └── daily-summary.test.ts         # API integration tests
+├── utils/
+│   ├── focusTimeUtils.ts
+│   ├── focusTimeUtils.test.ts           # Pure utility unit tests
+│   ├── focusTimeCalculator.ts  
+│   └── focusTimeCalculator.test.ts      # Database integration tests
+
+composables/
+├── useTimer.ts
+├── useTimer.test.ts                     # Unit tests
+├── useActivities.ts
+└── useActivities.test.ts                # Unit tests
+
+services/
+├── ai/
+│   ├── aiRouter.ts
+│   ├── aiRouter.test.ts                 # Unit tests
+│   ├── prompts.ts
+│   └── prompts.test.ts                  # Unit tests
+├── inputParser.ts
+└── inputParser.test.ts                  # Unit tests
+
+components/
+├── ActivityList.vue
+├── ActivityList.test.ts                 # Component integration tests
+├── DailySummary.vue
+└── DailySummary.test.ts                 # Component integration tests
+
+tests/ (cross-cutting concerns only)
+├── e2e/                                 # End-to-end workflows
+├── helpers/                             # Test utilities and mocks
+└── setup.ts                             # Global test setup
 ```
 
-**Simplified Structure Benefits:**
-- **📁 Consolidated composable tests**: Both unit logic and integration in `tests/integration/composables/`
-- **🎯 No redundant API tests**: Removed separate API tests, covered in composable integration tests
-- **⚡ Faster execution**: Eliminated duplicate test coverage
-- **🔧 Simpler mocking**: Direct `vi.fn()` approach instead of complex helpers
+**Co-location Benefits:**
+- **📁 Tests next to implementation** - Easy to find and maintain tests
+- **🎯 Clear separation** - Server vs client test concerns naturally separated  
+- **⚡ Focused development** - Test specific modules in isolation
+- **🔧 Logical organization** - Tests follow the same structure as source code
+- **📦 Module cohesion** - Tests and implementation evolve together
 
-**Naming Convention**: `[module].test.ts` (folder indicates test type)
-- `tests/integration/composables/useTimer.test.ts` - Integration + unit tests for useTimer composable
-- `tests/integration/components/TimerSection.test.ts` - Integration test for TimerSection component
-- `tests/e2e/timer-workflow.test.ts` - E2E test for timer workflow
-
-**Benefits of Folder-Based Organization:**
-- **🎯 Clear Intent** - Folder name indicates test type, no redundant suffixes
-- **⚡ Fast Feedback** - Run `bun test:unit` for quick development cycles
-- **🔧 Targeted Testing** - Run specific test types as needed
-- **📁 Clean Names** - Simpler file names without type suffixes
+**Naming Convention**: `[module].test.ts` (co-located with source)
+- `composables/useTimer.test.ts` - Unit tests for useTimer composable
+- `server/api/ai/daily-summary.test.ts` - Integration test for API endpoint
+- `services/ai/aiRouter.test.ts` - Unit test for aiRouter service
 
 ## 🛠️ **Testing Standards**
 
@@ -165,9 +183,13 @@ tests/
 - **E2E Tests**: Real APIs, database, and browser environment
 
 ### **Test Commands**
-- `bun test` - Integration tests (fast development feedback)
-- `bun test:e2e` - End-to-end workflows
-- `bun test --run` - All tests without watch mode (CI/CD)
+- `bun run test:unit:run` - All unit tests (91 tests, ~2s)
+- `bun run test:composables:run` - Composable tests only (45 tests)
+- `bun run test:services:run` - Service tests only (31 tests)
+- `bun run test:server:run` - Server utility tests only (15 tests)
+- `bun run test:integration:run` - Integration tests (API + components)
+- `bun run test:e2e` - End-to-end workflows
+- `bun run test:all` - All tests (unit + integration)
 
 ### **CI/CD Pipeline**
 1. `bun run lint` - Biome linting

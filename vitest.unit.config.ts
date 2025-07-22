@@ -12,7 +12,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/unit/**/*.test.ts'],
+    include: [
+      'composables/**/*.test.ts',
+      'services/**/*.test.ts',
+      'server/utils/focusTimeUtils.test.ts'  // Only pure utility functions, not database-dependent ones
+    ],
     env: {
       NODE_ENV: 'test',
     },
