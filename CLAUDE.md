@@ -25,10 +25,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bun install          # Install dependencies
 bun dev             # Start Nuxt 3 development server  
-bun test            # Run Vitest test suite
-bun run vitest run  # Run tests without watch mode
 bun run lint        # Run Biome linting (10x faster than ESLint)
 bun run build       # Production build
+
+# Testing (Co-located structure)
+bun run test:unit:run        # All unit tests (91 tests, ~2s)
+bun run test:composables:run # Composable tests only (45 tests)
+bun run test:services:run    # Service tests only (31 tests) 
+bun run test:server:run      # Server utility tests only (15 tests)
+bun run test:integration:run # Integration tests (API + components)
+bun run test:e2e            # End-to-end browser tests
+bun run test:all            # All tests (unit + integration)
 
 # Database (Drizzle ORM)
 bun run db:generate # Generate migrations
@@ -41,13 +48,22 @@ bun run db:studio   # Open Drizzle Studio
 ## Essential Development Rules
 
 ### **Testing Standards** 
+- **Co-located Structure**: Tests live next to their implementations
 - Follow Vue.js testing best practices in `docs/TESTING_STRATEGY.md`
 - Test **user behavior**, not implementation details
 - Use `data-testid` attributes for reliable element selection
 - **Never skip tests** - ask for guidance when stuck
-- Use `--run` flag with test commands for CI/automation
+- Use `:run` suffix commands for CI/automation (no watch mode)
 - **Never use `expect(true).toBe(true)`** in test cases
 - Target 75% coverage for critical paths (timer, activities, API)
+
+**Test Locations:**
+- `composables/*.test.ts` - Unit tests for composables (45 tests)
+- `services/**/*.test.ts` - Unit tests for services (31 tests)
+- `server/utils/*.test.ts` - Unit tests for server utilities (15 tests)
+- `server/api/**/*.test.ts` - Integration tests for API endpoints
+- `components/*.test.ts` - Integration tests for Vue components
+- `tests/e2e/` - End-to-end browser workflows
 
 ### **Code Quality**
 - **Vue 3 Composition API** exclusively (no Options API)

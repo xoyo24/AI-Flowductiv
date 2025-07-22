@@ -43,8 +43,10 @@ bun install
 # Start development server
 bun dev
 
-# Run tests
-bun test
+# Run tests (co-located structure)
+bun run test:unit:run        # Fast unit tests (91 tests, ~2s)
+bun run test:composables:run # Composable tests (45 tests)
+bun run test:all            # All tests
 
 # Lint code (10x faster than ESLint)
 bun run lint

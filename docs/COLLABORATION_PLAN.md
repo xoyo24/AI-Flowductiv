@@ -126,10 +126,12 @@ git status                 # Check current state
 ### **Daily Commands:**
 
 ```bash
-bun dev       # Start development server
-bun test      # Run test suite  
-bun run lint  # Code quality checks
-git status    # Check current state
+bun dev                      # Start development server
+bun run test:unit:run        # Fast unit tests (91 tests, ~2s)
+bun run test:composables:run # Composable tests (45 tests) 
+bun run test:services:run    # Service tests (31 tests)
+bun run lint                 # Code quality checks
+git status                   # Check current state
 ```
 
 ---
