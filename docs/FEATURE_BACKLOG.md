@@ -94,6 +94,26 @@
 
 ## 🔧 **Technical Infrastructure Improvements**
 
+### **Technical Debt & Code Quality**
+
+#### **DEBT.1 Build System Cleanup (30 min)**
+- **Problem**: Multiple duplicate import warnings during development
+- **Solution**: Complete cleanup of re-exported utilities from focusTimeCalculator.ts
+- **Files to Fix**: Remaining import references across test files and utilities
+- **Benefits**: Clean development experience, faster builds, clearer dependencies
+
+#### **DEBT.2 Type Safety Improvements (45 min)**
+- **Problem**: TypeScript `any` types in DailySummary and other components
+- **Solution**: Create proper interfaces for rate limit data, error states, API responses
+- **Implementation**: Define `RateLimitData`, `ApiErrorState`, `SummaryResponse` interfaces
+- **Benefits**: Better IDE support, catch bugs at compile time, improved maintainability
+
+#### **DEBT.3 Error Boundary Implementation (30 min)**
+- **Problem**: No global error handling for component failures
+- **Solution**: Add Vue error boundaries for mobile components and AI features
+- **Implementation**: `<ErrorBoundary>` wrapper with fallback UI for TimerSectionMobile
+- **Benefits**: Graceful degradation, better user experience, easier debugging
+
 ### **UI/UX Simplification & Performance**
 
 #### **UX.1 DailySummary Simplification (30 min)**
@@ -109,6 +129,49 @@
 - **Implementation**: Always return previous summary with metadata flags
 - **API Response**: `{ summary, isNew: false, reason: "Focus time requirement", nextUnlock: "15 min" }`
 - **User Experience**: Smoother, no error states for normal usage patterns
+
+### **Mobile UX Enhancement Epic**
+
+#### **MOBILE.1 Motivational Input Prompts (30 min)**
+- **Problem**: Plain activity input with no guidance or inspiration
+- **Solution**: Dynamic, encouraging prompts with smart examples
+- **Implementation**: 
+  - Rotating placeholder text: "What are you focusing on? Try: 'Team standup #work' or 'Deep work session !2'"
+  - Context-aware suggestions based on time of day: "Morning planning #strategy" vs "Afternoon coding #development"
+  - Success stories: "Users who track #learning activities report 40% better retention"
+- **Benefits**: Higher engagement, better data quality, improved onboarding
+
+#### **MOBILE.2 Real-time Tag & Priority Feedback (45 min)**
+- **Problem**: No visual indication when users type tags (#work) or priorities (!2)
+- **Solution**: Live parsing with immediate visual feedback
+- **Implementation**:
+  - Animated chips appear as user types: `#work` → blue chip, `!2` → orange priority badge
+  - Color-coded feedback: valid tags green, new tags yellow, priorities with urgency colors
+  - Micro-animations on successful parsing: gentle bounce, color transition
+  - Preview of parsed activity below input: "Team meeting" + blue #work chip + orange !2 badge
+- **Benefits**: Clear user feedback, reduced input errors, more engaging interaction
+
+#### **MOBILE.3 Modern Chat/Search Experience (60 min)**
+- **Problem**: Traditional form input feels outdated on mobile
+- **Solution**: Conversational, search-like interface inspired by modern chat apps
+- **Implementation**:
+  - Chat bubble design with message-like activity entries
+  - Search-style input with instant suggestions dropdown
+  - Voice input button for speech-to-text activity entry
+  - Quick action buttons: "Meeting #work", "Focus time !3", "Break #personal"
+  - Swipe gestures on activity bubbles for edit/delete actions
+- **Benefits**: Modern mobile UX, reduced typing friction, higher user engagement
+
+#### **MOBILE.4 Smart Contextual Suggestions (45 min)**
+- **Problem**: Users struggle with activity naming and categorization
+- **Solution**: AI-powered contextual suggestions based on time, history, and patterns
+- **Implementation**:
+  - Time-based suggestions: "Morning standup #work" at 9 AM, "Lunch break #personal" at 12 PM
+  - History-based predictions: User often does "Code review" → suggest when similar timeframe
+  - Pattern recognition: Detect recurring activities and suggest templates
+  - Smart tag completion: Typing "meet" suggests "#meeting #work" based on user history
+  - Integration with existing useAutoComplete but enhanced with ML patterns
+- **Benefits**: Faster activity entry, better data consistency, personalized experience
 
 ### **AI Infrastructure Enhancements**
 
@@ -181,11 +244,15 @@
 
 ## 🔄 **Implementation Timeline Summary**
 
+### **Phase 1B Remaining (1 week):**
+- **Week 2**: 🚨 Urgent fixes (hydration mismatch, mobile testing) + Gesture system
+- **Week 3**: Swipeable components + Performance optimization
+
 ### **Phase 1C (4 weeks):**
-- **Week 1**: History management + First-time UX
-- **Week 2**: Rating system + Quality insights
+- **Week 1**: Technical debt cleanup (DEBT.1-3) + History management + First-time UX
+- **Week 2**: Rating system + Quality insights  
 - **Week 3**: Visualization + Export features
-- **Week 4**: UI polish + Advanced features
+- **Week 4**: Mobile UX enhancements (MOBILE.1-4) + UI polish + Advanced features
 
 ### **Phase 2 (4 weeks):**
 - Advanced rating system and habit tracking
