@@ -1,11 +1,14 @@
 <template>
-  <!-- Mobile Layout -->
-  <div v-if="isMobile" class="min-h-screen bg-background">
-    <TimerSectionMobile />
-  </div>
+  <!-- Responsive Layout with Hydration-Safe Detection -->
+  <ClientOnly>
+    <template #default>
+      <!-- Mobile Layout -->
+      <div v-if="isMobile" class="min-h-screen bg-background">
+        <TimerSectionMobile />
+      </div>
 
-  <!-- Desktop Layout -->
-  <div v-else class="min-h-screen bg-background">
+      <!-- Desktop Layout -->
+      <div v-else class="min-h-screen bg-background">
     <!-- Header -->
     <header class="border-b border-border bg-card">
       <div class="container mx-auto px-4 py-4">
@@ -41,7 +44,23 @@
         </div>
       </div>
     </main>
-  </div>
+      </div>
+    </template>
+    
+    <template #fallback>
+      <!-- SSR-Safe Loading State -->
+      <div class="min-h-screen bg-background">
+        <div class="flex items-center justify-center min-h-screen">
+          <div class="animate-pulse space-y-4 w-full max-w-md px-4">
+            <!-- Loading skeleton -->
+            <div class="h-4 bg-muted rounded w-3/4"></div>
+            <div class="h-12 bg-muted rounded"></div>
+            <div class="h-8 bg-muted rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
