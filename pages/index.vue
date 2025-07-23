@@ -1,5 +1,11 @@
 <template>
-  <div class="min-h-screen bg-background">
+  <!-- Mobile Layout -->
+  <div v-if="isMobile" class="min-h-screen bg-background">
+    <TimerSectionMobile />
+  </div>
+
+  <!-- Desktop Layout -->
+  <div v-else class="min-h-screen bg-background">
     <!-- Header -->
     <header class="border-b border-border bg-card">
       <div class="container mx-auto px-4 py-4">
@@ -11,7 +17,7 @@
             <h1 class="text-xl font-semibold text-foreground">Flowductiv</h1>
           </div>
           <div class="flex items-center space-x-2">
-            <span class="text-sm text-muted-foreground">Phase 0 - MVP</span>
+            <span class="text-sm text-muted-foreground">Phase 1B - Mobile</span>
           </div>
         </div>
       </div>
@@ -39,6 +45,9 @@
 </template>
 
 <script setup lang="ts">
+// Responsive detection
+const { isMobile } = useViewport()
+
 // Page metadata
 useHead({
   title: 'Dashboard - Flowductiv',

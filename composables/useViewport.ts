@@ -1,12 +1,15 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 export const useViewport = () => {
-  const screenWidth = ref(0)
-  const screenHeight = ref(0)
+  // Default to desktop during SSR, will update on client
+  const screenWidth = ref(1024)
+  const screenHeight = ref(768)
 
   const updateDimensions = () => {
-    screenWidth.value = window.innerWidth
-    screenHeight.value = window.innerHeight
+    if (typeof window !== 'undefined') {
+      screenWidth.value = window.innerWidth
+      screenHeight.value = window.innerHeight
+    }
   }
 
   // Mobile breakpoint (matches Tailwind's default)
@@ -14,6 +17,7 @@ export const useViewport = () => {
   
   // Touch device detection
   const isTouchDevice = computed(() => {
+    if (typeof window === 'undefined') return false
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0
   })
 
