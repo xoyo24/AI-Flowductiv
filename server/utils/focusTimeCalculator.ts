@@ -6,8 +6,6 @@ import { db, activities, aiSummaries } from '~/server/database'
 
 import { FOCUS_TIME_CONFIG, formatDuration, createRateLimitError } from './focusTimeUtils'
 
-export { FOCUS_TIME_CONFIG, formatDuration, createRateLimitError }
-
 /**
  * Calculate new focus time since the last AI summary
  * @param userId - User ID (null for Phase 1B - no auth yet)
