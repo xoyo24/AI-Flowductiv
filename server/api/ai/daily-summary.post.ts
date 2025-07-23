@@ -1,6 +1,7 @@
 import { aiSummaries, db } from '~/server/database'
 import { AIRouter } from '~/services/ai/aiRouter'
-import { calculateNewFocusTime, createRateLimitError } from '~/server/utils/focusTimeCalculator'
+import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
+import { createRateLimitError } from '~/server/utils/focusTimeUtils'
 
 export default defineEventHandler(async (event) => {
   try {

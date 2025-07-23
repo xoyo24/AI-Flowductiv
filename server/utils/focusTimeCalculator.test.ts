@@ -26,11 +26,12 @@ vi.mock('drizzle-orm', () => ({
 }))
 
 // Now import after mocks are set up
+import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
 import { 
   formatDuration, 
   createRateLimitError,
   FOCUS_TIME_CONFIG 
-} from '~/server/utils/focusTimeCalculator'
+} from '~/server/utils/focusTimeUtils'
 
 describe('Focus Time Calculator', () => {
   beforeEach(() => {

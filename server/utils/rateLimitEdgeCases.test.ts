@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
 import { 
-  calculateNewFocusTime, 
   formatDuration, 
   FOCUS_TIME_CONFIG 
-} from '~/server/utils/focusTimeCalculator'
+} from '~/server/utils/focusTimeUtils'
 
 // Mock database with more complex scenarios
 const mockDb = {
