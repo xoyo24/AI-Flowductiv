@@ -225,17 +225,17 @@ Generate code following established project patterns for Vue 3 components, Nuxt 
 - Use existing Drizzle schema, integrate with `useAuth`, follow shadcn-vue patterns
 ```
 
-### `/task` - Task Management
+### `/task` - Simplified Task Management
 ```markdown
-Unified task management with TDD workflow orchestration:
+Four focused commands covering complete development workflow:
 
-- `/task create` - Break down Phase tasks into session-sized chunks (30/45/60 min)
-- `/task execute` - Orchestrate `/implement` + `/test` + verification with TDD cycles
-- `/task status` - TodoWrite + Sprint progress + session context view
-- `/task validate` - Completion evidence + code review + quality gates
+- `/task` - Current TodoWrite + SESSION_NOTES.md status + next priorities
+- `/task work [focus]` - Implementation + testing + git commits (TDD cycles)
+- `/task done [what]` - Record completion + reflection in SESSION_HISTORY.md
+- `/task plan [idea]` - Add future features to FEATURE_BACKLOG.md
 
-**TDD Integration:**
-Red Phase (`/test`) → Green Phase (`/implement`) → Refactor → Verify → Update
+**Daily Workflow:**
+Status Check (`/task`) → Implementation (`/task work`) → Record + Reflect (`/task done`)
 ```
 
 ## Quick Reference
