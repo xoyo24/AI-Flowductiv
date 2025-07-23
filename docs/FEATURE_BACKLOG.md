@@ -94,6 +94,22 @@
 
 ## 🔧 **Technical Infrastructure Improvements**
 
+### **UI/UX Simplification & Performance**
+
+#### **UX.1 DailySummary Simplification (30 min)**
+- **Problem**: Current rate limit UX is complex (3 conditional states, 100+ template lines)
+- **Solution**: Single summary display + small progress badge for rate limits
+- **Backend Refactor**: Return 200 with `{ data: previousSummary, fromCache: true, progress: {...} }`
+- **Frontend Simplification**: One template + computed progress indicator
+- **Benefits**: Cleaner architecture, easier maintenance, better performance
+
+#### **UX.2 Rate Limit Architecture Improvement (45 min)**  
+- **Current**: 429 errors thrown to frontend for focus time gates
+- **Better**: Reserve 429 for actual API abuse/spam protection
+- **Implementation**: Always return previous summary with metadata flags
+- **API Response**: `{ summary, isNew: false, reason: "Focus time requirement", nextUnlock: "15 min" }`
+- **User Experience**: Smoother, no error states for normal usage patterns
+
 ### **AI Infrastructure Enhancements**
 
 #### **AI.1 Provider Configuration Management (30 min)**
