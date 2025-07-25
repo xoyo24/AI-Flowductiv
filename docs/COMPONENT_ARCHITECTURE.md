@@ -16,108 +16,75 @@
 
 ---
 
-## **Refactoring Example: History & Settings**
+## **Current Architecture: Integrated Dashboard**
 
-### **❌ Before (Anti-pattern)**
+### **Single Page Application (Phase 1C)**
 ```
 pages/
-  history.vue     # 168 lines, duplicated mobile/desktop layouts
-  settings.vue    # 140 lines, duplicated mobile/desktop layouts
-  index.vue       # No navigation to history/settings on desktop
-```
-
-**Problems:**
-- Separate routes with no desktop navigation
-- Duplicate layout code (mobile header + desktop header)
-- Complex conditional classes repeated 3x per filter button
-- No component reusability
-
-### **✅ After (Best Practice)**
-```
-pages/
-  history.vue     # 45 lines, clean page wrapper
-  settings.vue    # 35 lines, clean page wrapper
-  index.vue       # Added desktop navigation sidebar
+  index.vue       # Single unified dashboard
 
 components/
-  HistoryContent.vue       # Pure content logic
-  SettingsContent.vue      # Pure content logic
-  UI/
-    PageHeader.vue         # Reusable header component
-    FilterTabs.vue         # Reusable filter buttons
-    SettingsSection.vue    # Consistent settings layout
-    SettingsToggle.vue     # Reusable toggle component
-    SettingsButton.vue     # Reusable button component
+  TimerSection.vue        # Timer + activity input
+  TimerSectionMobile.vue  # Mobile-optimized timer
+  ActivityList.vue        # Recent activities display
+  DailySummary.vue        # Today's metrics
+  QuickStats.vue          # Key statistics
+  AISettingsDropdown.vue  # Settings integration
 ```
 
-**Benefits:**
-- ✅ **70% less code** (pages reduced from 308 to 80 lines)
-- ✅ **Reusable components** for future features
-- ✅ **Desktop navigation** added to main dashboard
-- ✅ **Simplified class logic** extracted to utilities
-- ✅ **Easier testing** (components can be unit tested)
+**Current Benefits:**
+- ✅ **Unified experience** - No separate pages, all features integrated
+- ✅ **Mobile-first responsive** - Optimal UX on all devices
+- ✅ **Component reusability** - Clean separation of concerns
+- ✅ **Phase 1C ready** - Architecture supports analytics dashboard
 
 ---
 
 ## **Component Composition Patterns**
 
-### **1. Content + Presentation Separation**
+### **1. Mobile-First Responsive Design**
 ```vue
-<!-- ❌ Bad: Mixed concerns -->
+<!-- ✅ Current: Responsive dashboard -->
 <template>
-  <div class="complex-layout">
-    <header>...</header>
-    <main>
-      <!-- Complex filter logic inline -->
-      <button :class="complexCondition" @click="filterLogic">All</button>
-      <button :class="complexCondition" @click="filterLogic">Today</button>
-      <!-- Business logic mixed with presentation -->
-      <ActivityList :filter="activeFilter" />
-    </main>
-  </div>
-</template>
-
-<!-- ✅ Good: Separated concerns -->
-<template>
-  <div class="min-h-screen bg-background">
-    <PageHeader title="History" :show-back-button="true" />
-    <HistoryContent :is-mobile="isMobile" />
-  </div>
+  <ClientOnly>
+    <!-- Mobile Layout -->
+    <div v-if="isMobile" class="min-h-screen bg-background">
+      <TimerSectionMobile />
+    </div>
+    
+    <!-- Desktop Layout -->
+    <div v-else class="min-h-screen bg-background">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+          <TimerSection />
+          <ActivityList />
+        </div>
+        <div class="space-y-6">
+          <DailySummary />
+          <QuickStats />
+        </div>
+      </div>
+    </div>
+  </ClientOnly>
 </template>
 ```
 
-### **2. Prop-Driven Flexibility**
+### **2. Composable Integration**
 ```vue
-<!-- ✅ Flexible component design -->
-<FilterTabs 
-  v-model="activeFilter"
-  :filters="filterOptions"
-  :size="isMobile ? 'sm' : 'md'"
-/>
+<!-- ✅ Business logic in composables -->
+<script setup>
+const { isMobile } = useViewport()
+const { activities } = useActivities()
+const { isRunning, currentActivity } = useTimer()
+</script>
 
-<!-- ✅ Configurable header -->
-<PageHeader 
-  title="Settings"
-  :show-back-button="isMobile"
-  :show-brand="!isMobile"
->
-  <template #actions>
-    <NuxtLink to="/">← Back</NuxtLink>
-  </template>
-</PageHeader>
-```
-
-### **3. Compound Components**
-```vue
-<!-- ✅ Composable settings sections -->
-<SettingsSection title="AI Provider Settings">
-  <AISettingsDropdown />
-</SettingsSection>
-
-<SettingsSection title="Preferences">
-  <SettingsToggle label="Haptic Feedback" v-model="hapticEnabled" />
-  <SettingsToggle label="Auto-save" v-model="autosaveEnabled" />
-</SettingsSection>
+<!-- ✅ Settings integration -->
+<template>
+  <div class="space-y-6">
+    <AISettingsDropdown />
+    <!-- Future: Analytics dashboard components -->
+  </div>
+</template>
 ```
 
 ---
@@ -171,12 +138,10 @@ test('history page shows correct filter options', async () => {
 ### **Components (Unit Tests)**
 ```typescript
 // Test isolated component behavior
-test('FilterTabs emits correct value on click', async () => {
-  const wrapper = mount(FilterTabs, {
-    props: { modelValue: 'all', filters: mockFilters }
-  })
-  await wrapper.find('[data-testid="filter-today"]').trigger('click')
-  expect(wrapper.emitted('update:modelValue')).toEqual([['today']])
+test('TimerSection starts timer correctly', async () => {
+  const wrapper = await mountSuspended(TimerSection)
+  await wrapper.find('[data-testid="start-timer"]').trigger('click')
+  expect(wrapper.emitted('timer-started')).toBeTruthy()
 })
 ```
 
@@ -184,15 +149,15 @@ test('FilterTabs emits correct value on click', async () => {
 
 ## **Performance Benefits**
 
-### **Bundle Size Reduction**
-- **Before**: 3 large page components = ~800 lines total
-- **After**: 3 small pages + 6 reusable components = ~400 lines total
-- **Savings**: 50% code reduction + better tree-shaking
+### **Architecture Simplification**
+- **Phase 1B**: Removed redundant pages, unified dashboard experience
+- **Current**: Single page with responsive components
+- **Phase 1C Ready**: Architecture supports analytics dashboard integration
 
-### **Reusability**
-- `FilterTabs` can be used in future analytics pages
-- `PageHeader` standardizes all page headers
-- `SettingsSection` creates consistent settings UX
+### **Component Reusability**
+- `TimerSection` optimized for both mobile and desktop
+- `ActivityList` reusable across different views
+- `AISettingsDropdown` integrates seamlessly into dashboard
 
 ### **Maintainability**
 - Single source of truth for filter logic
