@@ -41,6 +41,15 @@
         <div class="space-y-6">
           <DailySummary />
           <QuickStats />
+          
+          <!-- Analytics & Goals Section -->
+          <div class="bg-card rounded-lg border border-border p-4">
+            <h3 class="text-sm font-medium text-foreground mb-3">Analytics & Goals</h3>
+            <div class="text-sm text-muted-foreground">
+              <p class="mb-2">Productivity heatmap and goal tracking coming in Phase 1C</p>
+              <p class="text-xs">Integrated dashboard replacing separate pages</p>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -64,6 +73,8 @@
 </template>
 
 <script setup lang="ts">
+import { Clock, Settings } from 'lucide-vue-next'
+
 // Responsive detection
 const { isMobile } = useViewport()
 

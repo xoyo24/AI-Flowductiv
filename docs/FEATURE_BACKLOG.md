@@ -2,93 +2,112 @@
 
 > **Detailed planning for Phase 1C and beyond - organized by implementation priority**
 
-## 🎯 **Phase 1C: Enhanced User Experience (4 weeks)**
+## 🎯 **Phase 1C: Productivity Analytics Dashboard (2 weeks)**
 
-**Goal**: Comprehensive user experience improvements and advanced features
+**Goal**: GitHub/Flomo-inspired visual analytics replacing basic activity lists
 
-### **📚 Epic 1C.1: Activity History & Management (Week 1)**
+### **📊 Epic 1C.1: Productivity Heatmap Implementation (Week 1)**
 
-#### **Task 1C.1.1: History View Implementation (60 min)**
-- **Research Phase** (15 min): Brainstorm history view concepts
-  - Calendar view vs list view vs timeline
-  - Filtering by date range, tags, priority
-  - Search functionality across historical data
-- **Design Phase** (15 min): Choose optimal UX pattern
-- **Implementation** (30 min): Create history component with navigation
+#### **Task 1C.1.1: Core Heatmap Component (90 min)**
+- **Data Aggregation** (30 min): Daily activity aggregation queries
+  - Total time tracked per day
+  - Activity count and focus rating averages
+  - Productivity score calculation algorithm
+- **Grid Rendering** (45 min): 365-day heatmap visualization
+  - Color intensity based on productivity metrics
+  - Responsive sizing for desktop/mobile
+  - Hover tooltips with daily summaries
+- **Integration** (15 min): Connect with existing activity data
 
-#### **Task 1C.1.2: Smart Activity Editing (45 min)**
-- **Reuse Smart Input Parser** for editing existing activities
-- **Preserve Original Timestamps** while allowing content updates
-- **Tag/Priority Editing** with real-time preview
-- **Bulk Operations** for multiple activity updates
+#### **Task 1C.1.2: Interactive Day Details (60 min)**
+- **Click Handlers** (20 min): Day selection and modal triggers
+- **Detail Modal** (30 min): Comprehensive day breakdown
+  - Activities list with time allocation
+  - Focus ratings and energy levels
+  - AI insights for that specific day
+- **Navigation** (10 min): Previous/next day navigation within modal
 
-#### **Task 1C.1.3: Advanced Search & Filtering (45 min)**
-- **Search Implementation** across activity titles, tags, and notes
-- **Date Range Filtering** with calendar picker
-- **Tag-based Filtering** with multi-select dropdown
-- **Priority Filtering** and sorting options
+#### **Task 1C.1.3: Heatmap Performance Optimization (45 min)**
+- **Virtual Rendering** for large datasets (365+ days)
+- **Lazy Loading** for historical data beyond current year
+- **Caching Strategy** for aggregated daily stats
+- **Mobile Touch Optimization** for day selection
 
-### **🎨 Epic 1C.2: First-Time User Experience (Week 1)**
+### **🎨 Epic 1C.2: Integrated Dashboard Layout (Week 1)**
 
-#### **Task 1C.2.1: Default Activity Suggestions (30 min)**
-- **Starter Activity Templates** when database is empty:
-  - Work activities: "Team meeting #work", "Code review #development"
-  - Learning: "Study session #learning", "Online course #skill"
-  - Personal: "Exercise #health", "Reading #personal"
-- **Smart Onboarding Flow** with activity examples
-- **Progressive Disclosure** of advanced features
+#### **Task 1C.2.1: Desktop Layout Restructuring (60 min)**
+- **Grid Restructure** (30 min): Heatmap (left 2 cols) + Timer/Activities (right 1 col)
+  - Remove sidebar navigation links to separate pages
+  - Integrate heatmap as primary visual element
+  - Position timer and recent activities as main content
+- **Component Integration** (30 min): 
+  - Replace ActivityList integration in pages/index.vue
+  - Remove QuickStats/DailySummary from sidebar
+  - Create unified analytics section
 
-#### **Task 1C.2.2: Onboarding & Tutorial System (45 min)**
-- **Interactive Walkthrough** for first session
-- **Feature Discovery** tooltips and hints
-- **Sample Data Generation** for demo purposes
+#### **Task 1C.2.2: Remove Redundant Pages (30 min)**
+- **Delete Separate Pages**: Remove pages/history.vue and pages/settings.vue
+- **Update Navigation**: Remove NuxtLink references to separate routes
+- **Consolidate Settings**: Move AI settings to unified settings modal/panel
+- **Update Tests**: Remove page-specific tests, update integration tests
 
-### **⭐ Epic 1C.3: Rating & Feedback System (Week 2)**
+### **⭐ Epic 1C.3: Goal Setting & Progress Tracking (Week 2)**
 
-#### **Task 1C.3.1: Post-Activity Rating Interface (45 min)**
-- **Focus Rating Component** (1-5 stars) after timer completion
-- **Energy Level Tracker** (low/medium/high) with icons
-- **Quick Notes Field** for reflection and context
-- **Rating Analytics** in daily summary
+#### **Task 1C.3.1: Visual Goal System (75 min)**
+- **Goal Definition Interface** (30 min): Daily/weekly/monthly targets
+  - Time-based goals ("Track 6+ hours daily")
+  - Activity-based goals ("Complete 5+ deep work sessions")
+  - Streak-based goals ("Maintain 21-day tracking streak")
+- **Progress Visualization** (30 min): 
+  - Progress bars overlaying heatmap
+  - Achievement badges and streak counters
+  - Goal completion celebrations
+- **AI Goal Suggestions** (15 min): Smart recommendations based on patterns
 
-#### **Task 1C.3.2: Activity Quality Insights (30 min)**
-- **Focus Patterns Analysis** by time of day, activity type
-- **Energy Correlation** with productivity metrics
-- **Personalized Recommendations** based on rating history
+#### **Task 1C.3.2: Insights & Pattern Analysis (45 min)**
+- **Pattern Recognition** (25 min): Identify productive periods and correlations
+- **AI Insights Generation** (20 min): "Your peak focus time is 9-11 AM" style insights
+- **Recommendation Engine**: Actionable suggestions for improvement
 
-### **📊 Epic 1C.4: Enhanced Visualization & Export (Week 3)**
+### **📊 Epic 1C.4: Mobile Analytics Panel (Week 2)**
 
-#### **Task 1C.4.1: Data Visualization Components (60 min)**
-- **Time Allocation Charts** (pie charts, bar charts)
-- **Productivity Trends** over time (line charts)
-- **Tag Distribution** visualization
-- **Focus/Energy Patterns** heatmaps
+#### **Task 1C.4.1: Slide-out Analytics Panel (90 min)**
+- **Panel Component** (45 min): Flomo-inspired slide-out design
+  - Condensed heatmap view for mobile
+  - Touch-optimized day selection
+  - Swipe gestures for navigation
+- **Mobile Integration** (30 min): 
+  - Trigger from hamburger menu in TimerSectionMobile
+  - Maintain timer context when panel is open
+  - Smooth slide animations
+- **Touch Optimization** (15 min): 44px touch targets, haptic feedback
 
-#### **Task 1C.4.2: Data Export & Import (45 min)**
-- **CSV/JSON Export** for activity data
-- **Data Import** from other time tracking tools
-- **Automatic Backup** to cloud storage
-- **Export Scheduling** and automation
+#### **Task 1C.4.2: Mobile Analytics Content (60 min)**
+- **Condensed Insights** (30 min): Key stats and goals progress
+- **Tag Filtering** (20 min): Quick filter chips for activity types
+- **Quick Actions** (10 min): Jump to specific date ranges
 
-### **🎨 Epic 1C.5: UI Polish & Advanced Features (Week 4)**
+### **🎨 Epic 1C.5: Visual Polish & Performance (Week 2)**
 
-#### **Task 1C.5.1: Dark Mode Toggle (15 min)**
-- **Small Toggle Button** in header or settings area
-- **System Preference Detection** (already implemented in useColorMode)
-- **Smooth Theme Transitions** with CSS animations
-- **Persistent User Choice** in localStorage
+#### **Task 1C.5.1: Color System & Visual Hierarchy (45 min)**
+- **Productivity Color Scale** (20 min): Define color intensity for heatmap
+  - Light gray: No activity
+  - Light green: Minimal activity (1-2 hours)
+  - Medium green: Good activity (3-5 hours)  
+  - Dark green: High productivity (6+ hours)
+- **Visual Consistency** (15 min): Ensure color language across components
+- **Accessibility** (10 min): Color-blind friendly palette, proper contrast
 
-#### **Task 1C.5.2: Visual & Interaction Improvements (45 min)**
-- **Loading States** for AI generation and API calls
-- **Success/Error Notifications** with toast system
-- **Keyboard Shortcuts** for power users (Space = start/stop, Esc = cancel)
-- **Mobile Responsiveness** optimization
+#### **Task 1C.5.2: Performance Optimization (30 min)**
+- **Component Lazy Loading** for analytics components
+- **Data Pagination** for large activity datasets
+- **Bundle Size Optimization** through tree-shaking
+- **Animation Performance** for smooth interactions
 
-#### **Task 1C.5.3: Advanced UI Components (30 min)**
-- **Command Palette** for power users
-- **Quick Actions** floating action button
-- **Contextual Menus** and right-click actions
-- **Drag & Drop** for activity reordering
+#### **Task 1C.5.3: Analytics Export (30 min)**
+- **CSV Export** for heatmap data and analytics
+- **Image Export** for sharing productivity visualizations
+- **Date Range Selection** for targeted exports
 
 ---
 
@@ -248,11 +267,9 @@
 - **Week 2**: 🚨 Urgent fixes (hydration mismatch, mobile testing) + Gesture system
 - **Week 3**: Swipeable components + Performance optimization
 
-### **Phase 1C (4 weeks):**
-- **Week 1**: Technical debt cleanup (DEBT.1-3) + History management + First-time UX
-- **Week 2**: Rating system + Quality insights  
-- **Week 3**: Visualization + Export features
-- **Week 4**: Mobile UX enhancements (MOBILE.1-4) + UI polish + Advanced features
+### **Phase 1C (2 weeks):**
+- **Week 1**: Productivity heatmap implementation + Integrated dashboard layout
+- **Week 2**: Goal setting system + Mobile analytics panel + Visual polish
 
 ### **Phase 2 (4 weeks):**
 - Advanced rating system and habit tracking
@@ -265,7 +282,7 @@
 - Personalized recommendations engine
 
 **Success Metrics:**
-- Phase 1C: 70% use history view, 85% onboarding completion, 40% dark mode adoption
+- Phase 1C: 70% interact with heatmap, 80% click day details, 60% set goals, 90% mobile analytics usage
 - Phase 2: 70% track 3+ habits, 80% provide session ratings, 60% calendar integration
 - Phase 3: 70% receive meaningful AI insights, 40% act on recommendations, 85% auto-categorization accuracy
 

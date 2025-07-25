@@ -164,42 +164,46 @@
 - [ ] 85%+ user satisfaction with AI summary timing/frequency
 - [ ] Application rate limiting reduces API costs by 60% vs technical limits
 
-### **Phase 1C: Enhanced User Experience (4 weeks)**  
-**Goal**: Comprehensive user experience improvements and advanced features
+### **Phase 1C: Productivity Analytics Dashboard (2 weeks)**  
+**Goal**: GitHub/Flomo-inspired visual analytics replacing basic activity lists
 
-#### **Epic 1C.1: Activity History & Management**
-- **As a** user, **I want to** view my activity history in multiple formats (calendar/list/timeline) **so that** I can analyze past productivity patterns effectively
-- **As a** user, **I want to** edit previous activities using smart input **so that** I can correct mistakes while preserving timestamps
-- **As a** user, **I want to** search and filter activities by date, tags, and priority **so that** I can find specific sessions quickly
-- **As a** user, **I want to** perform bulk operations on activities **so that** I can efficiently manage large datasets
+#### **Epic 1C.1: Productivity Heatmap (GitHub-inspired)**
+- **As a** visual user, **I want to** see my productivity in a 365-day heatmap **so that** I can quickly identify patterns and streaks
+- **As a** data-driven user, **I want to** click on any day in the heatmap **so that** I can see detailed activities and insights for that date
+- **As a** motivated user, **I want to** see color intensity based on productivity scores **so that** I can visualize my focus patterns over time
+- **As a** goal-oriented user, **I want to** see summary stats (active days, total hours, goal achievement) **so that** I can track overall progress
 
-#### **Epic 1C.2: First-Time User Experience**
-- **As a** new user, **I want to** see helpful starter activity templates **so that** I can begin tracking immediately without analysis paralysis
-- **As a** first-time user, **I want to** experience an interactive walkthrough **so that** I understand the app's core features quickly
-- **As a** new user, **I want to** see sample data and examples **so that** I can visualize the app's potential before creating my own data
+#### **Epic 1C.2: Integrated Dashboard Experience**
+- **As a** user, **I want to** access all features from one unified dashboard **so that** I don't lose context switching between pages
+- **As a** desktop user, **I want to** see analytics (left) and primary actions (right) **so that** the layout matches my workflow priorities
+- **As a** mobile user, **I want to** access analytics via slide-out panel **so that** I can quickly view insights without losing my place
+- **As a** user, **I want to** seamless navigation without browser back buttons **so that** the experience feels app-like
 
-#### **Epic 1C.3: Rating & Feedback System**
-- **As a** self-optimizer, **I want to** rate my focus and energy levels after sessions **so that** AI can correlate subjective experience with objective data
-- **As a** user, **I want to** add quick reflection notes **so that** I can capture context and insights while they're fresh
-- **As a** data-driven user, **I want to** see focus/energy patterns over time **so that** I can optimize my schedule and environment
+#### **Epic 1C.3: Goal Setting & Progress Tracking**
+- **As a** self-optimizer, **I want to** set daily/weekly productivity goals **so that** I can measure progress consistently
+- **As a** motivated user, **I want to** see visual progress bars and streak counters **so that** I stay motivated to maintain habits
+- **As a** competitive user, **I want to** earn achievement badges **so that** productivity tracking feels rewarding
+- **As a** pattern-aware user, **I want to** see AI insights about my optimal times **so that** I can optimize my schedule
 
-#### **Epic 1C.4: Enhanced Visualization & Export**
-- **As a** visual learner, **I want to** see my time allocation in charts and graphs **so that** patterns are easier to identify
-- **As a** user, **I want to** filter and analyze data by custom date ranges **so that** I can study specific periods in detail
-- **As a** power user, **I want to** export my data in multiple formats **so that** I can use it with other productivity tools
+#### **Epic 1C.4: Mobile Analytics Panel (Flomo-inspired)**
+- **As a** mobile user, **I want to** access condensed analytics via hamburger menu **so that** I can review progress on-the-go
+- **As a** touch user, **I want to** swipe through different time periods **so that** navigation feels natural on mobile
+- **As a** mobile user, **I want to** see tag filters and quick insights **so that** I can analyze patterns efficiently
+- **As a** mobile user, **I want to** maintain timer context when viewing analytics **so that** I don't lose my current activity
 
-#### **Epic 1C.5: UI Polish & Advanced Features**
-- **As a** user, **I want to** toggle between light and dark themes **so that** I can optimize for my environment and time of day
-- **As a** power user, **I want to** use keyboard shortcuts **so that** I can operate the app efficiently
-- **As a** user, **I want to** receive clear visual feedback and notifications **so that** the interface feels responsive and informative
+#### **Epic 1C.5: Visual Pattern Recognition**
+- **As a** visual learner, **I want to** see activity patterns through color coding **so that** trends are immediately apparent
+- **As a** self-aware user, **I want to** identify productive vs unproductive periods **so that** I can replicate successful patterns
+- **As a** optimizer, **I want to** see correlations between activity types and productivity **so that** I can focus on high-value work
+- **As a** data user, **I want to** export my analytics data **so that** I can use it with other productivity tools
 
 **Success Criteria**:
-- [ ] History view used by 70% of active users
-- [ ] New user onboarding completion rate >85%
-- [ ] Focus/energy ratings provided for 80% of sessions
-- [ ] Data visualization engagement >50%
-- [ ] Dark mode adoption reaches 40% of users
-- [ ] Export feature used by 25% of active users
+- [ ] Users spend 70% more time engaging with analytics vs previous activity lists
+- [ ] Heatmap interactions (day clicks) occur in 80%+ of sessions
+- [ ] Goal setting adoption reaches 60% of active users  
+- [ ] Mobile analytics panel used by 90% of mobile users
+- [ ] Visual pattern recognition drives 40% more productivity insights
+- [ ] Unified dashboard reduces page navigation by 85%
 
 ### **Phase 2: Habit Loop (4 weeks)**
 **Goal**: Transform from tracking tool to habit-building system
@@ -285,10 +289,11 @@
 - Security: Zero API key incidents, 40% use provider selection
 
 #### **Phase 1C**: 
-- Feature Adoption: 70% use history view, 50% use visualization
-- User Experience: 85%+ onboarding completion, 40% dark mode adoption
-- Data Quality: 80% provide focus/energy ratings, 25% use export
-- User Satisfaction: NPS > 30
+- Analytics Engagement: 70% interact with heatmap, 80% click day details
+- Dashboard Experience: Unified experience, 85% reduction in page navigation
+- Goal Setting: 60% adoption rate, 40% achieve streak goals
+- Mobile Analytics: 90% mobile users access analytics panel
+- User Satisfaction: NPS > 40 (improved through visual engagement)
 
 #### **Phase 2**: 
 - Habit Formation: 70% of users track 3+ habits
