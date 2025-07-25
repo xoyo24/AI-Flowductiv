@@ -15,6 +15,7 @@ export default defineConfig({
     include: [
       'composables/**/*.test.ts',
       'services/**/*.test.ts',
+      'components/**/*.test.ts',  // Vue component unit tests
       'server/utils/focusTimeUtils.test.ts'  // Only pure utility functions, not database-dependent ones
     ],
     env: {

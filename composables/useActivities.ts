@@ -13,6 +13,13 @@ export interface ActivityInput {
   energyLevel?: string | null
 }
 
+export interface HeatmapDay {
+  date: string // YYYY-MM-DD format
+  count: number
+  totalTime: number
+  productivityScore: number // 0-1 based on time and activity count
+}
+
 export const useActivities = () => {
   // Reactive state
   const activities = ref<Activity[]>([])
@@ -182,6 +189,64 @@ export const useActivities = () => {
     return `${minutes}m`
   }
 
+  // Get heatmap data for the last 365 days
+  const getHeatmapData = async (): Promise<HeatmapDay[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      // Generate 365 days from today going back
+      const today = new Date()
+      const oneYearAgo = new Date(today)
+      oneYearAgo.setFullYear(today.getFullYear() - 1)
+      oneYearAgo.setDate(oneYearAgo.getDate() + 1) // Start from 364 days ago
+
+      const promises: Promise<Activity[]>[] = []
+      const dates: string[] = []
+
+      // Generate all dates for the past 365 days
+      for (let i = 0; i < 365; i++) {
+        const currentDate = new Date(oneYearAgo)
+        currentDate.setDate(oneYearAgo.getDate() + i)
+        const dateStr = currentDate.toISOString().split('T')[0]
+        dates.push(dateStr)
+        promises.push(getActivitiesForDate(currentDate))
+      }
+
+      // Fetch all activities for all dates
+      const allDayActivities = await Promise.all(promises)
+
+      // Process each day's data
+      const heatmapData: HeatmapDay[] = dates.map((date, index) => {
+        const dayActivities = allDayActivities[index]
+        const count = dayActivities.length
+        const totalTime = dayActivities.reduce((sum, activity) => sum + activity.durationMs, 0)
+        
+        // Calculate productivity score (0-1) based on time and activity count
+        // 8 hours (28800000ms) of productive time = 1.0 score
+        // Bonus for having multiple focused sessions
+        const timeScore = Math.min(totalTime / (8 * 60 * 60 * 1000), 1)
+        const activityBonus = count > 0 ? Math.min(count / 10, 0.2) : 0 // Up to 20% bonus for multiple activities
+        const productivityScore = Math.min(timeScore + activityBonus, 1)
+
+        return {
+          date,
+          count,
+          totalTime,
+          productivityScore
+        }
+      })
+
+      return heatmapData
+    } catch (err) {
+      console.error('Failed to fetch heatmap data:', err)
+      error.value = 'Failed to load heatmap data.'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Initialize - load today's activities (removed onMounted to fix warning)
   // Components should call getTodaysActivities() explicitly
 
@@ -200,6 +265,7 @@ export const useActivities = () => {
     getTodaysActivities,
     updateActivity,
     deleteActivity,
+    getHeatmapData,
 
     // Utilities
     formatDuration,

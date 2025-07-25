@@ -42,14 +42,8 @@
           <DailySummary />
           <QuickStats />
           
-          <!-- Analytics & Goals Section -->
-          <div class="bg-card rounded-lg border border-border p-4">
-            <h3 class="text-sm font-medium text-foreground mb-3">Analytics & Goals</h3>
-            <div class="text-sm text-muted-foreground">
-              <p class="mb-2">Productivity heatmap and goal tracking coming in Phase 1C</p>
-              <p class="text-xs">Integrated dashboard replacing separate pages</p>
-            </div>
-          </div>
+          <!-- Productivity Heatmap -->
+          <ProductivityHeatmap @day-selected="handleDaySelected" />
         </div>
       </div>
     </main>
@@ -74,9 +68,16 @@
 
 <script setup lang="ts">
 import { Clock, Settings } from 'lucide-vue-next'
+import type { HeatmapDay } from '~/composables/useActivities'
 
 // Responsive detection
 const { isMobile } = useViewport()
+
+// Handle heatmap day selection
+const handleDaySelected = (day: HeatmapDay) => {
+  console.log('Selected day:', day)
+  // TODO: Show detailed view for selected day
+}
 
 // Page metadata
 useHead({
