@@ -28,23 +28,35 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Timer Section -->
-        <div class="lg:col-span-2">
-          <TimerSection />
-          <div class="mt-6">
-            <ActivityList />
+      <div class="flex gap-6">
+        <!-- Left Sidebar: Analytics (Hidden on mobile, narrow on desktop) -->
+        <aside class="hidden lg:block w-80 flex-shrink-0">
+          <div class="space-y-4">
+            <!-- Productivity Heatmap -->
+            <ProductivityHeatmap @day-selected="handleDaySelected" />
+            
+            <!-- Quick Stats -->
+            <QuickStats />
+            
+            <!-- Daily Summary -->
+            <DailySummary />
           </div>
-        </div>
+        </aside>
 
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <DailySummary />
-          <QuickStats />
-          
-          <!-- Productivity Heatmap -->
-          <ProductivityHeatmap @day-selected="handleDaySelected" />
-        </div>
+        <!-- Right Main: Timer & Activities -->
+        <main class="flex-1 min-w-0">
+          <div class="space-y-6">
+            <TimerSection />
+            <ActivityList />
+            
+            <!-- Mobile: Show analytics below main content -->
+            <div class="lg:hidden space-y-4">
+              <ProductivityHeatmap @day-selected="handleDaySelected" />
+              <QuickStats />
+              <DailySummary />
+            </div>
+          </div>
+        </main>
       </div>
     </main>
       </div>

@@ -46,12 +46,12 @@ describe('ProductivityHeatmap Component', () => {
       await wrapper.vm.$nextTick()
       
       expect(wrapper.find('[data-testid="heatmap-grid"]').exists()).toBe(true)
-      expect(wrapper.findAll('[data-testid^="heatmap-day-"]')).toHaveLength(365)
+      expect(wrapper.findAll('[data-testid^="heatmap-day-"]')).toHaveLength(30)
     })
   })
 
-  describe('365-Day Grid', () => {
-    it('should generate 365 days starting from one year ago', async () => {
+  describe('30-Day Grid', () => {
+    it('should generate 30 days starting from 29 days ago', async () => {
       const mockHeatmapData = [
         { date: '2024-01-01', count: 1, totalTime: 3600000, productivityScore: 0.3 }
       ]
@@ -61,23 +61,23 @@ describe('ProductivityHeatmap Component', () => {
       await wrapper.vm.$nextTick()
       
       const dayElements = wrapper.findAll('[data-testid^="heatmap-day-"]')
-      expect(dayElements).toHaveLength(365)
+      expect(dayElements).toHaveLength(30)
       
-      // Verify first day is approximately one year ago
+      // Verify first day is approximately 29 days ago
       const firstDay = dayElements[0]
       const dateAttr = firstDay.attributes('data-date')
       const firstDate = new Date(dateAttr!)
-      const oneYearAgo = new Date()
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29)
       
-      expect(Math.abs(firstDate.getTime() - oneYearAgo.getTime())).toBeLessThan(7 * 24 * 60 * 60 * 1000) // Within a week
+      expect(Math.abs(firstDate.getTime() - thirtyDaysAgo.getTime())).toBeLessThan(2 * 24 * 60 * 60 * 1000) // Within 2 days
     })
 
-    it('should arrange days in weeks (7 columns)', async () => {
+    it('should arrange days in 5 columns for 30-day grid', async () => {
       const wrapper = await mountSuspended(ProductivityHeatmap)
       const gridContainer = wrapper.find('[data-testid="heatmap-grid"]')
       
-      expect(gridContainer.classes()).toContain('grid-cols-[repeat(53,_minmax(0,_1fr))]')
+      expect(gridContainer.classes()).toContain('grid-cols-5')
     })
 
     it('should apply correct intensity classes based on productivity score', async () => {

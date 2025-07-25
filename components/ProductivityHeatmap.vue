@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-card rounded-lg border border-border p-6">
-    <h2 data-testid="heatmap-title" class="text-lg font-semibold text-foreground mb-6">
-      Productivity Heatmap
+  <div class="bg-card rounded-lg border border-border p-4">
+    <h2 data-testid="heatmap-title" class="text-base font-semibold text-foreground mb-4">
+      Last 30 Days
     </h2>
 
     <!-- Loading State -->
@@ -24,18 +24,11 @@
     </div>
 
     <!-- Heatmap Grid -->
-    <div v-else class="space-y-4">
-      <!-- Month Labels -->
-      <div class="flex justify-between text-xs text-muted-foreground mb-2">
-        <span v-for="month in monthLabels" :key="month.label" class="flex-1 text-center">
-          {{ month.label }}
-        </span>
-      </div>
-
-      <!-- Main Grid -->
+    <div v-else class="space-y-3">
+      <!-- Main Grid: 6 rows x 5 columns for 30 days -->
       <div 
         data-testid="heatmap-grid" 
-        class="grid grid-cols-[repeat(53,_minmax(0,_1fr))] gap-1 md:gap-2 auto-rows-min"
+        class="grid grid-cols-5 gap-1 md:gap-2"
       >
         <div
           v-for="(day, index) in gridDays"
@@ -43,8 +36,8 @@
           :data-testid="`heatmap-day-${day.date}`"
           :data-date="day.date"
           :class="[
-            'w-3 h-3 md:w-4 md:h-4 rounded-sm cursor-pointer transition-all duration-200',
-            'hover:ring-2 hover:ring-primary hover:ring-offset-1',
+            'w-4 h-4 md:w-5 md:h-5 rounded-sm cursor-pointer transition-all duration-200',
+            'hover:ring-1 hover:ring-primary hover:ring-offset-1',
             day.count === 0 
               ? 'bg-secondary opacity-20' 
               : 'bg-primary',
@@ -58,7 +51,7 @@
       </div>
 
       <!-- Legend -->
-      <div data-testid="heatmap-legend" class="flex items-center justify-between text-xs text-muted-foreground mt-4">
+      <div data-testid="heatmap-legend" class="flex items-center justify-between text-xs text-muted-foreground mt-3">
         <span>Less</span>
         <div class="flex items-center space-x-1">
           <div
@@ -117,10 +110,10 @@ const tooltip = ref({
 
 // Computed properties
 const gridDays = computed(() => {
-  // Return exactly 365 days
+  // Return exactly 30 days
   if (!heatmapData.value || heatmapData.value.length === 0) {
     // Return empty days for initial state
-    return Array(365).fill(null).map(() => ({
+    return Array(30).fill(null).map(() => ({
       date: '',
       count: 0,
       totalTime: 0,
@@ -130,8 +123,8 @@ const gridDays = computed(() => {
   
   const days = [...heatmapData.value]
   
-  // Ensure exactly 365 days
-  while (days.length < 365) {
+  // Ensure exactly 30 days
+  while (days.length < 30) {
     days.push({
       date: '',
       count: 0,
@@ -140,21 +133,7 @@ const gridDays = computed(() => {
     })
   }
   
-  return days.slice(0, 365) // Exactly 365 days
-})
-
-const monthLabels = computed(() => {
-  const labels = []
-  const today = new Date()
-  
-  for (let i = 11; i >= 0; i--) {
-    const date = new Date(today.getFullYear(), today.getMonth() - i, 1)
-    labels.push({
-      label: date.toLocaleDateString('en-US', { month: 'short' })
-    })
-  }
-  
-  return labels
+  return days.slice(0, 30) // Exactly 30 days
 })
 
 const legendIntensities = ['opacity-0', 'opacity-25', 'opacity-50', 'opacity-75', 'opacity-100']

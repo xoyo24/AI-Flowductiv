@@ -189,25 +189,24 @@ export const useActivities = () => {
     return `${minutes}m`
   }
 
-  // Get heatmap data for the last 365 days
+  // Get heatmap data for the last 30 days
   const getHeatmapData = async (): Promise<HeatmapDay[]> => {
     loading.value = true
     error.value = null
 
     try {
-      // Generate 365 days from today going back
+      // Generate 30 days from today going back
       const today = new Date()
-      const oneYearAgo = new Date(today)
-      oneYearAgo.setFullYear(today.getFullYear() - 1)
-      oneYearAgo.setDate(oneYearAgo.getDate() + 1) // Start from 364 days ago
+      const thirtyDaysAgo = new Date(today)
+      thirtyDaysAgo.setDate(today.getDate() - 29) // Start from 29 days ago to include today
 
       const promises: Promise<Activity[]>[] = []
       const dates: string[] = []
 
-      // Generate all dates for the past 365 days
-      for (let i = 0; i < 365; i++) {
-        const currentDate = new Date(oneYearAgo)
-        currentDate.setDate(oneYearAgo.getDate() + i)
+      // Generate all dates for the past 30 days
+      for (let i = 0; i < 30; i++) {
+        const currentDate = new Date(thirtyDaysAgo)
+        currentDate.setDate(thirtyDaysAgo.getDate() + i)
         const dateStr = currentDate.toISOString().split('T')[0]
         dates.push(dateStr)
         promises.push(getActivitiesForDate(currentDate))
