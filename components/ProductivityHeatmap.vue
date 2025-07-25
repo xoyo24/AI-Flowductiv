@@ -1,7 +1,7 @@
 <template>
   <div class="bg-card rounded-lg border border-border p-4">
     <h2 data-testid="heatmap-title" class="text-base font-semibold text-foreground mb-4">
-      Last 30 Days
+      Last 12 Weeks
     </h2>
 
     <!-- Loading State -->
@@ -25,10 +25,10 @@
 
     <!-- Heatmap Grid -->
     <div v-else class="space-y-3">
-      <!-- Main Grid: 6 rows x 5 columns for 30 days -->
+      <!-- Main Grid: 12 weeks arranged compactly -->
       <div 
         data-testid="heatmap-grid" 
-        class="grid grid-cols-5 gap-1 md:gap-2"
+        class="grid grid-cols-12 gap-1"
       >
         <div
           v-for="(day, index) in gridDays"
@@ -36,12 +36,9 @@
           :data-testid="`heatmap-day-${day.date}`"
           :data-date="day.date"
           :class="[
-            'w-4 h-4 md:w-5 md:h-5 rounded-sm cursor-pointer transition-all duration-200',
+            'w-3 h-3 md:w-4 md:h-4 rounded cursor-pointer transition-all duration-200',
             'hover:ring-1 hover:ring-primary hover:ring-offset-1',
-            day.count === 0 
-              ? 'bg-secondary opacity-20' 
-              : 'bg-primary',
-            getIntensityClass(day.productivityScore)
+            getColorClass(day.productivityScore)
           ]"
           :title="`${formatDate(day.date)}: ${day.count} activities, ${formatDuration(day.totalTime)}`"
           @click="handleDayClick(day)"
@@ -55,10 +52,10 @@
         <span>Less</span>
         <div class="flex items-center space-x-1">
           <div
-            v-for="(intensity, index) in legendIntensities"
+            v-for="(color, index) in legendColors"
             :key="index"
             :data-testid="`legend-intensity-${index}`"
-            :class="`w-3 h-3 rounded-sm bg-primary ${intensity}`"
+            :class="`w-3 h-3 rounded ${color}`"
           />
         </div>
         <span>More</span>
@@ -110,10 +107,10 @@ const tooltip = ref({
 
 // Computed properties
 const gridDays = computed(() => {
-  // Return exactly 30 days
+  // Return exactly 84 days (12 weeks)
   if (!heatmapData.value || heatmapData.value.length === 0) {
     // Return empty days for initial state
-    return Array(30).fill(null).map(() => ({
+    return Array(84).fill(null).map(() => ({
       date: '',
       count: 0,
       totalTime: 0,
@@ -123,8 +120,8 @@ const gridDays = computed(() => {
   
   const days = [...heatmapData.value]
   
-  // Ensure exactly 30 days
-  while (days.length < 30) {
+  // Ensure exactly 84 days
+  while (days.length < 84) {
     days.push({
       date: '',
       count: 0,
@@ -133,18 +130,24 @@ const gridDays = computed(() => {
     })
   }
   
-  return days.slice(0, 30) // Exactly 30 days
+  return days.slice(0, 84) // Exactly 84 days (12 weeks)
 })
 
-const legendIntensities = ['opacity-0', 'opacity-25', 'opacity-50', 'opacity-75', 'opacity-100']
+const legendColors = [
+  'bg-gray-100', 
+  'bg-green-200', 
+  'bg-green-400', 
+  'bg-green-600', 
+  'bg-green-800'
+]
 
 // Methods
-const getIntensityClass = (score: number): string => {
-  if (score === 0) return 'opacity-0'
-  if (score <= 0.25) return 'opacity-30'
-  if (score <= 0.5) return 'opacity-60'
-  if (score <= 0.8) return 'opacity-80'  // Changed to include 0.8 
-  return 'opacity-100'
+const getColorClass = (score: number): string => {
+  if (score === 0) return 'bg-gray-100'  // Very light gray for empty days
+  if (score <= 0.25) return 'bg-green-200'  // Light green
+  if (score <= 0.5) return 'bg-green-400'   // Medium green
+  if (score <= 0.8) return 'bg-green-600'   // Darker green
+  return 'bg-green-800'  // Darkest green for high productivity
 }
 
 const formatDate = (dateStr: string): string => {
