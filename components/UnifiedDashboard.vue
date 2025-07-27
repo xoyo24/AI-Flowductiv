@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full flex bg-gray-50">
+  <div class="min-h-screen w-full flex bg-background">
     
     <!-- Desktop Sidebar (always visible on lg+) -->
     <aside 
@@ -8,14 +8,14 @@
         'lg:w-80': !sidebarCollapsed,
         'lg:w-16': sidebarCollapsed
       }"
-      class="flex-col border-r border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-300 shadow-sm"
+      class="flex-col border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300"
     >
       <!-- Sidebar Header -->
       <div class="flex items-center justify-between p-4 border-b border-border">
         <h1 v-if="!sidebarCollapsed" class="text-lg font-semibold text-foreground">Flowductiv</h1>
         <button
           @click="sidebarCollapsed = !sidebarCollapsed"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
           data-testid="sidebar-toggle"
           :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         >
@@ -78,10 +78,10 @@
     <div class="flex-1 flex flex-col">
       
       <!-- Mobile Header (only visible on mobile) -->
-      <header class="lg:hidden flex items-center justify-between px-4 py-3 pt-safe border-b border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm">
+      <header class="lg:hidden flex items-center justify-between px-4 py-3 pt-safe border-b border-border bg-card/50 backdrop-blur-sm">
         <button
           @click="showMobileMenu = !showMobileMenu"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
           data-testid="hamburger-menu-button"
           aria-label="Open menu"
         >
@@ -99,25 +99,25 @@
         class="lg:hidden fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
         @click="showMobileMenu = false"
       >
-        <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white border-r border-gray-200 pt-safe overflow-y-auto shadow-lg">
-          <div class="p-4 border-b border-gray-200">
+        <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border pt-safe overflow-y-auto">
+          <div class="p-4 border-b border-border">
             <h2 class="text-lg font-semibold text-foreground">Menu</h2>
           </div>
           
           <!-- Analytics Section in Mobile Menu -->
           <div class="p-4 space-y-6">
             <div class="space-y-3">
-              <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide">Analytics</h3>
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Analytics</h3>
               <ProductivityHeatmap @day-selected="handleDaySelected" />
               <QuickStats />
               <DailySummary />
             </div>
             
             <!-- Navigation -->
-            <nav class="space-y-2 border-t border-gray-200 pt-4">
+            <nav class="space-y-2 border-t border-border pt-4">
               <button
                 @click="navigateToSettings"
-                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
                 data-testid="nav-settings"
               >
                 <Settings class="w-5 h-5" />
@@ -125,7 +125,7 @@
               </button>
               <button
                 @click="navigateToHistory"
-                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
                 data-testid="nav-history"
               >
                 <Clock class="w-5 h-5" />
@@ -142,7 +142,7 @@
         
         <!-- Contextual Status Bar (Flomo-Style) -->
         <div 
-          class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+          class="bg-card border border-border rounded-lg overflow-hidden"
           data-testid="contextual-status"
         >
           <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
@@ -193,7 +193,7 @@
         </div>
 
         <!-- Combined Timer + Input Card (Flomo-Style) -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-card rounded-lg border border-border p-6">
           <div class="space-y-4">
             
             <!-- Activity Input with Auto-complete -->
@@ -201,13 +201,21 @@
               <label for="unified-activity-input" class="text-sm font-medium text-foreground">
                 What are you working on?
               </label>
+              
+              <!-- Extracted Tags Display (Above Input) -->
+              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[24px]">
+                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                  <span class="text-primary/70 mr-1">#</span>{{ tag }}
+                </span>
+              </div>
+              
               <div ref="dropdownContainer" class="relative">
                 <input
                   id="unified-activity-input"
                   v-model="activityInput"
                   type="text"
                   placeholder="Enter activity or click for suggestions"
-                  class="w-full px-4 py-3 text-base border border-gray-200 rounded-xl bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full px-4 py-3 text-base border-2 border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   :disabled="isRunning || isPaused"
                   @keyup.enter="handleEnterKey"
                   @keydown="handleKeydown"
@@ -226,16 +234,11 @@
                   @hover="selectIndex"
                   @close="hideDropdown"
                 />
-                
-                <!-- Tag and Priority Display -->
-                <div v-if="activityInput" class="absolute right-3 top-3 flex space-x-1">
-                  <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    #{{ tag }}
-                  </span>
-                  <span v-if="extractedPriority" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                    !{{ extractedPriority }}
-                  </span>
-                </div>
+              </div>
+              
+              <!-- Helper Text -->
+              <div class="text-xs text-muted-foreground text-center">
+                <span>Use <span class="text-primary font-medium">#tags</span> to categorize your activities</span>
               </div>
             </div>
 
@@ -246,7 +249,7 @@
                 <button
                   @click="handleQuickStart('Deep work #focus')"
                   data-testid="quick-deep-work"
-                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
                 >
                   <Lightbulb class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Deep Work</span>
@@ -255,7 +258,7 @@
                 <button
                   @click="handleQuickStart('Meeting #meeting')"
                   data-testid="quick-meeting"
-                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
                 >
                   <Users class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Meeting</span>
@@ -264,7 +267,7 @@
                 <button
                   @click="handleQuickStart('Break #break')"
                   data-testid="quick-break"
-                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
                 >
                   <Moon class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Break</span>
@@ -273,7 +276,7 @@
                 <button
                   @click="handleQuickStart('Learning #development')"
                   data-testid="quick-learning"
-                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
                 >
                   <BookOpen class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Learning</span>
@@ -339,24 +342,24 @@
             <div 
               v-for="activity in recentActivities" 
               :key="activity.id"
-              class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 group hover:shadow-md transition-all duration-200 cursor-pointer"
+              class="bg-card rounded-lg border border-border p-5 group hover:shadow-md transition-all duration-200 cursor-pointer"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
-                  <p class="text-gray-900 font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
+                  <p class="text-foreground font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
                   <div class="flex items-center space-x-3 mb-3">
-                    <span class="text-sm font-medium text-gray-700">{{ formatDuration(activity.durationMs) }}</span>
-                    <span class="text-xs text-gray-400">•</span>
-                    <span class="text-xs text-gray-500">{{ formatRelativeTime(activity.endTime) }}</span>
+                    <span class="text-sm font-medium text-foreground">{{ formatDuration(activity.durationMs) }}</span>
+                    <span class="text-xs text-muted-foreground">•</span>
+                    <span class="text-xs text-muted-foreground">{{ formatRelativeTime(activity.endTime) }}</span>
                   </div>
                   <div class="flex space-x-2">
-                    <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">
+                    <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
                       #{{ tag }}
                     </span>
                   </div>
                 </div>
-                <button class="p-2 hover:bg-gray-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <button class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3">
+                  <svg class="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                   </svg>
                 </button>
@@ -365,8 +368,8 @@
           </div>
           
           <!-- Empty State Card -->
-          <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <p class="text-gray-500 text-sm">{{ recentActivitiesMessage }}</p>
+          <div v-else class="bg-card rounded-lg border border-border p-8 text-center">
+            <p class="text-muted-foreground text-sm">{{ recentActivitiesMessage }}</p>
           </div>
         </div>
 

@@ -32,7 +32,7 @@
       </div>
 
       <!-- Friendly Rate Limit Message -->
-      <div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div class="bg-blue-50  border border-blue-200  rounded-lg p-4">
         <div class="flex items-start space-x-3">
           <div class="text-blue-500 mt-0.5">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -40,21 +40,21 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+            <h4 class="text-sm font-medium text-blue-900  mb-2">
               Keep building your focus streak!
             </h4>
-            <div class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+            <div class="text-sm text-blue-800  space-y-1">
               <div v-for="reason in rateLimitReasons" :key="reason" class="flex items-center space-x-2">
                 <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
                 <span>{{ reason }}</span>
               </div>
             </div>
             <div v-if="rateLimitProgress" class="mt-3">
-              <div class="flex items-center justify-between text-xs text-blue-700 dark:text-blue-300 mb-1">
+              <div class="flex items-center justify-between text-xs text-blue-700  mb-1">
                 <span>Progress</span>
                 <span>{{ rateLimitProgress.focusTimePercent }}%</span>
               </div>
-              <div class="w-full bg-blue-200 dark:bg-blue-900 rounded-full h-2">
+              <div class="w-full bg-blue-200  rounded-full h-2">
                 <div 
                   class="bg-blue-500 h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${Math.min(rateLimitProgress.focusTimePercent, 100)}%` }"
@@ -68,40 +68,40 @@
       <!-- Last Updated -->
       <div class="flex justify-between items-center text-xs text-muted-foreground pt-2">
         <span>Updated {{ timeAgo }}</span>
-        <span class="text-blue-600 dark:text-blue-400">AI summary will refresh when requirements are met</span>
+        <span class="text-blue-600 ">AI summary will refresh when requirements are met</span>
       </div>
     </div>
 
     <!-- Rate Limited - No Previous Summary -->
     <div v-else-if="isRateLimited && !summary" class="text-center py-6">
-      <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6">
-        <div class="text-amber-600 dark:text-amber-400 mb-4">
+      <div class="bg-amber-50  border border-amber-200  rounded-lg p-6">
+        <div class="text-amber-600  mb-4">
           <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-amber-900 dark:text-amber-100 mb-2">
+        <h3 class="text-lg font-medium text-amber-900  mb-2">
           Almost there! Keep tracking your focus time
         </h3>
-        <div class="text-sm text-amber-800 dark:text-amber-200 space-y-2 mb-4">
+        <div class="text-sm text-amber-800  space-y-2 mb-4">
           <div v-for="reason in rateLimitReasons" :key="reason" class="flex items-center justify-center space-x-2">
             <span class="w-2 h-2 bg-amber-400 rounded-full"></span>
             <span>{{ reason }}</span>
           </div>
         </div>
         <div v-if="rateLimitProgress" class="mb-4">
-          <div class="flex items-center justify-between text-xs text-amber-700 dark:text-amber-300 mb-2">
+          <div class="flex items-center justify-between text-xs text-amber-700  mb-2">
             <span>Focus Time Progress</span>
             <span>{{ rateLimitProgress.focusTimePercent }}%</span>
           </div>
-          <div class="w-full bg-amber-200 dark:bg-amber-900 rounded-full h-3">
+          <div class="w-full bg-amber-200  rounded-full h-3">
             <div 
               class="bg-amber-500 h-3 rounded-full transition-all duration-300"
               :style="{ width: `${Math.min(rateLimitProgress.focusTimePercent, 100)}%` }"
             ></div>
           </div>
         </div>
-        <p class="text-xs text-amber-700 dark:text-amber-300">
+        <p class="text-xs text-amber-700 ">
           AI insights will unlock automatically when you reach the focus threshold
         </p>
       </div>

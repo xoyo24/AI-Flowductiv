@@ -19,10 +19,14 @@ export class InputParserService {
 
   /**
    * Extract tags from input text (e.g., #work #urgent #ai-coding #v2.0)
+   * Automatically deduplicates tags and preserves order of first occurrence
    */
   static extractTags(text: string): string[] {
     const tagRegex = /#([\w.-]+)/g
-    return Array.from(text.matchAll(tagRegex), (match) => match[1])
+    const tags = Array.from(text.matchAll(tagRegex), (match) => match[1])
+    
+    // Remove duplicates while preserving order
+    return [...new Set(tags)]
   }
 
   /**
