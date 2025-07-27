@@ -134,20 +134,20 @@ const gridDays = computed(() => {
 })
 
 const legendColors = [
-  'bg-gray-100', 
-  'bg-green-200', 
-  'bg-green-400', 
+  'bg-gray-700', 
+  'bg-green-800', 
   'bg-green-600', 
-  'bg-green-800'
+  'bg-green-500', 
+  'bg-green-400'
 ]
 
 // Methods
 const getColorClass = (score: number): string => {
-  if (score === 0) return 'bg-gray-100'  // Very light gray for empty days
-  if (score <= 0.25) return 'bg-green-200'  // Light green
-  if (score <= 0.5) return 'bg-green-400'   // Medium green
-  if (score <= 0.8) return 'bg-green-600'   // Darker green
-  return 'bg-green-800'  // Darkest green for high productivity
+  if (score === 0) return 'bg-gray-700'  // Dark gray for empty days
+  if (score <= 0.25) return 'bg-green-800'  // Darkest green
+  if (score <= 0.5) return 'bg-green-600'   // Dark green
+  if (score <= 0.8) return 'bg-green-500'   // Medium green
+  return 'bg-green-400'  // Brightest green for high productivity
 }
 
 const formatDate = (dateStr: string): string => {

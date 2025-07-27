@@ -145,17 +145,17 @@
           class="bg-card border border-border rounded-lg overflow-hidden"
           data-testid="contextual-status"
         >
-          <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+          <div class="p-4 bg-secondary/30 border-b border-border">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-blue-900 font-semibold text-base">{{ contextualMessage }}</p>
-                <p v-if="motivationalInsight" class="text-blue-700 text-sm mt-1">
+                <p class="text-foreground font-semibold text-base">{{ contextualMessage }}</p>
+                <p v-if="motivationalInsight" class="text-muted-foreground text-sm mt-1">
                   {{ motivationalInsight }}
                 </p>
               </div>
               <div class="text-right">
-                <div class="text-blue-900 font-bold text-2xl leading-none">{{ recentActivities.length }}</div>
-                <div class="text-blue-600 text-sm mt-1">activities</div>
+                <div class="text-primary font-bold text-2xl leading-none">{{ recentActivities.length }}</div>
+                <div class="text-muted-foreground text-sm mt-1">activities</div>
               </div>
             </div>
           </div>
