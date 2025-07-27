@@ -84,38 +84,53 @@ graph TB
 - Mobile-optimized components and responsive design patterns
 - Production-ready mobile experience with integrated desktop navigation
 
-### **🎯 Phase 1C: Unified Layout with Progressive UX (Current)**
-**Technical Focus:** Flomo-inspired unified layout with progressive UX intelligence
+### **🎯 Phase 1C: Flomo-Inspired Content-First UX (Current)**
+**Technical Focus:** Content-focused design with gray background + white content cards pattern
 **Key Components:** 
-- **UnifiedDashboard.vue** - Single responsive component replacing dual layouts
-- **useContextualStatus.ts** - Progressive messaging service based on user journey stage
-- **UnifiedInput.vue** - Merged input experience with timer display + auto-complete + quick actions
-- **HamburgerAnalytics.vue** - Detailed analytics moved to slide-out menu
+- **UnifiedDashboard.vue** - Flomo-style layout with gray background + white content cards
+- **ContextualStatus.vue** - Personalized messaging with key metrics (replacing data dashboard)
+- **ActivityTimeline.vue** - Individual activity cards with Flomo-style hover interactions
+- **SimplifiedInput.vue** - Tags-only parsing with real-time extraction (no priority complexity)
 
-**Technical Architecture:**
-- **Information Hierarchy**: Status bar → Timer display → Input section → Recent activities
-- **Progressive Enhancement**: Same mental model across devices with responsive improvements
-- **Contextual Intelligence**: Smart messaging that adapts to user state and progress
-- **Single Codebase**: Unified component system replacing mobile/desktop duality
+**Design Architecture:**
+- **Visual Hierarchy**: Gray-50 background → White content cards → Content-first typography
+- **Content Focus**: Activity content prominent, metadata subtle and secondary
+- **Simplified Interactions**: Tags-only system (#tags), hover-based actions, double-click editing
+- **Motivational Design**: Personal progress messages vs cold analytics
 
-**Progressive UX Patterns:**
+**Flomo-Inspired UX Patterns:**
 ```typescript
-// Contextual messaging service
-const getContextualMessage = (userState) => {
+// Content-first activity timeline
+interface ActivityCard {
+  content: string        // Hero element - prominent display
+  duration: string       // Secondary - smaller font
+  timeAgo: string       // Tertiary - subtle color
+  tags: string[]        // Pills below content
+  actions: 'on-hover'   // 3-dot menu appears on hover only
+}
+
+// Personalized status messaging
+const getPersonalizedStatus = (userState) => {
   if (userState.totalActivities === 0) 
-    return "Welcome! Track your first activity to unlock insights"
-  if (userState.todayActivities === 0)
-    return "Ready for today? Start tracking your first activity"
+    return { message: "Welcome!", subtitle: "Track your first activity to unlock insights", metric: "0", label: "activities" }
   if (userState.currentStreak >= 3)
-    return `🔥 ${userState.currentStreak}-day streak! ${userState.todayTime} today`
-  return `Today: ${userState.todayTime} across ${userState.todayActivities} sessions`
+    return { message: `🔥 ${userState.currentStreak}-day streak!`, subtitle: "You're building amazing momentum", metric: userState.todayTime, label: "today" }
+  return { message: "Keep it up!", subtitle: "Building your productivity habit", metric: userState.todayTime, label: "today" }
+}
+
+// Simplified tag extraction (no priority)
+const extractTags = (input: string) => {
+  const tags = input.match(/#\w+/g) || []
+  const cleanContent = input.replace(/#\w+/g, '').trim()
+  return { content: cleanContent, tags: tags.map(t => t.slice(1)) }
 }
 ```
 
 **Component Integration:**
-- **Always-present sections**: Status, timer, input, recent activities (contextual content)
-- **Responsive enhancement**: Better typography and spacing on larger screens
-- **Hamburger menu**: Detailed analytics, settings, navigation (secondary features)
+- **Background System**: Gray-50 main background, white rounded content cards with subtle shadows
+- **Content Cards**: Timer+Input combined, Individual activity cards, Contextual status card
+- **Sidebar Integration**: Analytics on same gray background (Flomo-style), collapsible for focus
+- **Interaction Patterns**: Hover effects, cursor pointers, 3-dot menus, double-click editing
 
 ### **🔄 Phase 2: Advanced Analytics & Habits**
 **Technical Focus:** Advanced pattern analysis and habit tracking systems  
@@ -335,4 +350,4 @@ const { isMobile } = useViewport()
 
 ---
 
-**Architecture Status**: Mobile-first UX complete (Phase 1B), enterprise security established, ready for analytics dashboard implementation (Phase 1C) with scalable component architecture and unified user experience.
+**Architecture Status**: Mobile-first UX complete (Phase 1B), Flomo-inspired content-first redesign (Phase 1C) in progress with gray background + white content cards, simplified tag-only input system, and personalized status messaging replacing analytics dashboard approach.

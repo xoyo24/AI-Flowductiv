@@ -1,77 +1,164 @@
 <template>
-  <div class="min-h-screen w-full flex flex-col bg-background">
-    <!-- Header with Navigation -->
-    <header class="flex items-center justify-between px-4 py-3 pt-safe border-b border-border bg-card/50 backdrop-blur-sm">
-      <button
-        @click="showMobileMenu = !showMobileMenu"
-        class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-        data-testid="hamburger-menu-button"
-        aria-label="Open menu"
-      >
-        <Menu class="w-6 h-6" />
-      </button>
-      
-      <h1 class="text-lg font-semibold text-foreground">Flowductiv</h1>
-      
-      <div class="w-10 h-10"></div> <!-- Spacer for centering -->
-    </header>
-
-    <!-- Hamburger Menu Overlay -->
-    <div
-      v-if="showMobileMenu"
-      class="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
-      @click="showMobileMenu = false"
+  <div class="min-h-screen w-full flex bg-gray-50">
+    
+    <!-- Desktop Sidebar (always visible on lg+) -->
+    <aside 
+      :class="{
+        'hidden lg:flex': true,
+        'lg:w-80': !sidebarCollapsed,
+        'lg:w-16': sidebarCollapsed
+      }"
+      class="flex-col border-r border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-300 shadow-sm"
     >
-      <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border pt-safe overflow-y-auto">
-        <div class="p-4 border-b border-border">
-          <h2 class="text-lg font-semibold text-foreground">Menu</h2>
+      <!-- Sidebar Header -->
+      <div class="flex items-center justify-between p-4 border-b border-border">
+        <h1 v-if="!sidebarCollapsed" class="text-lg font-semibold text-foreground">Flowductiv</h1>
+        <button
+          @click="sidebarCollapsed = !sidebarCollapsed"
+          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          data-testid="sidebar-toggle"
+          :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        >
+          <Menu class="w-5 h-5" />
+        </button>
+      </div>
+      
+      <!-- Analytics Section in Sidebar -->
+      <div v-if="!sidebarCollapsed" class="flex-1 p-4 space-y-6 overflow-y-auto">
+        <div class="space-y-3">
+          <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide">Analytics</h3>
+          <ProductivityHeatmap @day-selected="handleDaySelected" />
+          <QuickStats />
+          <DailySummary />
         </div>
         
-        <!-- Analytics Section in Menu -->
-        <div class="p-4 space-y-6">
-          <div class="space-y-3">
-            <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide">Analytics</h3>
-            <ProductivityHeatmap @day-selected="handleDaySelected" />
-            <QuickStats />
-            <DailySummary />
+        <!-- Navigation -->
+        <nav class="space-y-2 border-t border-border pt-4">
+          <button
+            @click="navigateToSettings"
+            class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+            data-testid="nav-settings"
+          >
+            <Settings class="w-5 h-5" />
+            <span>Settings</span>
+          </button>
+          <button
+            @click="navigateToHistory"
+            class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+            data-testid="nav-history"
+          >
+            <Clock class="w-5 h-5" />
+            <span>History</span>
+          </button>
+        </nav>
+      </div>
+      
+      <!-- Collapsed sidebar content -->
+      <div v-else class="flex-1 p-2 space-y-2">
+        <button
+          @click="navigateToSettings"
+          class="w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
+          data-testid="nav-settings-collapsed"
+          title="Settings"
+        >
+          <Settings class="w-5 h-5 mx-auto" />
+        </button>
+        <button
+          @click="navigateToHistory"
+          class="w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
+          data-testid="nav-history-collapsed"
+          title="History"
+        >
+          <Clock class="w-5 h-5 mx-auto" />
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      
+      <!-- Mobile Header (only visible on mobile) -->
+      <header class="lg:hidden flex items-center justify-between px-4 py-3 pt-safe border-b border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm">
+        <button
+          @click="showMobileMenu = !showMobileMenu"
+          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          data-testid="hamburger-menu-button"
+          aria-label="Open menu"
+        >
+          <Menu class="w-6 h-6" />
+        </button>
+        
+        <h1 class="text-lg font-semibold text-foreground">Flowductiv</h1>
+        
+        <div class="w-10 h-10"></div> <!-- Spacer for centering -->
+      </header>
+
+      <!-- Mobile Menu Overlay (only on mobile) -->
+      <div
+        v-if="showMobileMenu"
+        class="lg:hidden fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
+        @click="showMobileMenu = false"
+      >
+        <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white border-r border-gray-200 pt-safe overflow-y-auto shadow-lg">
+          <div class="p-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-foreground">Menu</h2>
           </div>
           
-          <!-- Navigation -->
-          <nav class="space-y-2 border-t border-border pt-4">
-            <button
-              @click="navigateToSettings"
-              class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-              data-testid="nav-settings"
-            >
-              <Settings class="w-5 h-5" />
-              <span>Settings</span>
-            </button>
-            <button
-              @click="navigateToHistory"
-              class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-              data-testid="nav-history"
-            >
-              <Clock class="w-5 h-5" />
-              <span>History</span>
-            </button>
-          </nav>
+          <!-- Analytics Section in Mobile Menu -->
+          <div class="p-4 space-y-6">
+            <div class="space-y-3">
+              <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide">Analytics</h3>
+              <ProductivityHeatmap @day-selected="handleDaySelected" />
+              <QuickStats />
+              <DailySummary />
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="space-y-2 border-t border-gray-200 pt-4">
+              <button
+                @click="navigateToSettings"
+                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                data-testid="nav-settings"
+              >
+                <Settings class="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+              <button
+                @click="navigateToHistory"
+                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                data-testid="nav-history"
+              >
+                <Clock class="w-5 h-5" />
+                <span>History</span>
+              </button>
+            </nav>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto pb-safe px-safe">
-      <div class="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto pb-safe px-safe lg:px-0">
+        <div class="max-w-4xl mx-auto px-4 lg:px-8 py-6 space-y-6">
         
-        <!-- Contextual Status Bar (Always Present) -->
+        <!-- Contextual Status Bar (Flomo-Style) -->
         <div 
-          class="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-4 text-center"
+          class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
           data-testid="contextual-status"
         >
-          <p class="text-foreground font-medium">{{ contextualMessage }}</p>
-          <p v-if="motivationalInsight" class="text-sm text-muted-foreground mt-1">
-            {{ motivationalInsight }}
-          </p>
+          <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-blue-900 font-semibold text-base">{{ contextualMessage }}</p>
+                <p v-if="motivationalInsight" class="text-blue-700 text-sm mt-1">
+                  {{ motivationalInsight }}
+                </p>
+              </div>
+              <div class="text-right">
+                <div class="text-blue-900 font-bold text-2xl leading-none">{{ recentActivities.length }}</div>
+                <div class="text-blue-600 text-sm mt-1">activities</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Timer Display (Unified from Desktop) -->
@@ -105,8 +192,8 @@
           </div>
         </div>
 
-        <!-- Unified Input Section -->
-        <div class="bg-card rounded-lg border border-border p-6">
+        <!-- Combined Timer + Input Card (Flomo-Style) -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div class="space-y-4">
             
             <!-- Activity Input with Auto-complete -->
@@ -120,7 +207,7 @@
                   v-model="activityInput"
                   type="text"
                   placeholder="Enter activity or click for suggestions"
-                  class="w-full px-4 py-3 text-base border-2 border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  class="w-full px-4 py-3 text-base border border-gray-200 rounded-xl bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   :disabled="isRunning || isPaused"
                   @keyup.enter="handleEnterKey"
                   @keydown="handleKeydown"
@@ -159,7 +246,7 @@
                 <button
                   @click="handleQuickStart('Deep work #focus')"
                   data-testid="quick-deep-work"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
                 >
                   <Lightbulb class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Deep Work</span>
@@ -168,7 +255,7 @@
                 <button
                   @click="handleQuickStart('Meeting #meeting')"
                   data-testid="quick-meeting"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
                 >
                   <Users class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Meeting</span>
@@ -177,7 +264,7 @@
                 <button
                   @click="handleQuickStart('Break #break')"
                   data-testid="quick-break"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
                 >
                   <Moon class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Break</span>
@@ -186,7 +273,7 @@
                 <button
                   @click="handleQuickStart('Learning #development')"
                   data-testid="quick-learning"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="flex flex-col items-center justify-center p-4 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 touch-manipulation"
                 >
                   <BookOpen class="w-6 h-6 mb-2 text-primary" />
                   <span class="text-xs text-center font-medium">Learning</span>
@@ -245,39 +332,47 @@
           </div>
         </div>
 
-        <!-- Recent Activities Section (Always Present) -->
-        <div class="bg-card rounded-lg border border-border p-6">
-          <h2 class="text-lg font-semibold text-foreground mb-4">Recent Activities</h2>
-          
-          <!-- Activities List or Contextual Message -->
-          <div v-if="recentActivities.length > 0" class="space-y-3">
+        <!-- Recent Activities Section (Individual Cards) -->
+        <div class="space-y-4">
+          <!-- Individual Activity Cards (Flomo Style) -->
+          <div v-if="recentActivities.length > 0" class="space-y-4">
             <div 
               v-for="activity in recentActivities" 
               :key="activity.id"
-              class="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+              class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 group hover:shadow-md transition-all duration-200 cursor-pointer"
             >
-              <div class="flex-1">
-                <p class="font-medium text-foreground">{{ activity.title }}</p>
-                <p class="text-sm text-muted-foreground">
-                  {{ formatDuration(activity.durationMs) }} • {{ formatRelativeTime(activity.endTime) }}
-                </p>
-              </div>
-              <div class="flex space-x-1">
-                <span v-for="tag in activity.tags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                  #{{ tag }}
-                </span>
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <p class="text-gray-900 font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
+                  <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-sm font-medium text-gray-700">{{ formatDuration(activity.durationMs) }}</span>
+                    <span class="text-xs text-gray-400">•</span>
+                    <span class="text-xs text-gray-500">{{ formatRelativeTime(activity.endTime) }}</span>
+                  </div>
+                  <div class="flex space-x-2">
+                    <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">
+                      #{{ tag }}
+                    </span>
+                  </div>
+                </div>
+                <button class="p-2 hover:bg-gray-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3">
+                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
           
-          <!-- Empty State with Contextual Message -->
-          <div v-else class="text-center py-8">
-            <p class="text-muted-foreground">{{ recentActivitiesMessage }}</p>
+          <!-- Empty State Card -->
+          <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <p class="text-gray-500 text-sm">{{ recentActivitiesMessage }}</p>
           </div>
         </div>
 
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -321,6 +416,7 @@ const timerStatus = computed(() => {
 // Local reactive state
 const activityInput = ref('')
 const showMobileMenu = ref(false)
+const sidebarCollapsed = ref(false)
 
 // Input parsing and auto-complete
 const { tags: extractedTags, priority: extractedPriority, cleanText } = useInputParser(activityInput)

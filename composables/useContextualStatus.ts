@@ -12,11 +12,15 @@ interface UserState {
 }
 
 export const useContextualStatus = () => {
-  const { activities, getTodayActivities, formatDuration } = useActivities()
+  const { activities, getTodaysActivities, formatDuration } = useActivities()
   
   // Calculate user state for contextual messaging
   const userState = computed((): UserState => {
-    const todayActivities = getTodayActivities()
+    const todayActivities = activities.value.filter(activity => {
+      const activityDate = new Date(activity.endTime)
+      const today = new Date()
+      return activityDate.toDateString() === today.toDateString()
+    })
     const totalActivities = activities.value.length
     
     // Calculate today's total time
@@ -112,7 +116,11 @@ export const useContextualStatus = () => {
         checkDate.setDate(checkDate.getDate() - 1)
       } else {
         // If today has no activities, we can still have a streak from yesterday
-        if (i === 0 && getTodayActivities().length === 0) {
+        if (i === 0 && activities.value.filter(activity => {
+          const activityDate = new Date(activity.endTime)
+          const today = new Date()
+          return activityDate.toDateString() === today.toDateString()
+        }).length === 0) {
           checkDate.setDate(checkDate.getDate() - 1)
           continue
         }
