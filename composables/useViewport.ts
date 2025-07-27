@@ -12,22 +12,31 @@ export const useViewport = () => {
     }
   }
 
-  // Mobile breakpoint (matches Tailwind's default)
-  const isMobile = computed(() => screenWidth.value < 768)
-  
   // Touch device detection
   const isTouchDevice = computed(() => {
     if (typeof window === 'undefined') return false
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0
   })
 
-  // Tablet detection
-  const isTablet = computed(() => {
-    return screenWidth.value >= 768 && screenWidth.value < 1024
+  // Smartphone detection (always mobile regardless of orientation)
+  const isSmartphone = computed(() => {
+    return screenWidth.value <= 480 || 
+           (screenWidth.value <= 896 && screenHeight.value <= 500)
   })
 
-  // Desktop detection
-  const isDesktop = computed(() => screenWidth.value >= 1024)
+  // Mobile layout logic: smartphones always + tablets in portrait
+  const isMobile = computed(() => {
+    // Always mobile for smartphones
+    if (isSmartphone.value) return true
+    
+    // Tablets in portrait mode
+    if (screenWidth.value >= 481 && screenHeight.value > screenWidth.value) return true
+    
+    return false
+  })
+  
+  // Desktop layout logic: tablets in landscape + desktop screens
+  const isDesktop = computed(() => !isMobile.value)
 
   onMounted(() => {
     updateDimensions()
@@ -43,7 +52,6 @@ export const useViewport = () => {
     screenHeight: readonly(screenHeight),
     isMobile: readonly(isMobile),
     isTouchDevice: readonly(isTouchDevice),
-    isTablet: readonly(isTablet),
     isDesktop: readonly(isDesktop)
   }
 }

@@ -29,8 +29,8 @@
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
       <div class="flex gap-6">
-        <!-- Left Sidebar: Analytics (Hidden on mobile, narrow on desktop) -->
-        <aside class="hidden lg:block w-80 flex-shrink-0">
+        <!-- Left Sidebar: Analytics (Desktop layout only) -->
+        <aside class="w-80 flex-shrink-0">
           <div class="space-y-4">
             <!-- Productivity Heatmap -->
             <ProductivityHeatmap @day-selected="handleDaySelected" />
@@ -49,12 +49,6 @@
             <TimerSection />
             <ActivityList />
             
-            <!-- Mobile: Show analytics below main content -->
-            <div class="lg:hidden space-y-4">
-              <ProductivityHeatmap @day-selected="handleDaySelected" />
-              <QuickStats />
-              <DailySummary />
-            </div>
           </div>
         </main>
       </div>
