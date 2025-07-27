@@ -2,6 +2,43 @@
 
 > **Compressed archive of completed development sessions and key decisions**
 
+---
+
+## **Phase 1C Flomo-Style Heatmap Implementation (July 25, 2025, 2.5 hours)**
+
+**Completed**: Flomo-inspired productivity heatmap with unified dashboard layout  
+**Evidence**: commits 941d7c9, b548cfc, ce39cee | 15 test cases | ProductivityHeatmap.vue + useActivities extension  
+**Worked Well**: TDD approach with user feedback integration, iterative design refinement based on Flomo reference  
+**Needs Improvement**: Initial over-engineering (365 days → 30 → 12 weeks), library research could have been done upfront  
+**Next Time**: Start with design reference analysis before implementation, consider existing libraries earlier  
+**Impact**: Completes Phase 1C core analytics infrastructure, provides visual productivity patterns matching user expectations
+
+### **Key Technical Decisions**:
+- **Custom Implementation**: Chose custom component over vue3-calendar-heatmap for full design control
+- **12-Week Scope**: Balanced data richness (84 days) vs sidebar space constraints
+- **Color System**: Light green palette (200/400/600/800) over dark opacity for better recognition
+- **Layout Architecture**: Narrow sidebar (320px) + flexible main content matching Flomo design
+
+### **User Feedback Integration Process**:
+1. **Initial**: 365-day GitHub-style heatmap with dark colors
+2. **Feedback 1**: "Too many days, not aligned with plan" → 30 days + proper layout
+3. **Feedback 2**: "Squares too big, research libraries" → Size optimization + library analysis  
+4. **Feedback 3**: "Make it like Flomo: 12 weeks, rounded, lighter colors" → Final implementation
+
+### **Performance & Quality Metrics**:
+- **Build Time**: Consistent ~2s production builds
+- **Bundle Impact**: Minimal increase with custom component
+- **Test Coverage**: 15 comprehensive test cases covering all interactions
+- **Responsive Design**: Mobile-first with sidebar collapse on narrow screens
+
+### **Code Architecture Insights**:
+- **Composable Extension**: Successfully extended useActivities with getHeatmapData()
+- **Component Patterns**: Followed established shadcn-vue + Tailwind conventions
+- **State Management**: Reactive heatmap data with proper loading states
+- **Grid Layout**: CSS Grid with responsive breakpoints for optimal density
+
+---
+
 ## 📊 **Phase Summary: Development Progress**
 
 ### **✅ Phase 0: Proof of Concept (100% Complete)**
