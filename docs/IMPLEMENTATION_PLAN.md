@@ -84,24 +84,38 @@ graph TB
 - Mobile-optimized components and responsive design patterns
 - Production-ready mobile experience with integrated desktop navigation
 
-### **🎯 Phase 1C: Analytics Dashboard (Current)**
-**Technical Focus:** GitHub/Flomo-inspired productivity analytics with visual patterns
+### **🎯 Phase 1C: Unified Layout with Progressive UX (Current)**
+**Technical Focus:** Flomo-inspired unified layout with progressive UX intelligence
 **Key Components:** 
-- **ProductivityHeatmap.vue** - 365-day activity visualization with click-to-drill-down
-- **AnalyticsDashboard.vue** - Integrated dashboard replacing separate pages
-- **GoalsInsights.vue** - Visual progress tracking with streak counters and AI insights
-- **Mobile AnalyticsPanel.vue** - Slide-out analytics panel for mobile users
+- **UnifiedDashboard.vue** - Single responsive component replacing dual layouts
+- **useContextualStatus.ts** - Progressive messaging service based on user journey stage
+- **UnifiedInput.vue** - Merged input experience with timer display + auto-complete + quick actions
+- **HamburgerAnalytics.vue** - Detailed analytics moved to slide-out menu
 
-**Technical Challenges:**
-- Daily activity aggregation and productivity scoring algorithms
-- Performant rendering of 365-day heatmap grids
-- Interactive day detail modals with activity breakdowns
-- Mobile-optimized analytics panel with touch interactions
+**Technical Architecture:**
+- **Information Hierarchy**: Status bar → Timer display → Input section → Recent activities
+- **Progressive Enhancement**: Same mental model across devices with responsive improvements
+- **Contextual Intelligence**: Smart messaging that adapts to user state and progress
+- **Single Codebase**: Unified component system replacing mobile/desktop duality
 
-**Database Requirements:**
-- Daily aggregation queries for activity patterns
-- Goal tracking schema for progress measurement
-- Pattern analysis for AI insights generation
+**Progressive UX Patterns:**
+```typescript
+// Contextual messaging service
+const getContextualMessage = (userState) => {
+  if (userState.totalActivities === 0) 
+    return "Welcome! Track your first activity to unlock insights"
+  if (userState.todayActivities === 0)
+    return "Ready for today? Start tracking your first activity"
+  if (userState.currentStreak >= 3)
+    return `🔥 ${userState.currentStreak}-day streak! ${userState.todayTime} today`
+  return `Today: ${userState.todayTime} across ${userState.todayActivities} sessions`
+}
+```
+
+**Component Integration:**
+- **Always-present sections**: Status, timer, input, recent activities (contextual content)
+- **Responsive enhancement**: Better typography and spacing on larger screens
+- **Hamburger menu**: Detailed analytics, settings, navigation (secondary features)
 
 ### **🔄 Phase 2: Advanced Analytics & Habits**
 **Technical Focus:** Advanced pattern analysis and habit tracking systems  
