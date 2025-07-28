@@ -338,7 +338,7 @@
           </div>
         </div>
 
-        <!-- Recent Activities Section (Individual Cards) -->
+        <!-- Activities Section (Individual Cards) -->
         <div class="space-y-4">
           <!-- Individual Activity Cards (Flomo Style) -->
           <div v-if="recentActivities.length > 0" class="space-y-4">
@@ -368,11 +368,29 @@
                 </button>
               </div>
             </div>
+            
+            <!-- Load More Button -->
+            <div v-if="hasMoreActivities" class="flex justify-center pt-4">
+              <button
+                @click="loadMoreActivities"
+                :disabled="activitiesLoading"
+                class="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                data-testid="load-more-activities"
+              >
+                <span v-if="activitiesLoading">Loading...</span>
+                <span v-else>Load More</span>
+              </button>
+            </div>
           </div>
           
           <!-- Empty State Card -->
-          <div v-else class="bg-card rounded-lg border border-border p-8 text-center">
+          <div v-else-if="!activitiesLoading" class="bg-card rounded-lg border border-border p-8 text-center">
             <p class="text-muted-foreground text-sm">{{ recentActivitiesMessage }}</p>
+          </div>
+          
+          <!-- Loading State -->
+          <div v-else class="bg-card rounded-lg border border-border p-8 text-center">
+            <p class="text-muted-foreground text-sm">Loading activities...</p>
           </div>
         </div>
 
@@ -405,13 +423,17 @@ const {
   resetTimer,
 } = useTimer()
 
-const { activities, formatDuration, formatRelativeTime } = useActivities()
+const { activities, formatDuration, formatRelativeTime, getActivities, loading: activitiesLoading } = useActivities()
 
 // Contextual status service
 const { contextualMessage, recentActivitiesMessage, motivationalInsight } = useContextualStatus()
 
-// Recent activities (last 5)
-const recentActivities = computed(() => activities.value.slice(0, 5))
+// Pagination state
+const currentPage = ref(1)
+const hasMoreActivities = ref(true)
+
+// Activities are already in chronological order from the API
+const recentActivities = computed(() => activities.value)
 
 // Timer status display
 const timerStatus = computed(() => {
@@ -634,12 +656,38 @@ const handleClickOutside = (event) => {
   }
 }
 
-onMounted(() => {
+// Load more activities
+const loadMoreActivities = async () => {
+  if (activitiesLoading.value || !hasMoreActivities.value) return
+  
+  currentPage.value++
+  const newActivities = await getActivities(currentPage.value, 10)
+  
+  // If we got fewer than 10, we've reached the end
+  if (newActivities.length < 10) {
+    hasMoreActivities.value = false
+  }
+}
+
+// Refresh activities (reset to page 1)
+const refreshActivities = async () => {
+  currentPage.value = 1
+  hasMoreActivities.value = true
+  await getActivities(1, 10)
+}
+
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+  // Load first page of activities on component mount
+  await refreshActivities()
+  
+  // Listen for activity saved events to refresh the list
+  window.addEventListener('activity-saved', refreshActivities)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('activity-saved', refreshActivities)
 })
 
 // Watch for suggestions and loading changes

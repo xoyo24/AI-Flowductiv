@@ -2,7 +2,7 @@
   <div class="bg-card rounded-lg border border-border p-6">
     <h2 class="text-lg font-semibold text-foreground mb-4">Quick Stats</h2>
 
-    <div v-if="activities.length === 0" class="text-center py-8 text-muted-foreground">
+    <div v-if="todaysActivities.length === 0" class="text-center py-8 text-muted-foreground">
       <div class="mb-2">No data yet</div>
       <div class="text-sm">Stats will appear as you track activities</div>
     </div>
@@ -104,7 +104,7 @@
           </div>
           <div>
             <div class="text-muted-foreground">Total Sessions</div>
-            <div class="font-medium text-foreground">{{ activities.length }}</div>
+            <div class="font-medium text-foreground">{{ todaysActivities.length }}</div>
           </div>
         </div>
       </div>
@@ -130,18 +130,27 @@
 </template>
 
 <script setup lang="ts">
-const { activities, getActivityStats, formatDuration, getTodaysActivities } = useActivities()
+const { formatDuration, getActivitiesForDate } = useActivities()
+
+// Local state for today's activities (for stats)
+const todaysActivities = ref([])
 
 // Event handler reference for cleanup
 let activitySavedHandler: (() => void) | null = null
 
+// Load today's activities for stats calculation
+const loadTodaysActivities = async () => {
+  const today = new Date()
+  todaysActivities.value = await getActivitiesForDate(today)
+}
+
 // Load today's activities on mount
 onMounted(async () => {
-  await getTodaysActivities()
+  await loadTodaysActivities()
 
   // Listen for new activities
   activitySavedHandler = async () => {
-    await getTodaysActivities()
+    await loadTodaysActivities()
   }
 
   if (typeof window !== 'undefined') {
@@ -160,10 +169,23 @@ onUnmounted(() => {
 // Daily goal (in milliseconds) - could be user configurable
 const dailyGoal = ref(8 * 60 * 60 * 1000) // 8 hours
 
-// Computed values
+// Computed values for today's activities
+const todaysTagStats = computed(() => {
+  const tagStats = {}
+  todaysActivities.value.forEach((activity) => {
+    activity.tags?.forEach((tag) => {
+      if (!tagStats[tag]) {
+        tagStats[tag] = { count: 0, totalTime: 0 }
+      }
+      tagStats[tag].count++
+      tagStats[tag].totalTime += activity.durationMs
+    })
+  })
+  return tagStats
+})
+
 const sortedTagStats = computed(() => {
-  const tagStats = getActivityStats.value.tagStats
-  return Object.entries(tagStats)
+  return Object.entries(todaysTagStats.value)
     .sort(([, a], [, b]) => b.totalTime - a.totalTime)
     .reduce(
       (acc, [tag, stats]) => {
@@ -174,18 +196,22 @@ const sortedTagStats = computed(() => {
     )
 })
 
+const totalTime = computed(() => {
+  return todaysActivities.value.reduce((sum, activity) => sum + activity.durationMs, 0)
+})
+
 const untaggedTime = computed(() => {
-  const totalTaggedTime = Object.values(getActivityStats.value.tagStats).reduce(
+  const totalTaggedTime = Object.values(todaysTagStats.value).reduce(
     (sum, stat) => sum + stat.totalTime,
     0
   )
-  return getActivityStats.value.totalTime - totalTaggedTime
+  return totalTime.value - totalTaggedTime
 })
 
 const priorityStats = computed(() => {
   const stats = [1, 2, 3]
     .map((level) => {
-      const activitiesAtLevel = activities.value.filter((a) => a.priority === level)
+      const activitiesAtLevel = todaysActivities.value.filter((a) => a.priority === level)
       const totalTime = activitiesAtLevel.reduce((sum, a) => sum + a.durationMs, 0)
       return { level, totalTime, count: activitiesAtLevel.length }
     })
@@ -195,7 +221,7 @@ const priorityStats = computed(() => {
 })
 
 const focusInsights = computed(() => {
-  const activitiesWithRating = activities.value.filter(
+  const activitiesWithRating = todaysActivities.value.filter(
     (a) => a.focusRating !== null && a.focusRating !== undefined
   )
 
@@ -214,11 +240,9 @@ const focusInsights = computed(() => {
 })
 
 const averageSessionLength = computed(() => {
-  if (activities.value.length === 0) return 0
-  return getActivityStats.value.totalTime / activities.value.length
+  if (todaysActivities.value.length === 0) return 0
+  return totalTime.value / todaysActivities.value.length
 })
-
-const totalTime = computed(() => getActivityStats.value.totalTime)
 
 const goalProgress = computed(() => {
   return (totalTime.value / dailyGoal.value) * 100

@@ -191,14 +191,16 @@
 import { InputParserService } from '~/services/inputParser'
 
 const {
-  activities,
   loading,
   error,
   getActivityStats,
-  getTodaysActivities,
+  getActivitiesForDate,
   deleteActivity,
   formatDuration,
 } = useActivities()
+
+// Local state for activities
+const activities = ref([])
 
 // Format time helper
 const formatTime = (timestamp: string | Date): string => {
@@ -211,9 +213,15 @@ const getCleanTitle = (title: string): string => {
   return InputParserService.cleanText(title)
 }
 
+// Load today's activities
+const loadTodaysActivities = async () => {
+  const today = new Date()
+  activities.value = await getActivitiesForDate(today)
+}
+
 // Actions
 const refreshActivities = async () => {
-  await getTodaysActivities()
+  await loadTodaysActivities()
 }
 
 const editingActivity = ref<any>(null)

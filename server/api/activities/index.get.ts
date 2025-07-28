@@ -5,6 +5,8 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event)
     const date = query.date as string
+    const page = Number(query.page) || 1
+    const limit = Number(query.limit) || 10
 
     const whereConditions = []
 
@@ -35,11 +37,22 @@ export default defineEventHandler(async (event) => {
     }
 
     // Order by start time, most recent first
-    const result = await dbQuery.orderBy(desc(activities.startTime))
+    dbQuery = dbQuery.orderBy(desc(activities.startTime))
+
+    // Add pagination only if not filtering by date
+    if (!date) {
+      const offset = (page - 1) * limit
+      dbQuery = dbQuery.limit(limit).offset(offset)
+    }
+
+    const result = await dbQuery
 
     return {
       data: result,
       count: result.length,
+      page,
+      limit,
+      hasMore: !date && result.length === limit,
     }
   } catch (error) {
     console.error('Database error:', error)

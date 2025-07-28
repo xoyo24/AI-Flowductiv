@@ -59,6 +59,33 @@ export const useActivities = () => {
     }
   }
 
+  // Get activities with pagination
+  const getActivities = async (page = 1, limit = 10): Promise<Activity[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<{ data: Activity[] }>('/api/activities', {
+        query: { page, limit },
+      })
+
+      // If it's page 1, replace activities, otherwise append
+      if (page === 1) {
+        activities.value = response.data
+      } else {
+        activities.value.push(...response.data)
+      }
+
+      return response.data
+    } catch (err) {
+      console.error('Failed to fetch activities:', err)
+      error.value = 'Failed to load activities.'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Get activities for a specific date
   const getActivitiesForDate = async (date: Date): Promise<Activity[]> => {
     loading.value = true
@@ -78,14 +105,6 @@ export const useActivities = () => {
     } finally {
       loading.value = false
     }
-  }
-
-  // Get activities for today
-  const getTodaysActivities = async (): Promise<Activity[]> => {
-    const today = new Date()
-    const todaysActivities = await getActivitiesForDate(today)
-    activities.value = todaysActivities
-    return todaysActivities
   }
 
   // Update an existing activity
@@ -189,6 +208,30 @@ export const useActivities = () => {
     return `${minutes}m`
   }
 
+  // Format relative time helper
+  const formatRelativeTime = (dateString: string): string => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffMins < 60) {
+      return diffMins <= 1 ? 'just now' : `${diffMins}m ago`
+    } else if (diffHours < 24) {
+      return `${diffHours}h ago`
+    } else if (diffDays < 7) {
+      return `${diffDays}d ago`
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      })
+    }
+  }
+
   // Get heatmap data for the last 12 weeks (84 days)
   const getHeatmapData = async (): Promise<HeatmapDay[]> => {
     loading.value = true
@@ -260,13 +303,14 @@ export const useActivities = () => {
 
     // Actions
     saveActivity,
+    getActivities,
     getActivitiesForDate,
-    getTodaysActivities,
     updateActivity,
     deleteActivity,
     getHeatmapData,
 
     // Utilities
     formatDuration,
+    formatRelativeTime,
   }
 }

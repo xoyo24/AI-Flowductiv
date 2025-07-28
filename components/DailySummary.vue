@@ -185,7 +185,10 @@ interface AISummary {
   generatedAt: string
 }
 
-const { activities, getTodaysActivities } = useActivities()
+const { getActivitiesForDate } = useActivities()
+
+// Local state for today's activities (for summary generation)
+const activities = ref([])
 const { isEnabled, currentProvider } = useAISettings()
 
 // Local state
@@ -327,10 +330,16 @@ const needsRefresh = () => {
 // Event handler reference for cleanup
 let activitySavedHandler: (() => void) | null = null
 
+// Load today's activities for summary
+const loadTodaysActivities = async () => {
+  const today = new Date()
+  activities.value = await getActivitiesForDate(today)
+}
+
 // Load existing summary on mount
 onMounted(async () => {
   // Load today's activities first
-  await getTodaysActivities()
+  await loadTodaysActivities()
 
   if (activities.value.length > 0) {
     // Try to load cached summary for today
@@ -349,7 +358,7 @@ onMounted(async () => {
 
   // Listen for new activities
   activitySavedHandler = async () => {
-    await getTodaysActivities()
+    await loadTodaysActivities()
   }
 
   if (typeof window !== 'undefined') {
