@@ -84,53 +84,48 @@ graph TB
 - Mobile-optimized components and responsive design patterns
 - Production-ready mobile experience with integrated desktop navigation
 
-### **🎯 Phase 1C: Flomo-Inspired Content-First UX (Current)**
-**Technical Focus:** Content-focused design with gray background + white content cards pattern
+### **🎯 Phase 1C: Analytics Hub Sidebar (Current Focus)**
+**Technical Focus:** Redesign sidebar from action-focused to analytics-focused hub, solving UX confusion between main area (all activities) and sidebar (today-only data)
+
+**Problem Identified:** Current sidebar with QuickStats and DailySummary shows today-only data while main UnifiedDashboard shows paginated all-time activities, creating cognitive dissonance for users.
+
+**Solution:** Transform sidebar into frequency-based analytics hub following Flomo's hierarchy pattern (high-frequency actions prominent, low-frequency analytics accessible but secondary).
+
 **Key Components:** 
-- **UnifiedDashboard.vue** - Flomo-style layout with gray background + white content cards
-- **ContextualStatus.vue** - Personalized messaging with key metrics (replacing data dashboard)
-- **ActivityTimeline.vue** - Individual activity cards with Flomo-style hover interactions
-- **SimplifiedInput.vue** - Tags-only parsing with real-time extraction (no priority complexity)
+- **AnalyticsSidebar.vue** - Analytics-focused hub replacing current sidebar
+- **OverallSummary.vue** - Comprehensive stats replacing QuickStats (all-time vs today-only)
+- **ProductivityHeatmap.vue** - 12-week productivity visualization (existing, integrate better)
+- **InsightsPanels.vue** - Trend analysis and pattern recognition
+- **MobileAnalyticsSheet.vue** - Collapsible mobile analytics access
 
-**Design Architecture:**
-- **Visual Hierarchy**: Gray-50 background → White content cards → Content-first typography
-- **Content Focus**: Activity content prominent, metadata subtle and secondary
-- **Simplified Interactions**: Tags-only system (#tags), hover-based actions, double-click editing
-- **Motivational Design**: Personal progress messages vs cold analytics
-
-**Flomo-Inspired UX Patterns:**
+**Frequency-Based Design Hierarchy:**
 ```typescript
-// Content-first activity timeline
-interface ActivityCard {
-  content: string        // Hero element - prominent display
-  duration: string       // Secondary - smaller font
-  timeAgo: string       // Tertiary - subtle color
-  tags: string[]        // Pills below content
-  actions: 'on-hover'   // 3-dot menu appears on hover only
+// Primary (High Frequency): Timer, Activity Input, Recent Activities
+interface PrimaryActions {
+  timer: 'always-visible'           // Most frequent action
+  activityInput: 'prominent'        // Second most frequent  
+  recentActivities: 'main-area'     // Frequent reference
 }
 
-// Personalized status messaging
-const getPersonalizedStatus = (userState) => {
-  if (userState.totalActivities === 0) 
-    return { message: "Welcome!", subtitle: "Track your first activity to unlock insights", metric: "0", label: "activities" }
-  if (userState.currentStreak >= 3)
-    return { message: `🔥 ${userState.currentStreak}-day streak!`, subtitle: "You're building amazing momentum", metric: userState.todayTime, label: "today" }
-  return { message: "Keep it up!", subtitle: "Building your productivity habit", metric: userState.todayTime, label: "today" }
+// Secondary (Medium Frequency): Analytics, Patterns, Goals
+interface SecondaryAnalytics {
+  overallSummary: 'sidebar-top'     // Weekly reference
+  productivityHeatmap: 'sidebar'    // Pattern recognition
+  insights: 'sidebar-expandable'    // Monthly deep-dive
 }
 
-// Simplified tag extraction (no priority)
-const extractTags = (input: string) => {
-  const tags = input.match(/#\w+/g) || []
-  const cleanContent = input.replace(/#\w+/g, '').trim()
-  return { content: cleanContent, tags: tags.map(t => t.slice(1)) }
+// Tertiary (Low Frequency): Settings, History, Export
+interface TertiaryFeatures {
+  settings: 'collapsed-menu'        // Infrequent configuration
+  fullHistory: 'analytics-drill'    // Rare deep analysis
+  export: 'settings-submenu'        // Occasional data export
 }
 ```
 
-**Component Integration:**
-- **Background System**: Gray-50 main background, white rounded content cards with subtle shadows
-- **Content Cards**: Timer+Input combined, Individual activity cards, Contextual status card
-- **Sidebar Integration**: Analytics on same gray background (Flomo-style), collapsible for focus
-- **Interaction Patterns**: Hover effects, cursor pointers, 3-dot menus, double-click editing
+**Mobile-First Analytics Access:**
+- **Desktop**: Right sidebar (320px) with analytics always visible
+- **Mobile**: Collapsible analytics sheet from bottom, swipe-up to expand
+- **Integration**: Analytics complement main actions, don't compete for attention
 
 ### **🔄 Phase 2: Advanced Analytics & Habits**
 **Technical Focus:** Advanced pattern analysis and habit tracking systems  

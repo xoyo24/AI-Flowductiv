@@ -1,9 +1,6 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
-import { 
-  formatDuration, 
-  FOCUS_TIME_CONFIG 
-} from '~/server/utils/focusTimeUtils'
+import { FOCUS_TIME_CONFIG, formatDuration } from '~/server/utils/focusTimeUtils'
 
 // Mock database with more complex scenarios
 const mockDb = {
@@ -11,27 +8,27 @@ const mockDb = {
   from: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
-  limit: vi.fn()
+  limit: vi.fn(),
 }
 
 vi.mock('~/server/database', () => ({
   db: mockDb,
   activities: {},
-  aiSummaries: {}
+  aiSummaries: {},
 }))
 
 vi.mock('drizzle-orm', () => ({
-  eq: vi.fn((field, value) => ({ field, value }))
+  eq: vi.fn((field, value) => ({ field, value })),
 }))
 
 vi.mock('better-sqlite3', () => ({
-  default: vi.fn()
+  default: vi.fn(),
 }))
 
 describe('Rate Limiting Edge Cases', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     mockDb.select.mockReturnValue(mockDb)
     mockDb.from.mockReturnValue(mockDb)
     mockDb.where.mockReturnValue(mockDb)
@@ -50,8 +47,8 @@ describe('Rate Limiting Edge Cases', () => {
 
       const currentActivities = [
         { title: 'Task 1', durationMs: 1200000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 20 min
-        { title: 'Task 2', durationMs: 1200000, startTime: '2025-01-22T10:30:00Z', tags: [] }, // 20 min  
-        { title: 'Task 3', durationMs: 2400000, startTime: '2025-01-22T11:00:00Z', tags: [] }  // 40 min
+        { title: 'Task 2', durationMs: 1200000, startTime: '2025-01-22T10:30:00Z', tags: [] }, // 20 min
+        { title: 'Task 3', durationMs: 2400000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // 40 min
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -72,7 +69,7 @@ describe('Rate Limiting Edge Cases', () => {
       const currentActivities = [
         { title: 'Task 1', durationMs: 1199999, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 19m 59s 999ms
         { title: 'Task 2', durationMs: 1200000, startTime: '2025-01-22T10:30:00Z', tags: [] }, // 20 min
-        { title: 'Task 3', durationMs: 2400000, startTime: '2025-01-22T11:00:00Z', tags: [] }  // 40 min
+        { title: 'Task 3', durationMs: 2400000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // 40 min
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -88,7 +85,7 @@ describe('Rate Limiting Edge Cases', () => {
 
       const currentActivities = [
         { title: 'Long task 1', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 30 min
-        { title: 'Long task 2', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] }  // 30 min
+        { title: 'Long task 2', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // 30 min
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -104,33 +101,35 @@ describe('Rate Limiting Edge Cases', () => {
   describe('Time Zone and Date Handling', () => {
     it('should handle activities spanning midnight', async () => {
       const lastSummaryDate = new Date('2025-01-22T23:00:00Z')
-      
-      mockDb.limit.mockResolvedValueOnce([{
-        id: '1',
-        generatedAt: lastSummaryDate.toISOString(),
-        userId: null
-      }])
-      
+
+      mockDb.limit.mockResolvedValueOnce([
+        {
+          id: '1',
+          generatedAt: lastSummaryDate.toISOString(),
+          userId: null,
+        },
+      ])
+
       const existingActivities = [
         {
           title: 'Late night work',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T23:30:00Z',
           endTime: '2025-01-23T00:00:00Z', // Spans midnight
-          userId: null
+          userId: null,
         },
         {
           title: 'Early morning work',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-23T00:30:00Z',
           endTime: '2025-01-23T01:00:00Z',
-          userId: null
-        }
+          userId: null,
+        },
       ]
       mockDb.where.mockResolvedValueOnce(existingActivities)
 
       const currentActivities = [
-        { title: 'Morning task', durationMs: 1800000, startTime: '2025-01-23T09:00:00Z', tags: [] }
+        { title: 'Morning task', durationMs: 1800000, startTime: '2025-01-23T09:00:00Z', tags: [] },
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -146,8 +145,18 @@ describe('Rate Limiting Edge Cases', () => {
 
       const currentActivities = [
         { title: 'UTC task', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] },
-        { title: 'EST task', durationMs: 1800000, startTime: '2025-01-22T05:00:00-05:00', tags: [] }, // Same as 10:00 UTC
-        { title: 'PST task', durationMs: 1800000, startTime: '2025-01-22T02:00:00-08:00', tags: [] }  // Same as 10:00 UTC
+        {
+          title: 'EST task',
+          durationMs: 1800000,
+          startTime: '2025-01-22T05:00:00-05:00',
+          tags: [],
+        }, // Same as 10:00 UTC
+        {
+          title: 'PST task',
+          durationMs: 1800000,
+          startTime: '2025-01-22T02:00:00-08:00',
+          tags: [],
+        }, // Same as 10:00 UTC
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -161,20 +170,20 @@ describe('Rate Limiting Edge Cases', () => {
   describe('Data Integrity Edge Cases', () => {
     it('should handle missing endTime in activities', async () => {
       mockDb.limit.mockResolvedValueOnce([])
-      
+
       const existingActivities = [
         {
           title: 'Task with missing endTime',
           durationMs: 1800000,
           startTime: '2025-01-22T10:00:00Z',
           endTime: null, // Missing endTime - should use startTime
-          userId: null
-        }
+          userId: null,
+        },
       ]
       mockDb.where.mockResolvedValueOnce(existingActivities)
 
       const currentActivities = [
-        { title: 'Current', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] }
+        { title: 'Current', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] },
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -191,9 +200,19 @@ describe('Rate Limiting Edge Cases', () => {
 
       const currentActivities = [
         { title: 'Valid task', durationMs: 2400000, startTime: '2025-01-22T10:00:00Z', tags: [] },
-        { title: 'Negative task', durationMs: -600000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // Should be filtered
-        { title: 'Another valid', durationMs: 1800000, startTime: '2025-01-22T12:00:00Z', tags: [] },
-        { title: 'Zero task', durationMs: 0, startTime: '2025-01-22T13:00:00Z', tags: [] } // Should be filtered
+        {
+          title: 'Negative task',
+          durationMs: -600000,
+          startTime: '2025-01-22T11:00:00Z',
+          tags: [],
+        }, // Should be filtered
+        {
+          title: 'Another valid',
+          durationMs: 1800000,
+          startTime: '2025-01-22T12:00:00Z',
+          tags: [],
+        },
+        { title: 'Zero task', durationMs: 0, startTime: '2025-01-22T13:00:00Z', tags: [] }, // Should be filtered
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -209,9 +228,19 @@ describe('Rate Limiting Edge Cases', () => {
       mockDb.where.mockResolvedValueOnce([])
 
       const currentActivities = [
-        { title: 'Massive task', durationMs: Number.MAX_SAFE_INTEGER, startTime: '2025-01-22T10:00:00Z', tags: [] },
+        {
+          title: 'Massive task',
+          durationMs: Number.MAX_SAFE_INTEGER,
+          startTime: '2025-01-22T10:00:00Z',
+          tags: [],
+        },
         { title: 'Normal task', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] },
-        { title: 'Another normal', durationMs: 1200000, startTime: '2025-01-22T12:00:00Z', tags: [] }
+        {
+          title: 'Another normal',
+          durationMs: 1200000,
+          startTime: '2025-01-22T12:00:00Z',
+          tags: [],
+        },
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -232,9 +261,14 @@ describe('Rate Limiting Edge Cases', () => {
       mockDb.where.mockResolvedValueOnce([])
 
       const currentActivities = [
-        { title: 'First ever task', durationMs: 4200000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 70 min
+        {
+          title: 'First ever task',
+          durationMs: 4200000,
+          startTime: '2025-01-22T10:00:00Z',
+          tags: [],
+        }, // 70 min
         { title: 'Second task', durationMs: 1800000, startTime: '2025-01-22T11:30:00Z', tags: [] }, // 30 min
-        { title: 'Third task', durationMs: 600000, startTime: '2025-01-22T12:30:00Z', tags: [] } // 10 min
+        { title: 'Third task', durationMs: 600000, startTime: '2025-01-22T12:30:00Z', tags: [] }, // 10 min
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -246,11 +280,13 @@ describe('Rate Limiting Edge Cases', () => {
     })
 
     it('should handle null/undefined values in database responses', async () => {
-      mockDb.limit.mockResolvedValueOnce([{
-        id: '1',
-        generatedAt: '2025-01-22T10:00:00Z',
-        userId: null
-      }])
+      mockDb.limit.mockResolvedValueOnce([
+        {
+          id: '1',
+          generatedAt: '2025-01-22T10:00:00Z',
+          userId: null,
+        },
+      ])
 
       const existingActivities = [
         {
@@ -258,20 +294,20 @@ describe('Rate Limiting Edge Cases', () => {
           durationMs: 1800000,
           startTime: '2025-01-22T11:00:00Z',
           endTime: '2025-01-22T11:30:00Z',
-          userId: null
+          userId: null,
         },
         {
           title: 'Valid task',
           durationMs: null, // Null duration
           startTime: '2025-01-22T12:00:00Z',
           endTime: '2025-01-22T12:30:00Z',
-          userId: null
-        }
+          userId: null,
+        },
       ]
       mockDb.where.mockResolvedValueOnce(existingActivities)
 
       const currentActivities = [
-        { title: 'Current task', durationMs: 3600000, startTime: '2025-01-22T13:00:00Z', tags: [] }
+        { title: 'Current task', durationMs: 3600000, startTime: '2025-01-22T13:00:00Z', tags: [] },
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -289,9 +325,7 @@ describe('Rate Limiting Edge Cases', () => {
         })
       })
 
-      const currentActivities = [
-        { title: 'Test task', durationMs: 1800000, tags: [] }
-      ]
+      const currentActivities = [{ title: 'Test task', durationMs: 1800000, tags: [] }]
 
       const result = await calculateNewFocusTime(null, currentActivities)
 
@@ -304,19 +338,19 @@ describe('Rate Limiting Edge Cases', () => {
   describe('Memory and Performance Edge Cases', () => {
     it('should handle large number of activities efficiently', async () => {
       mockDb.limit.mockResolvedValueOnce([])
-      
+
       // Create 1000 existing activities
       const manyExistingActivities = Array.from({ length: 1000 }, (_, i) => ({
         title: `Activity ${i}`,
         durationMs: 60000, // 1 minute each
         startTime: new Date(Date.now() - (1000 - i) * 60000).toISOString(),
         endTime: new Date(Date.now() - (1000 - i - 1) * 60000).toISOString(),
-        userId: null
+        userId: null,
       }))
       mockDb.where.mockResolvedValueOnce(manyExistingActivities)
 
       const currentActivities = [
-        { title: 'Current', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] }
+        { title: 'Current', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] },
       ]
 
       const startTime = Date.now()
@@ -325,7 +359,7 @@ describe('Rate Limiting Edge Cases', () => {
 
       // Should complete reasonably quickly (less than 1 second)
       expect(endTime - startTime).toBeLessThan(1000)
-      
+
       // Should handle large dataset correctly
       expect(result.totalNewFocusTime).toBe(61800000) // 1000 minutes + 30 minutes
       expect(result.activityCount).toBe(1001)

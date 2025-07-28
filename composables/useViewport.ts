@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 export const useViewport = () => {
   // Default to desktop during SSR, will update on client
@@ -20,21 +20,20 @@ export const useViewport = () => {
 
   // Smartphone detection (always mobile regardless of orientation)
   const isSmartphone = computed(() => {
-    return screenWidth.value <= 480 || 
-           (screenWidth.value <= 896 && screenHeight.value <= 500)
+    return screenWidth.value <= 480 || (screenWidth.value <= 896 && screenHeight.value <= 500)
   })
 
   // Mobile layout logic: smartphones always + tablets in portrait
   const isMobile = computed(() => {
     // Always mobile for smartphones
     if (isSmartphone.value) return true
-    
+
     // Tablets in portrait mode
     if (screenWidth.value >= 481 && screenHeight.value > screenWidth.value) return true
-    
+
     return false
   })
-  
+
   // Desktop layout logic: tablets in landscape + desktop screens
   const isDesktop = computed(() => !isMobile.value)
 
@@ -52,6 +51,6 @@ export const useViewport = () => {
     screenHeight: readonly(screenHeight),
     isMobile: readonly(isMobile),
     isTouchDevice: readonly(isTouchDevice),
-    isDesktop: readonly(isDesktop)
+    isDesktop: readonly(isDesktop),
   }
 }

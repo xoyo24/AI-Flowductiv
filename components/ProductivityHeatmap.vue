@@ -87,9 +87,7 @@
 import type { HeatmapDay } from '~/composables/useActivities'
 
 // Define emits
-interface Emits {
-  (e: 'day-selected', day: HeatmapDay): void
-}
+type Emits = (e: 'day-selected', day: HeatmapDay) => void
 
 const emit = defineEmits<Emits>()
 
@@ -102,7 +100,7 @@ const tooltip = ref({
   visible: false,
   x: 0,
   y: 0,
-  day: {} as HeatmapDay
+  day: {} as HeatmapDay,
 })
 
 // Computed properties
@@ -110,26 +108,28 @@ const gridDays = computed(() => {
   // Return exactly 84 days (12 weeks)
   if (!heatmapData.value || heatmapData.value.length === 0) {
     // Return empty days for initial state
-    return Array(84).fill(null).map(() => ({
-      date: '',
-      count: 0,
-      totalTime: 0,
-      productivityScore: 0
-    }))
+    return Array(84)
+      .fill(null)
+      .map(() => ({
+        date: '',
+        count: 0,
+        totalTime: 0,
+        productivityScore: 0,
+      }))
   }
-  
+
   const days = [...heatmapData.value]
-  
+
   // Ensure exactly 84 days
   while (days.length < 84) {
     days.push({
       date: '',
       count: 0,
       totalTime: 0,
-      productivityScore: 0
+      productivityScore: 0,
     })
   }
-  
+
   return days.slice(0, 84) // Exactly 84 days (12 weeks)
 })
 
@@ -138,21 +138,9 @@ const colorMode = useColorMode()
 
 const legendColors = computed(() => {
   if (colorMode.value === 'dark') {
-    return [
-      'bg-gray-700', 
-      'bg-green-800', 
-      'bg-green-600', 
-      'bg-green-500', 
-      'bg-green-400'
-    ]
+    return ['bg-gray-700', 'bg-green-800', 'bg-green-600', 'bg-green-500', 'bg-green-400']
   } else {
-    return [
-      'bg-gray-200', 
-      'bg-green-200', 
-      'bg-green-300', 
-      'bg-green-400', 
-      'bg-green-500'
-    ]
+    return ['bg-gray-200', 'bg-green-200', 'bg-green-300', 'bg-green-400', 'bg-green-500']
   }
 })
 
@@ -160,28 +148,28 @@ const legendColors = computed(() => {
 const getColorClass = (score: number): string => {
   if (colorMode.value === 'dark') {
     // Dark theme colors
-    if (score === 0) return 'bg-gray-700'  // Dark gray for empty days
-    if (score <= 0.25) return 'bg-green-800'  // Darkest green
-    if (score <= 0.5) return 'bg-green-600'   // Dark green
-    if (score <= 0.8) return 'bg-green-500'   // Medium green
-    return 'bg-green-400'  // Brightest green for high productivity
+    if (score === 0) return 'bg-gray-700' // Dark gray for empty days
+    if (score <= 0.25) return 'bg-green-800' // Darkest green
+    if (score <= 0.5) return 'bg-green-600' // Dark green
+    if (score <= 0.8) return 'bg-green-500' // Medium green
+    return 'bg-green-400' // Brightest green for high productivity
   } else {
     // Light theme colors
-    if (score === 0) return 'bg-gray-200'  // Light gray for empty days
-    if (score <= 0.25) return 'bg-green-200'  // Lightest green
-    if (score <= 0.5) return 'bg-green-300'   // Light green
-    if (score <= 0.8) return 'bg-green-400'   // Medium green
-    return 'bg-green-500'  // Darkest green for high productivity
+    if (score === 0) return 'bg-gray-200' // Light gray for empty days
+    if (score <= 0.25) return 'bg-green-200' // Lightest green
+    if (score <= 0.5) return 'bg-green-300' // Light green
+    if (score <= 0.8) return 'bg-green-400' // Medium green
+    return 'bg-green-500' // Darkest green for high productivity
   }
 }
 
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   })
 }
 
@@ -193,12 +181,12 @@ const handleDayClick = (day: HeatmapDay) => {
 
 const showTooltip = (event: MouseEvent, day: HeatmapDay) => {
   if (!day.date) return
-  
+
   tooltip.value = {
     visible: true,
     x: event.clientX,
     y: event.clientY,
-    day
+    day,
   }
 }
 

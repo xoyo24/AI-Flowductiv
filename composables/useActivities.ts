@@ -1,4 +1,4 @@
-import { ref, computed, readonly } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import type { Activity } from '~/server/database/schema'
 
 export interface ActivityInput {
@@ -224,10 +224,10 @@ export const useActivities = () => {
     } else if (diffDays < 7) {
       return `${diffDays}d ago`
     } else {
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
         day: 'numeric',
-        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
       })
     }
   }
@@ -263,7 +263,7 @@ export const useActivities = () => {
         const dayActivities = allDayActivities[index]
         const count = dayActivities.length
         const totalTime = dayActivities.reduce((sum, activity) => sum + activity.durationMs, 0)
-        
+
         // Calculate productivity score (0-1) based on time and activity count
         // 8 hours (28800000ms) of productive time = 1.0 score
         // Bonus for having multiple focused sessions
@@ -275,7 +275,7 @@ export const useActivities = () => {
           date,
           count,
           totalTime,
-          productivityScore
+          productivityScore,
         }
       })
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { PromptTemplates } from '~/services/ai/prompts'
 
 describe('PromptTemplates - Unit Tests', () => {
@@ -7,7 +7,7 @@ describe('PromptTemplates - Unit Tests', () => {
       const activities = [
         { title: 'Work on project #urgent', durationMs: 3600000, tags: ['urgent'] },
         { title: 'Meeting #work', durationMs: 1800000, tags: ['work'] },
-        { title: 'Code review', durationMs: 900000, tags: [] }
+        { title: 'Code review', durationMs: 900000, tags: [] },
       ]
 
       const prompt = PromptTemplates.dailySummary(activities)
@@ -20,9 +20,7 @@ describe('PromptTemplates - Unit Tests', () => {
     })
 
     it('should handle activities without tags', () => {
-      const activities = [
-        { title: 'Simple task', durationMs: 1800000, tags: [] }
-      ]
+      const activities = [{ title: 'Simple task', durationMs: 1800000, tags: [] }]
 
       const prompt = PromptTemplates.dailySummary(activities)
 
@@ -34,7 +32,7 @@ describe('PromptTemplates - Unit Tests', () => {
       const activities = [
         { title: 'Short task', durationMs: 300000, tags: [] }, // 5 minutes
         { title: 'Hour task', durationMs: 3600000, tags: [] }, // 1 hour
-        { title: 'Long task', durationMs: 5400000, tags: [] } // 1 hour 30 minutes
+        { title: 'Long task', durationMs: 5400000, tags: [] }, // 1 hour 30 minutes
       ]
 
       const prompt = PromptTemplates.dailySummary(activities)
@@ -45,9 +43,7 @@ describe('PromptTemplates - Unit Tests', () => {
     })
 
     it('should include analysis instructions', () => {
-      const activities = [
-        { title: 'Test task', durationMs: 1800000, tags: ['test'] }
-      ]
+      const activities = [{ title: 'Test task', durationMs: 1800000, tags: ['test'] }]
 
       const prompt = PromptTemplates.dailySummary(activities)
 
@@ -61,7 +57,7 @@ describe('PromptTemplates - Unit Tests', () => {
       const activities = [
         { title: 'Task 1 #work', durationMs: 1800000, tags: ['work'] },
         { title: 'Task 2 #work', durationMs: 1800000, tags: ['work'] },
-        { title: 'Task 3 #personal', durationMs: 900000, tags: ['personal'] }
+        { title: 'Task 3 #personal', durationMs: 900000, tags: ['personal'] },
       ]
 
       const prompt = PromptTemplates.dailySummary(activities)
@@ -76,7 +72,7 @@ describe('PromptTemplates - Unit Tests', () => {
       const activity = {
         title: 'work on project',
         durationMs: 1800000,
-        tags: []
+        tags: [],
       }
 
       const prompt = PromptTemplates.enhanceActivity(activity)
@@ -98,11 +94,7 @@ describe('PromptTemplates - Unit Tests', () => {
     })
 
     it('should calculate total duration', () => {
-      const activities = [
-        { durationMs: 1800000 },
-        { durationMs: 3600000 },
-        { durationMs: 900000 }
-      ]
+      const activities = [{ durationMs: 1800000 }, { durationMs: 3600000 }, { durationMs: 900000 }]
 
       const total = PromptTemplates.getTotalDuration(activities)
       expect(total).toBe(6300000) // 1h 45m
@@ -112,11 +104,11 @@ describe('PromptTemplates - Unit Tests', () => {
       const activities = [
         { title: 'Task 1', durationMs: 1800000, tags: ['work'] },
         { title: 'Task 2', durationMs: 900000, tags: ['work'] },
-        { title: 'Task 3', durationMs: 1200000, tags: ['personal'] }
+        { title: 'Task 3', durationMs: 1200000, tags: ['personal'] },
       ]
 
       const grouped = PromptTemplates.groupByTags(activities)
-      
+
       expect(grouped.work).toBe(2700000) // 45m
       expect(grouped.personal).toBe(1200000) // 20m
     })

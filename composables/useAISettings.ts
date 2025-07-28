@@ -18,13 +18,13 @@ export const useAISettings = () => {
   const settings = useLocalStorage<AISettings>('ai-settings', {
     enabled: true,
     provider: 'claude' as SupportedProvider,
-    fallbackToMock: true
+    fallbackToMock: true,
   })
 
   // Provider health status
   const providerStatus = ref<Record<SupportedProvider, ProviderStatus>>({
     claude: { provider: 'claude', available: true, lastChecked: 0 },
-    openai: { provider: 'openai', available: true, lastChecked: 0 }
+    openai: { provider: 'openai', available: true, lastChecked: 0 },
   })
 
   // Computed for easy access
@@ -56,32 +56,29 @@ export const useAISettings = () => {
       const { AIRouter } = await import('~/services/ai/aiRouter')
       const router = new AIRouter()
       router.setProvider(provider)
-      
+
       // Update status
       providerStatus.value[provider] = {
         provider,
         available: true,
         lastChecked: Date.now(),
       }
-      
+
       return true
     } catch (error) {
       providerStatus.value[provider] = {
         provider,
         available: false,
         lastChecked: Date.now(),
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
-      
+
       return false
     }
   }
 
   const checkAllProviders = async () => {
-    await Promise.all([
-      checkProviderHealth('claude'),
-      checkProviderHealth('openai')
-    ])
+    await Promise.all([checkProviderHealth('claude'), checkProviderHealth('openai')])
   }
 
   // Get current provider status
@@ -92,14 +89,14 @@ export const useAISettings = () => {
   // Get available providers
   const availableProviders = computed(() => {
     return Object.values(providerStatus.value)
-      .filter(status => status.available)
-      .map(status => status.provider)
+      .filter((status) => status.available)
+      .map((status) => status.provider)
   })
 
   // Auto-switch to available provider if current is unavailable
   const ensureProviderAvailable = async () => {
     await checkProviderHealth(currentProvider.value)
-    
+
     if (!getCurrentProviderStatus.value.available && availableProviders.value.length > 0) {
       setProvider(availableProviders.value[0])
     }
@@ -109,7 +106,7 @@ export const useAISettings = () => {
   const getProviderDisplayName = (provider: SupportedProvider): string => {
     const names = {
       claude: 'Claude (Anthropic)',
-      openai: 'GPT-4 (OpenAI)'
+      openai: 'GPT-4 (OpenAI)',
     }
     return names[provider] || provider
   }
@@ -142,7 +139,7 @@ export const useAISettings = () => {
     checkProviderHealth,
     checkAllProviders,
     ensureProviderAvailable,
-    
+
     // Utils
     getProviderDisplayName,
   }

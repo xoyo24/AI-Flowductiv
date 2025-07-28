@@ -6,11 +6,11 @@ export default defineVitestConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     include: [
-      'server/api/**/*.test.ts',                    // API endpoint tests (need Nuxt env)
-      'server/utils/focusTimeCalculator.test.ts',   // Database integration tests
-      'server/utils/rateLimitEdgeCases.test.ts',    // Database integration tests  
-      'components/**/*.test.ts',                    // Component integration tests (need Nuxt env)
-      'tests/integration/**/*.test.ts'              // Legacy integration tests
+      'server/api/**/*.test.ts', // API endpoint tests (need Nuxt env)
+      'server/utils/focusTimeCalculator.test.ts', // Database integration tests
+      'server/utils/rateLimitEdgeCases.test.ts', // Database integration tests
+      'components/**/*.test.ts', // Component integration tests (need Nuxt env)
+      'tests/integration/**/*.test.ts', // Legacy integration tests
     ],
     exclude: ['tests/e2e/**/*.test.ts'], // E2E tests use Playwright, not Vitest
     env: {

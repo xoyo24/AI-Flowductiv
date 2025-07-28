@@ -16,11 +16,11 @@ export const FOCUS_TIME_CONFIG = {
  */
 export function formatDuration(ms: number): string {
   if (ms <= 0) return '0 minutes'
-  
+
   const minutes = Math.floor(ms / (1000 * 60))
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
-  
+
   if (hours === 0) {
     return `${minutes} minutes`
   } else if (remainingMinutes === 0) {
@@ -37,16 +37,16 @@ export function formatDuration(ms: number): string {
  */
 export function createRateLimitError(focusAnalysis: any) {
   const reasons = []
-  
+
   if (!focusAnalysis.hasMinimumFocusTime) {
     reasons.push(`Track ${focusAnalysis.timeToNextSummary} more focus time`)
   }
-  
+
   if (!focusAnalysis.hasMinimumActivities) {
     const needed = focusAnalysis.requiredActivityCount - focusAnalysis.activityCount
     reasons.push(`Complete ${needed} more activities`)
   }
-  
+
   return {
     statusCode: 429,
     statusMessage: 'Track more focus time to unlock AI summary',
@@ -55,7 +55,10 @@ export function createRateLimitError(focusAnalysis: any) {
       reasons,
       progress: {
         focusTimePercent: focusAnalysis.progressPercent,
-        activitiesNeeded: Math.max(0, focusAnalysis.requiredActivityCount - focusAnalysis.activityCount),
+        activitiesNeeded: Math.max(
+          0,
+          focusAnalysis.requiredActivityCount - focusAnalysis.activityCount
+        ),
         timeRemaining: focusAnalysis.timeToNextSummary,
       },
       requirements: {
@@ -65,7 +68,7 @@ export function createRateLimitError(focusAnalysis: any) {
       current: {
         focusTime: formatDuration(focusAnalysis.totalNewFocusTime),
         activities: focusAnalysis.activityCount,
-      }
-    }
+      },
+    },
   }
 }

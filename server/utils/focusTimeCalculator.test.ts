@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the database queries
 const mockDb = {
@@ -6,37 +6,37 @@ const mockDb = {
   from: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
-  limit: vi.fn()
+  limit: vi.fn(),
 }
 
 // Mock all database dependencies at the top level before any imports
 vi.mock('better-sqlite3', () => ({
   default: vi.fn(() => ({
     pragma: vi.fn(),
-    close: vi.fn()
-  }))
+    close: vi.fn(),
+  })),
 }))
 
 vi.mock('drizzle-orm/better-sqlite3', () => ({
-  drizzle: vi.fn(() => mockDb)
+  drizzle: vi.fn(() => mockDb),
 }))
 
 vi.mock('drizzle-orm', () => ({
-  eq: vi.fn((field, value) => ({ field, value }))
+  eq: vi.fn((field, value) => ({ field, value })),
 }))
 
 // Now import after mocks are set up
 import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
-import { 
-  formatDuration, 
+import {
+  FOCUS_TIME_CONFIG,
   createRateLimitError,
-  FOCUS_TIME_CONFIG 
+  formatDuration,
 } from '~/server/utils/focusTimeUtils'
 
 describe('Focus Time Calculator', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     // Setup default mock chain
     mockDb.select.mockReturnValue(mockDb)
     mockDb.from.mockReturnValue(mockDb)
@@ -57,8 +57,8 @@ describe('Focus Time Calculator', () => {
 
       const currentActivities = [
         { title: 'Deep work', durationMs: 2400000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 40 min
-        { title: 'Code review', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // 30 min  
-        { title: 'Planning', durationMs: 1200000, startTime: '2025-01-22T12:00:00Z', tags: [] } // 20 min
+        { title: 'Code review', durationMs: 1800000, startTime: '2025-01-22T11:00:00Z', tags: [] }, // 30 min
+        { title: 'Planning', durationMs: 1200000, startTime: '2025-01-22T12:00:00Z', tags: [] }, // 20 min
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -78,7 +78,7 @@ describe('Focus Time Calculator', () => {
       mockDb.where.mockResolvedValueOnce([])
 
       const currentActivities = [
-        { title: 'Quick task', durationMs: 300000, startTime: '2025-01-22T10:00:00Z', tags: [] } // 5 minutes
+        { title: 'Quick task', durationMs: 300000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 5 minutes
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -94,28 +94,30 @@ describe('Focus Time Calculator', () => {
 
     it('should calculate correctly with existing activities since last summary', async () => {
       const lastSummaryDate = new Date('2025-01-22T08:00:00Z')
-      
+
       // Mock existing summary
-      mockDb.limit.mockResolvedValueOnce([{
-        id: '1',
-        generatedAt: lastSummaryDate.toISOString(),
-        userId: null
-      }])
-      
+      mockDb.limit.mockResolvedValueOnce([
+        {
+          id: '1',
+          generatedAt: lastSummaryDate.toISOString(),
+          userId: null,
+        },
+      ])
+
       // Mock existing activities since summary
       const existingActivities = [
-        { 
-          title: 'Previous work', 
+        {
+          title: 'Previous work',
           durationMs: 2400000, // 40 minutes
           startTime: '2025-01-22T09:00:00Z',
           endTime: '2025-01-22T09:40:00Z',
-          userId: null
-        }
+          userId: null,
+        },
       ]
       mockDb.where.mockResolvedValueOnce(existingActivities)
 
       const currentActivities = [
-        { title: 'Current work', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] } // 30 minutes
+        { title: 'Current work', durationMs: 1800000, startTime: '2025-01-22T10:00:00Z', tags: [] }, // 30 minutes
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -129,14 +131,16 @@ describe('Focus Time Calculator', () => {
 
     it('should handle activities older than last summary', async () => {
       const lastSummaryDate = new Date('2025-01-22T10:00:00Z')
-      
+
       // Mock existing summary
-      mockDb.limit.mockResolvedValueOnce([{
-        id: '1', 
-        generatedAt: lastSummaryDate.toISOString(),
-        userId: null
-      }])
-      
+      mockDb.limit.mockResolvedValueOnce([
+        {
+          id: '1',
+          generatedAt: lastSummaryDate.toISOString(),
+          userId: null,
+        },
+      ])
+
       // Mock activities - some before, some after summary
       const allActivities = [
         {
@@ -144,20 +148,20 @@ describe('Focus Time Calculator', () => {
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T09:00:00Z',
           endTime: '2025-01-22T09:30:00Z',
-          userId: null
+          userId: null,
         },
         {
-          title: 'After summary', 
+          title: 'After summary',
           durationMs: 1200000, // 20 minutes
           startTime: '2025-01-22T11:00:00Z',
           endTime: '2025-01-22T11:20:00Z',
-          userId: null
-        }
+          userId: null,
+        },
       ]
       mockDb.where.mockResolvedValueOnce(allActivities)
 
       const currentActivities = [
-        { title: 'Current', durationMs: 600000, startTime: '2025-01-22T12:00:00Z', tags: [] } // 10 minutes
+        { title: 'Current', durationMs: 600000, startTime: '2025-01-22T12:00:00Z', tags: [] }, // 10 minutes
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -172,9 +176,7 @@ describe('Focus Time Calculator', () => {
       // Mock database error
       mockDb.limit.mockRejectedValueOnce(new Error('Database connection failed'))
 
-      const currentActivities = [
-        { title: 'Test', durationMs: 1000000, tags: [] }
-      ]
+      const currentActivities = [{ title: 'Test', durationMs: 1000000, tags: [] }]
 
       const result = await calculateNewFocusTime(null, currentActivities)
 
@@ -193,7 +195,7 @@ describe('Focus Time Calculator', () => {
         { title: 'Complete', durationMs: 3600000, tags: [] }, // 60 minutes
         { title: 'Incomplete', durationMs: 0, tags: [] }, // Should be filtered out
         { title: 'Another complete', durationMs: 1800000, tags: [] }, // 30 minutes
-        { title: 'Running', durationMs: 300000, tags: [] } // 5 minutes
+        { title: 'Running', durationMs: 300000, tags: [] }, // 5 minutes
       ]
 
       const result = await calculateNewFocusTime(null, currentActivities)
@@ -238,7 +240,7 @@ describe('Focus Time Calculator', () => {
         activityCount: 3,
         requiredActivityCount: 3,
         totalNewFocusTime: 1800000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -262,7 +264,7 @@ describe('Focus Time Calculator', () => {
         activityCount: 1,
         requiredActivityCount: 3,
         totalNewFocusTime: 3600000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -282,14 +284,14 @@ describe('Focus Time Calculator', () => {
         activityCount: 1,
         requiredActivityCount: 3,
         totalNewFocusTime: 900000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
 
       expect(error.data.reasons).toEqual([
         'Track 45 minutes more focus time',
-        'Complete 2 more activities'
+        'Complete 2 more activities',
       ])
       expect(error.data.progress.focusTimePercent).toBe(25)
       expect(error.data.progress.activitiesNeeded).toBe(2)

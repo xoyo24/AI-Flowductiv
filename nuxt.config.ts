@@ -88,7 +88,6 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
 
-
   experimental: {
     typedPages: true,
   },

@@ -135,10 +135,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted, triggerRef } from 'vue'
-import { useInputParser } from '~/composables/useInputParser'
-import { useAutoComplete } from '~/composables/useAutoComplete'
+import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
+import { useAutoComplete } from '~/composables/useAutoComplete'
+import { useInputParser } from '~/composables/useInputParser'
 
 const {
   isRunning,
@@ -167,7 +167,11 @@ const timerStatus = computed(() => {
 })
 
 // Use centralized input parser
-const { tags: extractedTags, priority: extractedPriority, cleanText } = useInputParser(activityInput)
+const {
+  tags: extractedTags,
+  priority: extractedPriority,
+  cleanText,
+} = useInputParser(activityInput)
 
 // Dynamic auto-complete suggestions
 const {
@@ -179,15 +183,18 @@ const {
   selectCurrent,
   selectIndex,
   performSearch,
-  getInitialSuggestions
+  getInitialSuggestions,
 } = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
 
 // Simplified dropdown state management
 const inputFocused = ref(false)
 const dropdownVisible = ref(false)
 
-const showSuggestions = computed(() => 
-  inputFocused.value && dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
+const showSuggestions = computed(
+  () =>
+    inputFocused.value &&
+    dropdownVisible.value &&
+    (suggestions.value.length > 0 || suggestionsLoading.value)
 )
 
 const showDropdown = () => {
@@ -227,19 +234,21 @@ const handleSuggestionSelect = (suggestion) => {
     const currentText = activityInput.value.trim()
     const hasTag = currentText.includes(`#${suggestion.text}`)
     if (!hasTag) {
-      activityInput.value = currentText ? `${currentText} #${suggestion.text}` : `#${suggestion.text}`
+      activityInput.value = currentText
+        ? `${currentText} #${suggestion.text}`
+        : `#${suggestion.text}`
     }
   }
-  
+
   // Force reactivity trigger
   triggerRef(activityInput)
-  
+
   // Mark that we just selected a suggestion
   justSelectedSuggestion.value = true
-  
+
   // Auto-close dropdown after selection
   hideDropdown()
-  
+
   // Keep input focused for further editing
   nextTick(() => {
     const input = document.getElementById('activity-input')
@@ -292,7 +301,7 @@ const handleKeydown = (event) => {
         break
     }
   }
-  
+
   // Handle typing that should show suggestions
   if (!showSuggestions.value && event.key.length === 1) {
     // User is typing, show dropdown if we have suggestions
@@ -307,7 +316,7 @@ const handleKeydown = (event) => {
 // Input focus handling
 const handleInputFocus = () => {
   inputFocused.value = true
-  
+
   // If input is empty, get initial suggestions (recent activities/tags)
   // If input has content, search for matching suggestions
   nextTick(() => {
@@ -317,7 +326,7 @@ const handleInputFocus = () => {
       getInitialSuggestions()
     }
   })
-  
+
   // Show existing suggestions if available
   if (suggestions.value.length > 0) {
     showDropdown()
@@ -341,12 +350,12 @@ const handleEnterKey = () => {
   if (justSelectedSuggestion.value) {
     return
   }
-  
+
   // Start timer normally (dropdown logic handled in handleKeydown)
   handleStart()
 }
 
-// Actions  
+// Actions
 // Click outside to dismiss dropdown
 const dropdownContainer = ref(null)
 

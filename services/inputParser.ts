@@ -13,7 +13,7 @@ export class InputParserService {
       originalText: input,
       cleanText,
       tags,
-      priority
+      priority,
     }
   }
 
@@ -24,7 +24,7 @@ export class InputParserService {
   static extractTags(text: string): string[] {
     const tagRegex = /#([\w.-]+)/g
     const tags = Array.from(text.matchAll(tagRegex), (match) => match[1])
-    
+
     // Remove duplicates while preserving order
     return [...new Set(tags)]
   }

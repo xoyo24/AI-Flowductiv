@@ -8,9 +8,9 @@ export class PromptTemplates {
 
     const totalDuration = this.getTotalDuration(activities)
     const groupedByTags = this.groupByTags(activities)
-    
+
     const activitiesList = activities
-      .map(activity => {
+      .map((activity) => {
         const duration = this.formatDuration(activity.durationMs)
         const tags = activity.tags.length > 0 ? ` #${activity.tags.join(' #')}` : ''
         return `- ${activity.title}${tags} (${duration})`
@@ -18,7 +18,10 @@ export class PromptTemplates {
       .join('\n')
 
     const tagSummary = Object.entries(groupedByTags)
-      .map(([tag, duration]) => `${tag.charAt(0).toUpperCase() + tag.slice(1)}: ${this.formatDuration(duration)}`)
+      .map(
+        ([tag, duration]) =>
+          `${tag.charAt(0).toUpperCase() + tag.slice(1)}: ${this.formatDuration(duration)}`
+      )
       .join(', ')
 
     return `Generate a comprehensive daily productivity summary based on the following activities:
@@ -39,7 +42,7 @@ Keep the summary concise but insightful, focusing on actionable insights that ca
 
   static enhanceActivity(activity: Activity): string {
     const duration = this.formatDuration(activity.durationMs)
-    
+
     return `Please enhance this activity description to make it more specific and actionable:
 
 Activity: "${activity.title}"
@@ -75,16 +78,16 @@ Respond in JSON format with: title, tags, priority, notes`
 
   static groupByTags(activities: Activity[]): Record<string, number> {
     const grouped: Record<string, number> = {}
-    
-    activities.forEach(activity => {
-      activity.tags.forEach(tag => {
+
+    activities.forEach((activity) => {
+      activity.tags.forEach((tag) => {
         if (!grouped[tag]) {
           grouped[tag] = 0
         }
         grouped[tag] += activity.durationMs
       })
     })
-    
+
     return grouped
   }
 }

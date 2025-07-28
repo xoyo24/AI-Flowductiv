@@ -28,10 +28,13 @@ export interface HealthStatus {
 export interface UsageStats {
   totalTokens: number
   requestCount: number
-  providers: Record<string, {
-    tokens: number
-    requests: number
-  }>
+  providers: Record<
+    string,
+    {
+      tokens: number
+      requests: number
+    }
+  >
 }
 
 export type SupportedProvider = 'claude' | 'openai' | 'gemini' | 'ollama'

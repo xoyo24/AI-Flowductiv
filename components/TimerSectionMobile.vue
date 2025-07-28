@@ -288,8 +288,18 @@
 </template>
 
 <script setup lang="ts">
+import {
+  BookOpen,
+  ChevronDown,
+  Clock,
+  Home,
+  Lightbulb,
+  Menu,
+  Moon,
+  Settings,
+  Users,
+} from 'lucide-vue-next'
 import { ref } from 'vue'
-import { Menu, Settings, Clock, Home, Lightbulb, Users, Moon, BookOpen, ChevronDown } from 'lucide-vue-next'
 
 const {
   isRunning,
@@ -306,7 +316,6 @@ const {
 // Local reactive state
 const activityInput = ref('')
 const showMobileMenu = ref(false)
-
 
 // Haptic feedback utility
 const vibrate = (pattern: number | number[]) => {
@@ -366,7 +375,6 @@ const navigateAndCloseMenu = (path: string) => {
 const navigateToHome = () => navigateAndCloseMenu('/')
 const navigateToHistory = () => navigateAndCloseMenu('/history')
 const navigateToSettings = () => navigateAndCloseMenu('/settings')
-
 </script>
 
 <style scoped>

@@ -190,14 +190,8 @@
 <script setup lang="ts">
 import { InputParserService } from '~/services/inputParser'
 
-const {
-  loading,
-  error,
-  getActivityStats,
-  getActivitiesForDate,
-  deleteActivity,
-  formatDuration,
-} = useActivities()
+const { loading, error, getActivityStats, getActivitiesForDate, deleteActivity, formatDuration } =
+  useActivities()
 
 // Local state for activities
 const activities = ref([])
@@ -227,10 +221,10 @@ const refreshActivities = async () => {
 const editingActivity = ref<any>(null)
 
 const editActivity = (activity: any) => {
-  editingActivity.value = { 
+  editingActivity.value = {
     ...activity,
     // Show clean title for editing (without tags/priority)
-    title: getCleanTitle(activity.title)
+    title: getCleanTitle(activity.title),
   }
 }
 

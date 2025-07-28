@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest'
-import { formatDuration, createRateLimitError, FOCUS_TIME_CONFIG } from '~/server/utils/focusTimeUtils'
+import { describe, expect, it } from 'vitest'
+import {
+  FOCUS_TIME_CONFIG,
+  createRateLimitError,
+  formatDuration,
+} from '~/server/utils/focusTimeUtils'
 
 describe('Focus Time Utilities', () => {
   describe('formatDuration', () => {
@@ -45,7 +49,7 @@ describe('Focus Time Utilities', () => {
         activityCount: 3,
         requiredActivityCount: 3,
         totalNewFocusTime: 1800000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -70,7 +74,7 @@ describe('Focus Time Utilities', () => {
         activityCount: 1,
         requiredActivityCount: 3,
         totalNewFocusTime: 3600000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -91,14 +95,14 @@ describe('Focus Time Utilities', () => {
         activityCount: 1,
         requiredActivityCount: 3,
         totalNewFocusTime: 900000,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
 
       expect(error.data.reasons).toEqual([
         'Track 45 minutes more focus time',
-        'Complete 2 more activities'
+        'Complete 2 more activities',
       ])
       expect(error.data.progress.focusTimePercent).toBe(25)
       expect(error.data.progress.activitiesNeeded).toBe(2)
@@ -116,7 +120,7 @@ describe('Focus Time Utilities', () => {
         activityCount: 0,
         requiredActivityCount: 3,
         totalNewFocusTime: 0,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -136,7 +140,7 @@ describe('Focus Time Utilities', () => {
         activityCount: 50,
         requiredActivityCount: 3,
         totalNewFocusTime: Number.MAX_SAFE_INTEGER,
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -166,7 +170,7 @@ describe('Focus Time Utilities', () => {
     it('should validate that 1 hour is the correct minimum for meaningful insights', () => {
       const oneHourMs = 60 * 60 * 1000
       expect(FOCUS_TIME_CONFIG.MIN_FOCUS_TIME_MS).toBe(oneHourMs)
-      
+
       // Verify that this provides meaningful granularity
       expect(formatDuration(oneHourMs)).toBe('1 hour')
       expect(formatDuration(oneHourMs - 1)).toBe('59 minutes')
@@ -175,7 +179,7 @@ describe('Focus Time Utilities', () => {
 
     it('should validate that 3 activities is reasonable for insight generation', () => {
       expect(FOCUS_TIME_CONFIG.MIN_ACTIVITY_COUNT).toBe(3)
-      
+
       // This ensures we have enough data points for meaningful analysis
       // but is not too restrictive for users
     })
@@ -192,7 +196,7 @@ describe('Focus Time Utilities', () => {
         activityCount: 1,
         requiredActivityCount: 3,
         totalNewFocusTime: 1080000, // 18 minutes
-        requiredFocusTime: 3600000
+        requiredFocusTime: 3600000,
       }
 
       const error = createRateLimitError(focusAnalysis)
@@ -200,11 +204,11 @@ describe('Focus Time Utilities', () => {
       // Check that error messages are user-friendly
       expect(error.data.reasons[0]).toMatch(/Track \d+ minutes more focus time/)
       expect(error.data.reasons[1]).toMatch(/Complete \d+ more activities/)
-      
+
       // Check that requirements are clearly stated
       expect(error.data.requirements.minimumFocusTime).toBe('1 hour')
       expect(error.data.requirements.minimumActivities).toBe(3)
-      
+
       // Check that current progress is shown
       expect(error.data.current.focusTime).toBe('18 minutes')
       expect(error.data.current.activities).toBe(1)

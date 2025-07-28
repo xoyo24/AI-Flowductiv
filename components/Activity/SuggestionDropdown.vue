@@ -138,7 +138,7 @@ const handleEscapeKey = () => {
 // Expose methods for parent component
 defineExpose({
   handleEnterKey,
-  handleEscapeKey
+  handleEscapeKey,
 })
 </script>
 

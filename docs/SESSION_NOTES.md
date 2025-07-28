@@ -37,38 +37,41 @@
 
 ---
 
-## 🎯 **Phase 1C: Productivity Analytics Dashboard (Current Focus)**
+## 🎯 **Phase 1C: Analytics Hub Sidebar (Current Focus)**
 
-### **Week 1 (Aug 1-5): Core Analytics Infrastructure**
-- **Productivity Heatmap Component** (GitHub-inspired 365-day grid)
-  - Daily activity aggregation queries
-  - Color intensity based on productivity score
-  - Click-to-drill-down functionality for specific days
-- **Integrated Dashboard Layout**
-  - Left: Heatmap + Goals/Insights (analysis functions)
-  - Right: Timer + Recent Activities (primary actions)
-  - Remove separate pages, unified experience
+**Revised Priority**: Analytics-focused sidebar redesign to resolve UX confusion between main area (all activities) and sidebar (today-only data)
 
-### **Week 2 (Aug 8-12): Goals & Mobile Analytics**
-- **Goal Setting & Tracking System**
-  - Visual progress indicators on heatmap
-  - Daily/weekly/monthly targets
-  - Streak counters and achievement badges
-- **Mobile Analytics Panel** (Flomo-inspired)
-  - Slide-out panel with condensed heatmap
-  - Touch-optimized goals and insights
-  - Tag filtering and pattern analysis
+### **Week 1 (Jul 28 - Aug 1): Core Analytics Hub Architecture**
+- **AnalyticsSidebar Component Design**
+  - Frequency-based layout hierarchy (primary actions prominent, analytics accessible)
+  - Desktop: Fixed right sidebar (320px) with collapsible sections
+  - Mobile: Bottom sheet with swipe-up expansion
+- **OverallSummary Component** (replacing QuickStats)
+  - All-time statistics with period comparisons (today vs week vs month)
+  - Progress bars and trend indicators
+  - Consistent data scope with main activity feed
+
+### **Week 2 (Aug 5-8): Enhanced Analytics Integration**
+- **Heatmap Integration Improvements**
+  - Better integration into analytics sidebar layout
+  - Click-to-drill-down with consistent data scope
+  - Visual pattern recognition with motivational messaging
+- **Mobile Analytics Experience**
+  - Collapsible bottom sheet for analytics access
+  - Maintain timer/input context while viewing insights
+  - Touch-optimized interaction patterns
 
 ### **Success Metrics**:
-- Replace simple activity lists with engaging visual patterns
-- Unified dashboard experience (no separate navigation)
-- GitHub-style contribution patterns for motivation
-- Goal-oriented productivity tracking
+- Resolve cognitive dissonance between main area and sidebar data scope
+- Maintain efficiency of primary actions (timer, input) while enhancing analytics access
+- Frequency-based hierarchy: high-use features prominent, analytics accessible but secondary
+- Mobile analytics complement rather than compete with primary workflow
 
-### **Technical Debt Resolution**:
-- Remove redundant pages (`pages/history.vue`, `pages/settings.vue`)
-- Consolidate navigation into integrated dashboard
-- Update documentation to reflect current architecture
+### **Technical Implementation**:
+- Replace `components/QuickStats.vue` with `components/OverallSummary.vue`
+- Create `components/AnalyticsSidebar.vue` with responsive layout
+- Update `UnifiedDashboard.vue` layout for new sidebar integration
+- Implement `components/MobileAnalyticsSheet.vue` for mobile experience
 
 ---
 

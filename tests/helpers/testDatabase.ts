@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
+import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { activities } from '~/server/database/schema'
 import type { NewActivity } from '~/types'
@@ -80,7 +80,7 @@ export async function closeTestDatabase() {
  */
 export async function seedTestActivities(customActivities?: Partial<NewActivity>[]) {
   const db = getTestDatabase()
-  
+
   const defaultActivities: NewActivity[] = [
     {
       id: 'test-1',
@@ -93,7 +93,7 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       priority: 2,
       focusRating: 8,
       energyLevel: 7,
-      userId: null
+      userId: null,
     },
     {
       id: 'test-2',
@@ -106,7 +106,7 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       priority: 1,
       focusRating: 6,
       energyLevel: 5,
-      userId: null
+      userId: null,
     },
     {
       id: 'test-3',
@@ -119,15 +119,15 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       priority: 3,
       focusRating: 9,
       energyLevel: 8,
-      userId: null
-    }
+      userId: null,
+    },
   ]
 
   const activitiesToSeed = customActivities
     ? customActivities.map((custom, index) => ({
         ...defaultActivities[index % defaultActivities.length],
         ...custom,
-        id: custom.id || `test-custom-${index}`
+        id: custom.id || `test-custom-${index}`,
       }))
     : defaultActivities
 

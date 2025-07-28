@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 
@@ -14,7 +14,7 @@ const sampleActivities = [
     tags: ['urgent'],
     priority: 2,
     focusRating: 8,
-    energyLevel: 7
+    energyLevel: 7,
   },
   {
     id: '2',
@@ -25,7 +25,7 @@ const sampleActivities = [
     tags: ['work'],
     priority: null,
     focusRating: 6,
-    energyLevel: 5
+    energyLevel: 5,
   },
   {
     id: '3',
@@ -36,15 +36,15 @@ const sampleActivities = [
     tags: [],
     priority: null,
     focusRating: null,
-    energyLevel: null
-  }
+    energyLevel: null,
+  },
 ]
 
 // Mock variables that will be updated per test
-let mockActivities = ref([])
-let mockLoading = ref(false)
-let mockError = ref(null)
-let mockGetActivityStats = ref({ totalTime: 0, activityCount: 0, longestSession: 0 })
+const mockActivities = ref([])
+const mockLoading = ref(false)
+const mockError = ref(null)
+const mockGetActivityStats = ref({ totalTime: 0, activityCount: 0, longestSession: 0 })
 let mockGetTodaysActivities = vi.fn()
 let mockDeleteActivity = vi.fn()
 let mockFormatDuration = vi.fn(() => '0m')
@@ -77,7 +77,7 @@ describe('ActivityList Component', () => {
 
   it('should render basic structure with empty state', async () => {
     const wrapper = await mountSuspended(ActivityList)
-    
+
     expect(wrapper.find('h2').text()).toContain("Today's Activities")
     expect(wrapper.text()).toContain('0 activities')
     expect(wrapper.text()).toContain('No activities tracked today')
@@ -87,9 +87,9 @@ describe('ActivityList Component', () => {
   it('should display loading state', async () => {
     // Set loading state
     mockLoading.value = true
-    
+
     const wrapper = await mountSuspended(ActivityList)
-    
+
     expect(wrapper.find('.animate-spin').exists()).toBe(true)
     expect(wrapper.text()).toContain('0 activities')
   })
@@ -100,14 +100,14 @@ describe('ActivityList Component', () => {
     mockGetTodaysActivities = vi.fn()
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     expect(wrapper.text()).toContain('Failed to fetch activities')
     expect(wrapper.text()).toContain('Try again')
-    
+
     // Test retry functionality
     const retryButton = wrapper.find('button')
     expect(retryButton.exists()).toBe(true)
-    
+
     await retryButton.trigger('click')
     expect(mockGetTodaysActivities).toHaveBeenCalled()
   })
@@ -119,22 +119,22 @@ describe('ActivityList Component', () => {
     mockFormatDuration = vi.fn(() => '30m')
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     // Check header shows correct count
     expect(wrapper.text()).toContain('3 activities')
-    
+
     // Check activity list exists
     expect(wrapper.find('[data-testid="activity-list"]').exists()).toBe(true)
-    
+
     // Check some activity content is displayed
     expect(wrapper.text()).toContain('Work on project')
     expect(wrapper.text()).toContain('Team meeting')
     expect(wrapper.text()).toContain('Quick review')
-    
+
     // Check tags are displayed
     expect(wrapper.text()).toContain('#urgent')
     expect(wrapper.text()).toContain('#work')
-    
+
     // Check priority indicators
     expect(wrapper.text()).toContain('!2')
   })
@@ -146,7 +146,7 @@ describe('ActivityList Component', () => {
     mockFormatDuration = vi.fn(() => '30m')
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     // Check for focus rating display
     expect(wrapper.text()).toContain('Focus:')
     // Should have 5 rating dots
@@ -161,13 +161,13 @@ describe('ActivityList Component', () => {
     mockFormatDuration = vi.fn(() => '30m')
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     // Find first edit button
     const editButton = wrapper.find('button[title="Edit activity"]')
     expect(editButton.exists()).toBe(true)
-    
+
     await editButton.trigger('click')
-    
+
     // Should show edit modal
     expect(wrapper.text()).toContain('Edit Activity')
   })
@@ -178,22 +178,22 @@ describe('ActivityList Component', () => {
     mockDeleteActivity = vi.fn()
     mockGetActivityStats.value = { totalTime: 7200000, activityCount: 3, longestSession: 3600000 }
     mockFormatDuration = vi.fn(() => '30m')
-    
+
     // Mock window.confirm
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     // Find first delete button
     const deleteButton = wrapper.find('button[title="Delete activity"]')
     expect(deleteButton.exists()).toBe(true)
-    
+
     await deleteButton.trigger('click')
-    
+
     // Should call confirm and deleteActivity
     expect(confirmSpy).toHaveBeenCalled()
     expect(mockDeleteActivity).toHaveBeenCalled()
-    
+
     confirmSpy.mockRestore()
   })
 
@@ -203,12 +203,12 @@ describe('ActivityList Component', () => {
     mockGetActivityStats.value = {
       totalTime: 7200000, // 2 hours
       activityCount: 3,
-      longestSession: 3600000 // 1 hour
+      longestSession: 3600000, // 1 hour
     }
     mockFormatDuration = vi.fn(() => '2h')
 
     const wrapper = await mountSuspended(ActivityList)
-    
+
     // Should show stats section
     expect(wrapper.text()).toContain('Total Time')
     expect(wrapper.text()).toContain('Sessions')

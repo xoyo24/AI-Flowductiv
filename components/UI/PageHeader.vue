@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
   backButtonTestId: 'back-button',
   headerClass: 'px-4 py-3',
   contentClass: '',
-  titleClass: 'text-lg'
+  titleClass: 'text-lg',
 })
 
 const navigateBack = () => {

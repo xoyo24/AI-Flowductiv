@@ -1,6 +1,6 @@
+import { desc, like, or, sql } from 'drizzle-orm'
 import { db } from '~/server/database'
 import { activities } from '~/server/database/schema'
-import { sql, desc, like, or } from 'drizzle-orm'
 import type { ActivitySuggestion } from '~/types/activity'
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const rawSearchQuery = (query.q as string) || ''
     const limit = Math.min(Number(query.limit) || 10, 50) // Max 50 suggestions
-    
+
     // Handle tag search - strip # prefix for tag matching
     const isTagSearch = rawSearchQuery.startsWith('#')
     const searchQuery = isTagSearch ? rawSearchQuery.slice(1) : rawSearchQuery
@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
 
     // Extract activity suggestions
     const activitySuggestions = new Map<string, ActivitySuggestion>()
-    
+
     // Extract tag suggestions with frequency counting
-    const tagFrequency = new Map<string, { count: number, lastUsed: Date }>()
+    const tagFrequency = new Map<string, { count: number; lastUsed: Date }>()
 
     // Process activities to build suggestions
     recentActivities.forEach((activity) => {
@@ -36,7 +36,11 @@ export default defineEventHandler(async (event) => {
       const activityDate = new Date(activity.startTime)
 
       // Add activity suggestion (skip if doing tag search)
-      if (!isTagSearch && title && (!searchQuery || title.toLowerCase().includes(searchQuery.toLowerCase()))) {
+      if (
+        !isTagSearch &&
+        title &&
+        (!searchQuery || title.toLowerCase().includes(searchQuery.toLowerCase()))
+      ) {
         const key = title.toLowerCase()
         if (!activitySuggestions.has(key)) {
           activitySuggestions.set(key, {
@@ -44,7 +48,7 @@ export default defineEventHandler(async (event) => {
             text: title,
             type: 'activity',
             frequency: 1,
-            lastUsed: activityDate
+            lastUsed: activityDate,
           })
         } else {
           const existing = activitySuggestions.get(key)!
@@ -71,26 +75,25 @@ export default defineEventHandler(async (event) => {
     })
 
     // Convert tag frequency to suggestions
-    const tagSuggestions: ActivitySuggestion[] = Array.from(tagFrequency.entries()).map(([tag, data]) => ({
-      id: `tag-${tag}`,
-      text: tag,
-      type: 'tag',
-      frequency: data.count,
-      lastUsed: data.lastUsed
-    }))
+    const tagSuggestions: ActivitySuggestion[] = Array.from(tagFrequency.entries()).map(
+      ([tag, data]) => ({
+        id: `tag-${tag}`,
+        text: tag,
+        type: 'tag',
+        frequency: data.count,
+        lastUsed: data.lastUsed,
+      })
+    )
 
     // Combine all suggestions
-    const allSuggestions = [
-      ...Array.from(activitySuggestions.values()),
-      ...tagSuggestions
-    ]
+    const allSuggestions = [...Array.from(activitySuggestions.values()), ...tagSuggestions]
 
     // Sort by relevance (frequency * recency score)
     const now = Date.now()
     const sortedSuggestions = allSuggestions
-      .map(suggestion => ({
+      .map((suggestion) => ({
         ...suggestion,
-        score: calculateRelevanceScore(suggestion, now, searchQuery, isTagSearch)
+        score: calculateRelevanceScore(suggestion, now, searchQuery, isTagSearch),
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
@@ -101,14 +104,14 @@ export default defineEventHandler(async (event) => {
       meta: {
         total: sortedSuggestions.length,
         query: searchQuery,
-        limit
-      }
+        limit,
+      },
     }
   } catch (error) {
     console.error('Error fetching activity suggestions:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch activity suggestions'
+      statusMessage: 'Failed to fetch activity suggestions',
     })
   }
 })
@@ -118,31 +121,31 @@ export default defineEventHandler(async (event) => {
  * Higher score = more relevant
  */
 function calculateRelevanceScore(
-  suggestion: ActivitySuggestion, 
-  now: number, 
+  suggestion: ActivitySuggestion,
+  now: number,
   searchQuery: string,
-  isTagSearch: boolean = false
+  isTagSearch = false
 ): number {
   const dayMs = 24 * 60 * 60 * 1000
   const daysSinceUsed = (now - suggestion.lastUsed.getTime()) / dayMs
-  
+
   // Base frequency score
   let score = suggestion.frequency
-  
+
   // Recency boost (more recent = higher score)
-  const recencyMultiplier = Math.max(0.1, 1 - (daysSinceUsed / 30)) // Decay over 30 days
+  const recencyMultiplier = Math.max(0.1, 1 - daysSinceUsed / 30) // Decay over 30 days
   score *= recencyMultiplier
-  
+
   // Exact match boost
   if (searchQuery && suggestion.text.toLowerCase() === searchQuery.toLowerCase()) {
     score *= 3
   }
-  
+
   // Prefix match boost
   if (searchQuery && suggestion.text.toLowerCase().startsWith(searchQuery.toLowerCase())) {
     score *= 2
   }
-  
+
   // Tag search preference
   if (isTagSearch) {
     // Strongly prefer tag suggestions when doing tag search
@@ -155,6 +158,6 @@ function calculateRelevanceScore(
       score *= 1.1
     }
   }
-  
+
   return score
 }

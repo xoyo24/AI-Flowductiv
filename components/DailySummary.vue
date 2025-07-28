@@ -289,7 +289,7 @@ const generateSummary = async () => {
     summary.value = response.data
   } catch (err: any) {
     console.error('Failed to generate summary:', err)
-    
+
     // Handle rate limit errors (429) with detailed data
     if (err.statusCode === 429 || err.status === 429) {
       rateLimitData.value = err.data || {}

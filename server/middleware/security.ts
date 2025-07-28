@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'X-Frame-Options', 'DENY')
   setHeader(event, 'X-XSS-Protection', '1; mode=block')
   setHeader(event, 'Referrer-Policy', 'strict-origin-when-cross-origin')
-  
+
   // CORS headers for API routes
   if (event.node.req.url?.startsWith('/api/')) {
     setHeader(event, 'Access-Control-Allow-Origin', '*')
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'Access-Control-Allow-Headers', 'Content-Type, Authorization')
     setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate')
   }
-  
+
   // Handle preflight OPTIONS requests
   if (event.node.req.method === 'OPTIONS') {
     setResponseStatus(event, 204)

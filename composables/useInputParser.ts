@@ -21,7 +21,7 @@ export const useInputParser = (inputRef: Ref<string>) => {
     endTime: Date
   }): ActivityInput => {
     const parsed = parsedActivity.value
-    
+
     return {
       title: parsed.cleanText || 'Untitled Activity',
       description: parsed.originalText !== parsed.cleanText ? parsed.originalText : undefined,
@@ -31,7 +31,7 @@ export const useInputParser = (inputRef: Ref<string>) => {
       tags: parsed.tags,
       priority: parsed.priority,
       focusRating: null,
-      energyLevel: null
+      energyLevel: null,
     }
   }
 
@@ -41,8 +41,8 @@ export const useInputParser = (inputRef: Ref<string>) => {
     tags: readonly(tags),
     priority: readonly(priority),
     cleanText: readonly(cleanText),
-    
+
     // Utilities
-    createActivityInput
+    createActivityInput,
   }
 }

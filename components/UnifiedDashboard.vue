@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen w-full flex bg-background">
     
-    <!-- Desktop Sidebar (always visible on lg+) -->
+    <!-- Desktop Analytics Sidebar (always visible on lg+) -->
     <aside 
       :class="{
         'hidden lg:flex': true,
@@ -10,71 +10,22 @@
       }"
       class="flex-col border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300"
     >
-      <!-- Sidebar Header -->
-      <div class="flex items-center justify-between p-4 border-b border-border">
-        <h1 v-if="!sidebarCollapsed" class="text-lg font-semibold text-foreground">Flowductiv</h1>
-        <div class="flex items-center space-x-2">
+      <AnalyticsSidebar
+        :collapsed="sidebarCollapsed"
+        :loading="analyticsLoading"
+        @toggle-collapse="sidebarCollapsed = !sidebarCollapsed"
+        @day-selected="handleDaySelected"
+        @refresh-data="refreshAnalytics"
+        @navigate-to-settings="navigateToSettings"
+        @navigate-to-history="navigateToHistory"
+        @show-analytics-modal="showAnalyticsModal = true"
+        @show-heatmap-modal="showHeatmapModal = true"
+        @show-insights-modal="showInsightsModal = true"
+      >
+        <template #theme-toggle>
           <ThemeToggle />
-          <button
-            @click="sidebarCollapsed = !sidebarCollapsed"
-            class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-            data-testid="sidebar-toggle"
-            :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-          >
-            <Menu class="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-      
-      <!-- Analytics Section in Sidebar -->
-      <div v-if="!sidebarCollapsed" class="flex-1 p-4 space-y-6 overflow-y-auto">
-        <div class="space-y-3">
-          <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide">Analytics</h3>
-          <ProductivityHeatmap @day-selected="handleDaySelected" />
-          <QuickStats />
-          <DailySummary />
-        </div>
-        
-        <!-- Navigation -->
-        <nav class="space-y-2 border-t border-border pt-4">
-          <button
-            @click="navigateToSettings"
-            class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-            data-testid="nav-settings"
-          >
-            <Settings class="w-5 h-5" />
-            <span>Settings</span>
-          </button>
-          <button
-            @click="navigateToHistory"
-            class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-            data-testid="nav-history"
-          >
-            <Clock class="w-5 h-5" />
-            <span>History</span>
-          </button>
-        </nav>
-      </div>
-      
-      <!-- Collapsed sidebar content -->
-      <div v-else class="flex-1 p-2 space-y-2">
-        <button
-          @click="navigateToSettings"
-          class="w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
-          data-testid="nav-settings-collapsed"
-          title="Settings"
-        >
-          <Settings class="w-5 h-5 mx-auto" />
-        </button>
-        <button
-          @click="navigateToHistory"
-          class="w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
-          data-testid="nav-history-collapsed"
-          title="History"
-        >
-          <Clock class="w-5 h-5 mx-auto" />
-        </button>
-      </div>
+        </template>
+      </AnalyticsSidebar>
     </aside>
 
     <!-- Main Content Area -->
@@ -109,32 +60,22 @@
           
           <!-- Analytics Section in Mobile Menu -->
           <div class="p-4 space-y-6">
-            <div class="space-y-3">
-              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Analytics</h3>
-              <ProductivityHeatmap @day-selected="handleDaySelected" />
-              <QuickStats />
-              <DailySummary />
-            </div>
-            
-            <!-- Navigation -->
-            <nav class="space-y-2 border-t border-border pt-4">
-              <button
-                @click="navigateToSettings"
-                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-                data-testid="nav-settings"
-              >
-                <Settings class="w-5 h-5" />
-                <span>Settings</span>
-              </button>
-              <button
-                @click="navigateToHistory"
-                class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
-                data-testid="nav-history"
-              >
-                <Clock class="w-5 h-5" />
-                <span>History</span>
-              </button>
-            </nav>
+            <AnalyticsSidebar
+              :collapsed="false"
+              :loading="analyticsLoading"
+              @day-selected="handleDaySelected"
+              @refresh-data="refreshAnalytics"
+              @navigate-to-settings="navigateToSettings"
+              @navigate-to-history="navigateToHistory"
+              @toggle-collapse="() => {}"
+              @show-analytics-modal="() => {}"
+              @show-heatmap-modal="() => {}"
+              @show-insights-modal="() => {}"
+            >
+              <template #theme-toggle>
+                <!-- No theme toggle in mobile menu - it's in header -->
+              </template>
+            </AnalyticsSidebar>
           </div>
         </div>
       </div>
@@ -401,14 +342,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted, triggerRef } from 'vue'
-import { Menu, Settings, Clock, Lightbulb, Users, Moon, BookOpen } from 'lucide-vue-next'
-import { useInputParser } from '~/composables/useInputParser'
-import { useAutoComplete } from '~/composables/useAutoComplete'
-import { useContextualStatus } from '~/composables/useContextualStatus'
+import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
+import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import type { HeatmapDay } from '~/composables/useActivities'
+import { useAutoComplete } from '~/composables/useAutoComplete'
+import { useContextualStatus } from '~/composables/useContextualStatus'
+import { useInputParser } from '~/composables/useInputParser'
 
 // Timer and activities
 const {
@@ -423,7 +364,13 @@ const {
   resetTimer,
 } = useTimer()
 
-const { activities, formatDuration, formatRelativeTime, getActivities, loading: activitiesLoading } = useActivities()
+const {
+  activities,
+  formatDuration,
+  formatRelativeTime,
+  getActivities,
+  loading: activitiesLoading,
+} = useActivities()
 
 // Contextual status service
 const { contextualMessage, recentActivitiesMessage, motivationalInsight } = useContextualStatus()
@@ -446,9 +393,17 @@ const timerStatus = computed(() => {
 const activityInput = ref('')
 const showMobileMenu = ref(false)
 const sidebarCollapsed = ref(false)
+const analyticsLoading = ref(false)
+const showAnalyticsModal = ref(false)
+const showHeatmapModal = ref(false)
+const showInsightsModal = ref(false)
 
 // Input parsing and auto-complete
-const { tags: extractedTags, priority: extractedPriority, cleanText } = useInputParser(activityInput)
+const {
+  tags: extractedTags,
+  priority: extractedPriority,
+  cleanText,
+} = useInputParser(activityInput)
 
 const {
   suggestions,
@@ -459,7 +414,7 @@ const {
   selectCurrent,
   selectIndex,
   performSearch,
-  getInitialSuggestions
+  getInitialSuggestions,
 } = useAutoComplete(activityInput, { debounceMs: 300, maxSuggestions: 8 })
 
 // Dropdown state management
@@ -467,8 +422,11 @@ const inputFocused = ref(false)
 const dropdownVisible = ref(false)
 const justSelectedSuggestion = ref(false)
 
-const showSuggestions = computed(() => 
-  inputFocused.value && dropdownVisible.value && (suggestions.value.length > 0 || suggestionsLoading.value)
+const showSuggestions = computed(
+  () =>
+    inputFocused.value &&
+    dropdownVisible.value &&
+    (suggestions.value.length > 0 || suggestionsLoading.value)
 )
 
 // Haptic feedback utility
@@ -538,14 +496,16 @@ const handleSuggestionSelect = (suggestion) => {
     const currentText = activityInput.value.trim()
     const hasTag = currentText.includes(`#${suggestion.text}`)
     if (!hasTag) {
-      activityInput.value = currentText ? `${currentText} #${suggestion.text}` : `#${suggestion.text}`
+      activityInput.value = currentText
+        ? `${currentText} #${suggestion.text}`
+        : `#${suggestion.text}`
     }
   }
-  
+
   triggerRef(activityInput)
   justSelectedSuggestion.value = true
   hideDropdown()
-  
+
   nextTick(() => {
     const input = document.getElementById('unified-activity-input')
     if (input) {
@@ -590,7 +550,7 @@ const handleKeydown = (event) => {
         break
     }
   }
-  
+
   if (!showSuggestions.value && event.key.length === 1) {
     nextTick(() => {
       if (suggestions.value.length > 0) {
@@ -602,7 +562,7 @@ const handleKeydown = (event) => {
 
 const handleInputFocus = () => {
   inputFocused.value = true
-  
+
   nextTick(() => {
     if (activityInput.value.trim()) {
       performSearch(activityInput.value.trim())
@@ -610,7 +570,7 @@ const handleInputFocus = () => {
       getInitialSuggestions()
     }
   })
-  
+
   if (suggestions.value.length > 0) {
     showDropdown()
   }
@@ -647,6 +607,19 @@ const handleDaySelected = (day: HeatmapDay) => {
   // TODO: Show detailed view for selected day
 }
 
+// Analytics handlers
+const refreshAnalytics = async () => {
+  analyticsLoading.value = true
+  try {
+    // Trigger refresh of analytics components
+    window.dispatchEvent(new CustomEvent('refresh-analytics'))
+  } catch (error) {
+    console.error('Failed to refresh analytics:', error)
+  } finally {
+    analyticsLoading.value = false
+  }
+}
+
 // Click outside to dismiss dropdown
 const dropdownContainer = ref(null)
 
@@ -659,10 +632,10 @@ const handleClickOutside = (event) => {
 // Load more activities
 const loadMoreActivities = async () => {
   if (activitiesLoading.value || !hasMoreActivities.value) return
-  
+
   currentPage.value++
   const newActivities = await getActivities(currentPage.value, 10)
-  
+
   // If we got fewer than 10, we've reached the end
   if (newActivities.length < 10) {
     hasMoreActivities.value = false
@@ -680,7 +653,7 @@ onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   // Load first page of activities on component mount
   await refreshActivities()
-  
+
   // Listen for activity saved events to refresh the list
   window.addEventListener('activity-saved', refreshActivities)
 })

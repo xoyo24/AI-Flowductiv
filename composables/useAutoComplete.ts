@@ -1,4 +1,4 @@
-import { type Ref, ref, computed, watch, readonly, getCurrentInstance, onUnmounted } from 'vue'
+import { type Ref, computed, getCurrentInstance, onUnmounted, readonly, ref, watch } from 'vue'
 import type { ActivitySuggestion, AutoCompleteResult } from '~/types/activity'
 
 export interface UseAutoCompleteOptions {
@@ -7,15 +7,8 @@ export interface UseAutoCompleteOptions {
   maxSuggestions?: number
 }
 
-export const useAutoComplete = (
-  searchQuery: Ref<string>,
-  options: UseAutoCompleteOptions = {}
-) => {
-  const {
-    debounceMs = 300,
-    minQueryLength = 0,
-    maxSuggestions = 10
-  } = options
+export const useAutoComplete = (searchQuery: Ref<string>, options: UseAutoCompleteOptions = {}) => {
+  const { debounceMs = 300, minQueryLength = 0, maxSuggestions = 10 } = options
 
   // Reactive state
   const suggestions = ref<ActivitySuggestion[]>([])
@@ -28,13 +21,9 @@ export const useAutoComplete = (
   let abortController: AbortController | null = null
 
   // Computed properties for suggestion filtering
-  const activitySuggestions = computed(() => 
-    suggestions.value.filter(s => s.type === 'activity')
-  )
+  const activitySuggestions = computed(() => suggestions.value.filter((s) => s.type === 'activity'))
 
-  const tagSuggestions = computed(() => 
-    suggestions.value.filter(s => s.type === 'tag')
-  )
+  const tagSuggestions = computed(() => suggestions.value.filter((s) => s.type === 'tag'))
 
   const selectedSuggestion = computed(() => {
     if (selectedIndex.value >= 0 && selectedIndex.value < suggestions.value.length) {
@@ -63,11 +52,11 @@ export const useAutoComplete = (
 
     try {
       const response = await $fetch<{ data: ActivitySuggestion[] }>('/api/activities/suggestions', {
-        query: { 
+        query: {
           q: query,
-          limit: maxSuggestions
+          limit: maxSuggestions,
         },
-        signal: abortController.signal
+        signal: abortController.signal,
       })
 
       suggestions.value = response.data
@@ -84,36 +73,38 @@ export const useAutoComplete = (
   }
 
   // Debounced search watcher
-  watch(searchQuery, (newQuery) => {
-    // Clear existing timer
-    if (debounceTimer) {
-      clearTimeout(debounceTimer)
-    }
+  watch(
+    searchQuery,
+    (newQuery) => {
+      // Clear existing timer
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
 
-    // Reset selection when query changes
-    selectedIndex.value = -1
+      // Reset selection when query changes
+      selectedIndex.value = -1
 
-    // Set new timer
-    debounceTimer = setTimeout(() => {
-      performSearch(newQuery.trim())
-    }, debounceMs)
-  }, { immediate: false })
+      // Set new timer
+      debounceTimer = setTimeout(() => {
+        performSearch(newQuery.trim())
+      }, debounceMs)
+    },
+    { immediate: false }
+  )
 
   // Keyboard navigation
   const selectNext = () => {
     if (suggestions.value.length === 0) return
-    
-    selectedIndex.value = selectedIndex.value < suggestions.value.length - 1 
-      ? selectedIndex.value + 1 
-      : -1
+
+    selectedIndex.value =
+      selectedIndex.value < suggestions.value.length - 1 ? selectedIndex.value + 1 : -1
   }
 
   const selectPrevious = () => {
     if (suggestions.value.length === 0) return
-    
-    selectedIndex.value = selectedIndex.value > -1 
-      ? selectedIndex.value - 1 
-      : suggestions.value.length - 1
+
+    selectedIndex.value =
+      selectedIndex.value > -1 ? selectedIndex.value - 1 : suggestions.value.length - 1
   }
 
   const selectCurrent = () => {
@@ -167,11 +158,11 @@ export const useAutoComplete = (
     tagSuggestions: readonly(tagSuggestions),
     isLoading: readonly(isLoading),
     error: readonly(error),
-    
+
     // Selection
     selectedIndex: readonly(selectedIndex),
     selectedSuggestion: readonly(selectedSuggestion),
-    
+
     // Actions
     selectNext,
     selectPrevious,
@@ -179,9 +170,9 @@ export const useAutoComplete = (
     selectIndex,
     retry,
     cleanup,
-    
+
     // Manual search (for testing)
     performSearch,
-    getInitialSuggestions
+    getInitialSuggestions,
   }
 }

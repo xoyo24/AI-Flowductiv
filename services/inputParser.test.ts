@@ -1,104 +1,104 @@
 import { describe, expect, it } from 'vitest'
-import type { ParsedActivity } from '~/types/activity'
 import { InputParserService } from '~/services/inputParser'
+import type { ParsedActivity } from '~/types/activity'
 
 describe('InputParserService', () => {
   describe('parseActivity', () => {
     it('should parse activity with tags and priority', () => {
       const input = 'Work on frontend #react #typescript !2'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Work on frontend',
         tags: ['react', 'typescript'],
-        priority: 2
+        priority: 2,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should parse activity with only tags', () => {
       const input = 'Meeting with team #work #meeting'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Meeting with team',
         tags: ['work', 'meeting'],
-        priority: null
+        priority: null,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should parse activity with only priority', () => {
       const input = 'Urgent task !1'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Urgent task',
         tags: [],
-        priority: 1
+        priority: 1,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should parse plain text without tags or priority', () => {
       const input = 'Simple task'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Simple task',
         tags: [],
-        priority: null
+        priority: null,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should handle empty input', () => {
       const input = ''
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: '',
         cleanText: '',
         tags: [],
-        priority: null
+        priority: null,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should handle multiple priorities (use first valid)', () => {
       const input = 'Task with multiple !2 priorities !1'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Task with multiple priorities',
         tags: [],
-        priority: 2
+        priority: 2,
       }
-      
+
       expect(result).toEqual(expected)
     })
 
     it('should handle invalid priority values', () => {
       const input = 'Invalid priority !9 !0 !4'
       const result = InputParserService.parseActivity(input)
-      
+
       const expected: ParsedActivity = {
         originalText: input,
         cleanText: 'Invalid priority',
         tags: [],
-        priority: null
+        priority: null,
       }
-      
+
       expect(result).toEqual(expected)
     })
   })
@@ -106,15 +106,30 @@ describe('InputParserService', () => {
   describe('extractTags', () => {
     it('should extract various tag formats', () => {
       expect(InputParserService.extractTags('Work on #frontend')).toEqual(['frontend'])
-      expect(InputParserService.extractTags('Work on #frontend #react #typescript')).toEqual(['frontend', 'react', 'typescript'])
+      expect(InputParserService.extractTags('Work on #frontend #react #typescript')).toEqual([
+        'frontend',
+        'react',
+        'typescript',
+      ])
       expect(InputParserService.extractTags('No tags here')).toEqual([])
       expect(InputParserService.extractTags('Invalid # tag and #valid')).toEqual(['valid'])
     })
 
     it('should handle special characters in tags', () => {
-      expect(InputParserService.extractTags('Sprint #v2_0 #web3 #ui_ux')).toEqual(['v2_0', 'web3', 'ui_ux'])
-      expect(InputParserService.extractTags('Working on #ai-coding #machine-learning')).toEqual(['ai-coding', 'machine-learning'])
-      expect(InputParserService.extractTags('Learning #react.js #node.js #v2.0')).toEqual(['react.js', 'node.js', 'v2.0'])
+      expect(InputParserService.extractTags('Sprint #v2_0 #web3 #ui_ux')).toEqual([
+        'v2_0',
+        'web3',
+        'ui_ux',
+      ])
+      expect(InputParserService.extractTags('Working on #ai-coding #machine-learning')).toEqual([
+        'ai-coding',
+        'machine-learning',
+      ])
+      expect(InputParserService.extractTags('Learning #react.js #node.js #v2.0')).toEqual([
+        'react.js',
+        'node.js',
+        'v2.0',
+      ])
     })
   })
 
@@ -141,12 +156,18 @@ describe('InputParserService', () => {
   describe('cleanText', () => {
     it('should remove tags and priority from text', () => {
       expect(InputParserService.cleanText('Work on #frontend #react !2')).toBe('Work on')
-      expect(InputParserService.cleanText('Working on #ai-coding #machine-learning project !2')).toBe('Working on project')
-      expect(InputParserService.cleanText('Building #react.js #v2.0 app with #ui_ux design !3')).toBe('Building app with design')
+      expect(
+        InputParserService.cleanText('Working on #ai-coding #machine-learning project !2')
+      ).toBe('Working on project')
+      expect(
+        InputParserService.cleanText('Building #react.js #v2.0 app with #ui_ux design !3')
+      ).toBe('Building app with design')
     })
 
     it('should handle edge cases', () => {
-      expect(InputParserService.cleanText('  Task with spaces  #tag  !1  ')).toBe('Task with spaces')
+      expect(InputParserService.cleanText('  Task with spaces  #tag  !1  ')).toBe(
+        'Task with spaces'
+      )
       expect(InputParserService.cleanText('#tag !1')).toBe('')
       expect(InputParserService.cleanText('Plain text task')).toBe('Plain text task')
     })
@@ -156,7 +177,7 @@ describe('InputParserService', () => {
     it('should handle special characters in text', () => {
       const input = 'Review API docs & update tests #documentation !2'
       const result = InputParserService.parseActivity(input)
-      
+
       expect(result.cleanText).toBe('Review API docs & update tests')
       expect(result.tags).toEqual(['documentation'])
       expect(result.priority).toBe(2)
@@ -165,7 +186,7 @@ describe('InputParserService', () => {
     it('should handle unicode characters', () => {
       const input = 'Code review 📝 #review !1'
       const result = InputParserService.parseActivity(input)
-      
+
       expect(result.cleanText).toBe('Code review 📝')
       expect(result.tags).toEqual(['review'])
       expect(result.priority).toBe(1)
@@ -175,7 +196,7 @@ describe('InputParserService', () => {
       const longText = 'A'.repeat(100) // Reduced for test efficiency
       const input = `${longText} #tag !2`
       const result = InputParserService.parseActivity(input)
-      
+
       expect(result.cleanText).toBe(longText)
       expect(result.tags).toEqual(['tag'])
       expect(result.priority).toBe(2)

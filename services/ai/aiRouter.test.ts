@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest'
-import { PromptTemplates } from '~/services/ai/prompts'
+import { describe, expect, it } from 'vitest'
 import { AIRouter } from '~/services/ai/aiRouter'
+import { PromptTemplates } from '~/services/ai/prompts'
 
 describe('AI Router Integration', () => {
   describe('Prompt Generation', () => {
     it('should generate valid daily summary prompts', () => {
       const activities = [
         { title: 'Work on project #urgent', durationMs: 3600000, tags: ['urgent'] },
-        { title: 'Team meeting #work', durationMs: 1800000, tags: ['work'] }
+        { title: 'Team meeting #work', durationMs: 1800000, tags: ['work'] },
       ]
 
       const prompt = PromptTemplates.dailySummary(activities)

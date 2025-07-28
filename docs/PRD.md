@@ -164,46 +164,51 @@
 - [ ] 85%+ user satisfaction with AI summary timing/frequency
 - [ ] Application rate limiting reduces API costs by 60% vs technical limits
 
-### **Phase 1C: Productivity Analytics Dashboard (2 weeks)**  
-**Goal**: GitHub/Flomo-inspired visual analytics replacing basic activity lists
+### **Phase 1C: Analytics Hub Sidebar (2 weeks)**  
+**Goal**: Redesign sidebar from today-only action hub to comprehensive analytics hub, resolving UX confusion between main area (all activities) and sidebar scope
 
-#### **Epic 1C.1: Productivity Heatmap (GitHub-inspired)**
-- **As a** visual user, **I want to** see my productivity in a 365-day heatmap **so that** I can quickly identify patterns and streaks
-- **As a** data-driven user, **I want to** click on any day in the heatmap **so that** I can see detailed activities and insights for that date
-- **As a** motivated user, **I want to** see color intensity based on productivity scores **so that** I can visualize my focus patterns over time
-- **As a** goal-oriented user, **I want to** see summary stats (active days, total hours, goal achievement) **so that** I can track overall progress
+**Problem**: Current sidebar shows today-only data (QuickStats, DailySummary) while main area shows all-time paginated activities, creating cognitive dissonance and unclear data scope for users.
 
-#### **Epic 1C.2: Integrated Dashboard Experience**
-- **As a** user, **I want to** access all features from one unified dashboard **so that** I don't lose context switching between pages
-- **As a** desktop user, **I want to** see analytics (left) and primary actions (right) **so that** the layout matches my workflow priorities
-- **As a** mobile user, **I want to** access analytics via slide-out panel **so that** I can quickly view insights without losing my place
-- **As a** user, **I want to** seamless navigation without browser back buttons **so that** the experience feels app-like
+**Solution**: Transform sidebar into analytics-focused hub using frequency-based design hierarchy inspired by Flomo's approach.
 
-#### **Epic 1C.3: Goal Setting & Progress Tracking**
-- **As a** self-optimizer, **I want to** set daily/weekly productivity goals **so that** I can measure progress consistently
-- **As a** motivated user, **I want to** see visual progress bars and streak counters **so that** I stay motivated to maintain habits
-- **As a** competitive user, **I want to** earn achievement badges **so that** productivity tracking feels rewarding
-- **As a** pattern-aware user, **I want to** see AI insights about my optimal times **so that** I can optimize my schedule
+#### **Epic 1C.1: Analytics Hub Sidebar Architecture**
+- **As a** confused user, **I want to** see consistent data scope between main area and sidebar **so that** I understand what timeframe I'm viewing
+- **As a** desktop user, **I want to** see analytics in a dedicated right sidebar **so that** insights are always accessible while working
+- **As a** mobile user, **I want to** access analytics via collapsible bottom sheet **so that** I can view patterns without losing my current activity context
+- **As a** frequent user, **I want to** primary actions (timer, input) always prominent **so that** my most common tasks remain efficient
 
-#### **Epic 1C.4: Mobile Analytics Panel (Flomo-inspired)**
-- **As a** mobile user, **I want to** access condensed analytics via hamburger menu **so that** I can review progress on-the-go
-- **As a** touch user, **I want to** swipe through different time periods **so that** navigation feels natural on mobile
-- **As a** mobile user, **I want to** see tag filters and quick insights **so that** I can analyze patterns efficiently
-- **As a** mobile user, **I want to** maintain timer context when viewing analytics **so that** I don't lose my current activity
+#### **Epic 1C.2: Overall Summary Component (replacing QuickStats)**
+- **As a** data-driven user, **I want to** see comprehensive statistics spanning all time periods **so that** I get meaningful productivity insights
+- **As a** pattern seeker, **I want to** compare today vs week vs month metrics **so that** I can understand my productivity trends
+- **As a** goal-oriented user, **I want to** see progress toward weekly/monthly targets **so that** I stay motivated and on track
+- **As a** visual user, **I want to** see key metrics with clear labels and context **so that** I understand what the numbers mean
 
-#### **Epic 1C.5: Visual Pattern Recognition**
-- **As a** visual learner, **I want to** see activity patterns through color coding **so that** trends are immediately apparent
-- **As a** self-aware user, **I want to** identify productive vs unproductive periods **so that** I can replicate successful patterns
-- **As a** optimizer, **I want to** see correlations between activity types and productivity **so that** I can focus on high-value work
-- **As a** data user, **I want to** export my analytics data **so that** I can use it with other productivity tools
+#### **Epic 1C.3: Enhanced Productivity Heatmap Integration**
+- **As a** visual learner, **I want to** see my 12-week productivity heatmap in the analytics sidebar **so that** patterns are immediately visible
+- **As a** curious user, **I want to** click any day in the heatmap **so that** I can drill down to specific activities and insights
+- **As a** motivated user, **I want to** see productivity intensity through color gradients **so that** I can identify my most productive periods
+- **As a** streak builder, **I want to** see consecutive active days highlighted **so that** I'm motivated to maintain consistency
+
+#### **Epic 1C.4: Frequency-Based UI Hierarchy**
+- **As a** efficiency-focused user, **I want to** most frequent actions (timer, input) prominently placed **so that** my daily workflow is optimized
+- **As a** analytics user, **I want to** medium-frequency insights (patterns, summaries) easily accessible **so that** I can check progress regularly
+- **As a** power user, **I want to** low-frequency features (settings, export) available but secondary **so that** the interface remains clean
+- **As a** mobile user, **I want to** analytics to complement rather than compete with primary actions **so that** the experience feels balanced
+
+#### **Epic 1C.5: Motivational Analytics Design**
+- **As a** habit builder, **I want to** see encouraging progress messages **so that** I stay motivated to continue tracking
+- **As a** achievement-oriented user, **I want to** see completion streaks and milestones **so that** productivity tracking feels rewarding
+- **As a** self-optimizer, **I want to** see actionable insights about my patterns **so that** I can make evidence-based improvements
+- **As a** visual user, **I want to** analytics presented in digestible, encouraging formats **so that** data feels inspiring rather than overwhelming
 
 **Success Criteria**:
-- [ ] Users spend 70% more time engaging with analytics vs previous activity lists
-- [ ] Heatmap interactions (day clicks) occur in 80%+ of sessions
-- [ ] Goal setting adoption reaches 60% of active users  
-- [ ] Mobile analytics panel used by 90% of mobile users
-- [ ] Visual pattern recognition drives 40% more productivity insights
-- [ ] Unified dashboard reduces page navigation by 85%
+- [ ] Resolve UX confusion: 95% of users understand data scope consistency between main area and sidebar
+- [ ] Analytics engagement: 60% increase in sidebar analytics interaction vs previous QuickStats usage
+- [ ] Frequency-based hierarchy: Timer/input actions remain accessible within 1-2 clicks on mobile
+- [ ] Comprehensive insights: Overall Summary shows 3x more relevant metrics than previous QuickStats
+- [ ] Mobile analytics: 80% of mobile users access analytics via bottom sheet
+- [ ] Pattern recognition: Heatmap clicks occur in 70%+ of sessions with analytics sidebar
+- [ ] User satisfaction: NPS improvement of +15 points due to clearer information architecture
 
 ### **Phase 2: Habit Loop (4 weeks)**
 **Goal**: Transform from tracking tool to habit-building system

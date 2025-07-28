@@ -1,7 +1,7 @@
 import { aiSummaries, db } from '~/server/database'
-import { AIRouter } from '~/services/ai/aiRouter'
 import { calculateNewFocusTime } from '~/server/utils/focusTimeCalculator'
 import { createRateLimitError } from '~/server/utils/focusTimeUtils'
+import { AIRouter } from '~/services/ai/aiRouter'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -23,16 +23,16 @@ export default defineEventHandler(async (event) => {
 
     // Application-level rate limiting: Check focus time gates
     const focusAnalysis = await calculateNewFocusTime(null, body.activities) // null = no user auth in Phase 1B
-    
+
     // Log focus time analytics for monitoring
     console.log('📊 Focus Time Analytics:', {
       totalFocusTime: Math.round(focusAnalysis.totalNewFocusTime / (1000 * 60)), // minutes
       activityCount: focusAnalysis.activityCount,
       progressPercent: focusAnalysis.progressPercent,
       canRequest: focusAnalysis.canRequestSummary,
-      timeRemaining: focusAnalysis.timeToNextSummary
+      timeRemaining: focusAnalysis.timeToNextSummary,
     })
-    
+
     if (!focusAnalysis.canRequestSummary) {
       const rateLimitError = createRateLimitError(focusAnalysis)
       throw createError(rateLimitError)
@@ -40,15 +40,16 @@ export default defineEventHandler(async (event) => {
 
     // Use the AI Router to generate real AI summaries
     const aiRouter = new AIRouter()
-    
+
     try {
       const aiResponse = await aiRouter.generateDailySummary(body.activities)
-      
+
       // Save to database
       const today = new Date().toISOString().split('T')[0]
       const activitiesHash = generateActivitiesHash(body.activities)
-      const tokensUsed = (aiResponse.usage.input_tokens || aiResponse.usage.prompt_tokens || 0) + 
-                         (aiResponse.usage.output_tokens || aiResponse.usage.completion_tokens || 0)
+      const tokensUsed =
+        (aiResponse.usage.input_tokens || aiResponse.usage.prompt_tokens || 0) +
+        (aiResponse.usage.output_tokens || aiResponse.usage.completion_tokens || 0)
 
       const summaryData = {
         date: today,
@@ -66,16 +67,15 @@ export default defineEventHandler(async (event) => {
         message: 'Summary generated successfully',
         usage: {
           provider: aiResponse.provider,
-          tokens: tokensUsed
-        }
+          tokens: tokensUsed,
+        },
       }
-      
     } catch (aiError) {
       console.warn('AI generation failed, falling back to mock:', aiError)
-      
+
       // Fallback to mock if AI fails
       const summary = generateMockSummary(body.activities)
-      
+
       const today = new Date().toISOString().split('T')[0]
       const activitiesHash = generateActivitiesHash(body.activities)
 
@@ -95,14 +95,13 @@ export default defineEventHandler(async (event) => {
         message: 'Summary generated using fallback (AI unavailable)',
       }
     }
-    
   } catch (error) {
     if (error.statusCode) {
       throw error
     }
 
     console.error('AI Summary error:', error)
-    
+
     // Enhanced error response with more context
     const isDev = process.env.NODE_ENV === 'development'
     throw createError({
@@ -111,8 +110,8 @@ export default defineEventHandler(async (event) => {
       data: {
         error: 'Summary generation failed',
         timestamp: new Date().toISOString(),
-        details: isDev && error instanceof Error ? error.message : undefined
-      }
+        details: isDev && error instanceof Error ? error.message : undefined,
+      },
     })
   }
 })

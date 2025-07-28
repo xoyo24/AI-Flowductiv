@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Timer Essential Functionality', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('[data-testid="activity-input"]')).toBeVisible()
-    
+
     // Ensure clean state
     await page.evaluate(() => {
       localStorage.clear()
@@ -15,11 +15,11 @@ test.describe('Timer Essential Functionality', () => {
 
   test('Complete timer workflow: start → pause → resume → finish', async ({ page }) => {
     const activityText = 'Work on project #urgent'
-    
+
     // STEP 1: Verify initial state
     await expect(page.locator('[data-testid="timer-display"]')).toContainText('00:00')
     await expect(page.locator('[data-testid="timer-status"]')).toHaveClass(/bg-gray-300/)
-    
+
     // STEP 2: Start timer using Enter key (most reliable method)
     await page.fill('[data-testid="activity-input"]', activityText)
     await page.press('[data-testid="activity-input"]', 'Enter')
@@ -30,7 +30,7 @@ test.describe('Timer Essential Functionality', () => {
     await expect(page.locator('[data-testid="pause-timer"]')).toBeVisible()
     await expect(page.locator('[data-testid="finish-timer"]')).toBeVisible()
     await expect(page.locator('[data-testid="reset-timer"]')).toBeVisible()
-    
+
     // Verify input is disabled and shows current activity
     await expect(page.locator('[data-testid="activity-input"]')).toBeDisabled()
     await expect(page.locator(`text=${activityText}`)).toBeVisible()
@@ -62,7 +62,7 @@ test.describe('Timer Essential Functionality', () => {
     await expect(page.locator('[data-testid="timer-display"]')).toContainText('00:00')
     await expect(page.locator('[data-testid="timer-status"]')).toHaveClass(/bg-gray-300/)
     await expect(page.locator('text=Stopped')).toBeVisible()
-    
+
     // Input should be enabled and cleared
     await expect(page.locator('[data-testid="activity-input"]')).toBeEnabled()
     await expect(page.locator('[data-testid="activity-input"]')).toHaveValue('')
@@ -72,7 +72,7 @@ test.describe('Timer Essential Functionality', () => {
     // Test that timer doesn't start with empty input
     await page.press('[data-testid="activity-input"]', 'Enter')
     await expect(page.locator('[data-testid="timer-status"]')).toHaveClass(/bg-gray-300/)
-    
+
     // Test with valid input
     await page.fill('[data-testid="activity-input"]', 'Valid activity')
     await page.press('[data-testid="activity-input"]', 'Enter')

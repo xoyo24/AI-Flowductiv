@@ -182,7 +182,7 @@ const toggleDropdown = () => {
 
 const refreshProviders = async () => {
   if (refreshing.value) return
-  
+
   refreshing.value = true
   try {
     await checkAllProviders()

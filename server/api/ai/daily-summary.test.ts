@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $fetch } from '@nuxt/test-utils/runtime'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock AI router to avoid real API calls
 const mockGenerateDailySummary = vi.fn().mockResolvedValue({
@@ -7,14 +7,14 @@ const mockGenerateDailySummary = vi.fn().mockResolvedValue({
   provider: 'mock-claude',
   usage: {
     input_tokens: 100,
-    output_tokens: 200
-  }
+    output_tokens: 200,
+  },
 })
 
 vi.mock('~/services/ai/aiRouter', () => ({
   AIRouter: vi.fn().mockImplementation(() => ({
-    generateDailySummary: mockGenerateDailySummary
-  }))
+    generateDailySummary: mockGenerateDailySummary,
+  })),
 }))
 
 describe('AI Summary Rate Limiting Integration', () => {
@@ -38,14 +38,14 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 300000, // 5 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T10:05:00Z',
-          tags: []
-        }
+          tags: [],
+        },
       ]
 
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities }
+          body: { activities },
         })
         expect.fail('Should have thrown rate limit error')
       } catch (error: any) {
@@ -67,14 +67,14 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 4200000, // 70 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T11:10:00Z',
-          tags: ['development']
-        }
+          tags: ['development'],
+        },
       ]
 
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities }
+          body: { activities },
         })
         expect.fail('Should have thrown rate limit error')
       } catch (error: any) {
@@ -93,27 +93,27 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 2400000, // 40 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T10:40:00Z',
-          tags: ['development']
+          tags: ['development'],
         },
         {
           title: 'Code review',
           durationMs: 1200000, // 20 minutes
           startTime: '2025-01-22T11:00:00Z',
           endTime: '2025-01-22T11:20:00Z',
-          tags: ['review']
+          tags: ['review'],
         },
         {
           title: 'Planning session',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T14:00:00Z',
           endTime: '2025-01-22T14:30:00Z',
-          tags: ['planning']
-        }
+          tags: ['planning'],
+        },
       ]
 
       const response = await $fetch(API_URL, {
         method: 'POST',
-        body: { activities }
+        body: { activities },
       })
 
       expect(response.message).toBe('Summary generated successfully')
@@ -132,27 +132,27 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 2400000, // 40 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T10:40:00Z',
-          tags: ['work']
+          tags: ['work'],
         },
         {
-          title: 'Session 2', 
+          title: 'Session 2',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T11:00:00Z',
           endTime: '2025-01-22T11:30:00Z',
-          tags: ['work']
+          tags: ['work'],
         },
         {
           title: 'Session 3',
           durationMs: 1200000, // 20 minutes
           startTime: '2025-01-22T12:00:00Z',
           endTime: '2025-01-22T12:20:00Z',
-          tags: ['work']
-        }
+          tags: ['work'],
+        },
       ]
 
       const firstResponse = await $fetch(API_URL, {
         method: 'POST',
-        body: { activities: firstActivities }
+        body: { activities: firstActivities },
       })
       expect(firstResponse.message).toBe('Summary generated successfully')
 
@@ -163,14 +163,14 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 600000, // 10 minutes
           startTime: '2025-01-22T13:00:00Z',
           endTime: '2025-01-22T13:10:00Z',
-          tags: []
-        }
+          tags: [],
+        },
       ]
 
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities: secondActivities }
+          body: { activities: secondActivities },
         })
         expect.fail('Should have thrown rate limit error')
       } catch (error: any) {
@@ -188,7 +188,7 @@ describe('AI Summary Rate Limiting Integration', () => {
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: {}
+          body: {},
         })
         expect.fail('Should have thrown validation error')
       } catch (error: any) {
@@ -201,7 +201,7 @@ describe('AI Summary Rate Limiting Integration', () => {
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities: [] }
+          body: { activities: [] },
         })
         expect.fail('Should have thrown validation error')
       } catch (error: any) {
@@ -214,7 +214,7 @@ describe('AI Summary Rate Limiting Integration', () => {
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities: 'not an array' }
+          body: { activities: 'not an array' },
         })
         expect.fail('Should have thrown validation error')
       } catch (error: any) {
@@ -232,34 +232,34 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 3600000, // 60 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T11:00:00Z',
-          tags: []
+          tags: [],
         },
         {
           title: 'Incomplete task',
           durationMs: 0, // Should be filtered out
           startTime: '2025-01-22T11:00:00Z',
           endTime: '2025-01-22T11:00:00Z',
-          tags: []
+          tags: [],
         },
         {
           title: 'Another complete task',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T12:00:00Z',
           endTime: '2025-01-22T12:30:00Z',
-          tags: []
+          tags: [],
         },
         {
           title: 'Third complete task',
           durationMs: 600000, // 10 minutes
           startTime: '2025-01-22T13:00:00Z',
           endTime: '2025-01-22T13:10:00Z',
-          tags: []
-        }
+          tags: [],
+        },
       ]
 
       const response = await $fetch(API_URL, {
         method: 'POST',
-        body: { activities }
+        body: { activities },
       })
 
       // Should succeed with 100 minutes total (60+30+10), 3 valid activities
@@ -274,27 +274,27 @@ describe('AI Summary Rate Limiting Integration', () => {
           durationMs: 28800000, // 8 hours
           startTime: '2025-01-22T09:00:00Z',
           endTime: '2025-01-22T17:00:00Z',
-          tags: ['marathon']
+          tags: ['marathon'],
         },
         {
           title: 'Short break task',
           durationMs: 300000, // 5 minutes
           startTime: '2025-01-22T17:30:00Z',
           endTime: '2025-01-22T17:35:00Z',
-          tags: []
+          tags: [],
         },
         {
           title: 'Wrap-up',
           durationMs: 900000, // 15 minutes
           startTime: '2025-01-22T18:00:00Z',
           endTime: '2025-01-22T18:15:00Z',
-          tags: []
-        }
+          tags: [],
+        },
       ]
 
       const response = await $fetch(API_URL, {
         method: 'POST',
-        body: { activities }
+        body: { activities },
       })
 
       // Should succeed - way more than required time and activities
@@ -306,21 +306,21 @@ describe('AI Summary Rate Limiting Integration', () => {
   describe('Analytics Logging', () => {
     it('should log focus time analytics on requests', async () => {
       const consoleLogSpy = vi.spyOn(console, 'log')
-      
+
       const activities = [
         {
           title: 'Test session',
           durationMs: 1800000, // 30 minutes
           startTime: '2025-01-22T10:00:00Z',
           endTime: '2025-01-22T10:30:00Z',
-          tags: []
-        }
+          tags: [],
+        },
       ]
 
       try {
         await $fetch(API_URL, {
           method: 'POST',
-          body: { activities }
+          body: { activities },
         })
       } catch (error) {
         // Expected to fail due to insufficient focus time
@@ -334,7 +334,7 @@ describe('AI Summary Rate Limiting Integration', () => {
           activityCount: 1,
           progressPercent: expect.any(Number),
           canRequest: false,
-          timeRemaining: expect.any(String)
+          timeRemaining: expect.any(String),
         })
       )
 
