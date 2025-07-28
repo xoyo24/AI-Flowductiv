@@ -98,37 +98,16 @@
       </div>
 
       <!-- Top Tags (Current Period) -->
-      <div v-if="currentStats.topTags.length > 0" class="space-y-2">
-        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Top Tags ({{ currentPeriodLabel }})
-        </div>
-        <div class="flex flex-wrap gap-1">
-          <span
-            v-for="tag in currentStats.topTags.slice(0, 3)"
-            :key="tag.name"
-            class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary"
-          >
-            #{{ tag.name }}
-            <span class="ml-1 text-muted-foreground">{{ formatDuration(tag.totalTime) }}</span>
-          </span>
-        </div>
-      </div>
-
-      <!-- Quick Insights -->
-      <div v-if="insights.length > 0" class="space-y-2">
-        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Quick Insights
-        </div>
-        <div class="space-y-1">
-          <div
-            v-for="insight in insights.slice(0, 2)"
-            :key="insight.id"
-            class="text-xs text-foreground bg-secondary/20 rounded p-2"
-          >
-            {{ insight.text }}
-          </div>
-        </div>
-      </div>
+      <TagFilters
+        v-if="currentStats.topTags.length > 0"
+        :top-tags="currentStats.topTags"
+        :title="`Top Tags (${currentPeriodLabel})`"
+        :max-display="3"
+        @tag-selected="handleTagSelected"
+        @tag-deselected="handleTagDeselected"
+        @tags-cleared="handleTagsCleared"
+        @selection-changed="handleTagSelectionChanged"
+      />
     </div>
   </div>
 </template>
@@ -136,6 +115,7 @@
 <script setup lang="ts">
 import { Calendar, TrendingDown, TrendingUp } from 'lucide-vue-next'
 import TrendIndicator from '~/components/TrendIndicator.vue'
+import TagFilters from '~/components/TagFilters.vue'
 
 interface Props {
   loading?: boolean
@@ -179,7 +159,6 @@ const currentStats = ref<ActivityStats>({
   topTags: [],
 })
 const previousStats = ref<ActivityStats | null>(null)
-const insights = ref<Insight[]>([])
 
 // Time periods configuration
 const timePeriods: TimePeriod[] = [
@@ -290,46 +269,6 @@ const calculateStreakDays = async (): Promise<number> => {
   return streak
 }
 
-const generateInsights = (stats: ActivityStats, previousStats: ActivityStats | null): Insight[] => {
-  const insights: Insight[] = []
-
-  if (previousStats) {
-    // Time comparison
-    if (stats.totalTime > previousStats.totalTime * 1.1) {
-      insights.push({
-        id: 'time-increase',
-        text: `Great! You tracked ${Math.round((stats.totalTime - previousStats.totalTime) / (1000 * 60 * 60))}h more than last ${selectedPeriod.value}`,
-        type: 'positive',
-      })
-    }
-
-    // Focus improvement
-    if (stats.averageFocus > previousStats.averageFocus) {
-      insights.push({
-        id: 'focus-improvement',
-        text: `Your focus improved by ${(stats.averageFocus - previousStats.averageFocus).toFixed(1)} points`,
-        type: 'positive',
-      })
-    }
-  }
-
-  // Streak insights
-  if (stats.streakDays >= 7) {
-    insights.push({
-      id: 'streak-milestone',
-      text: `Amazing ${stats.streakDays}-day streak! You're building a strong habit`,
-      type: 'positive',
-    })
-  } else if (stats.streakDays === 0) {
-    insights.push({
-      id: 'streak-start',
-      text: 'Start a tracking streak by logging activities daily',
-      type: 'suggestion',
-    })
-  }
-
-  return insights
-}
 
 const getStreakMessage = (days: number): string => {
   if (days === 0) return 'Start your streak today!'
@@ -337,6 +276,27 @@ const getStreakMessage = (days: number): string => {
   if (days < 7) return 'Building momentum...'
   if (days < 30) return 'Strong habit forming!'
   return 'Incredible consistency!'
+}
+
+// Tag filter event handlers
+const handleTagSelected = (tag: string) => {
+  console.log('Tag selected:', tag)
+  // TODO: Implement tag filtering functionality
+}
+
+const handleTagDeselected = (tag: string) => {
+  console.log('Tag deselected:', tag)
+  // TODO: Implement tag filtering functionality
+}
+
+const handleTagsCleared = () => {
+  console.log('All tags cleared')
+  // TODO: Implement tag filtering functionality
+}
+
+const handleTagSelectionChanged = (selectedTags: Set<string>) => {
+  console.log('Tag selection changed:', selectedTags)
+  // TODO: Implement tag filtering functionality
 }
 
 // Watch for period changes
@@ -358,8 +318,6 @@ const loadStats = async () => {
       previousStats.value = await calculatePreviousPeriodStats(previousPeriodKey)
     }
 
-    // Generate insights
-    insights.value = generateInsights(currentStats.value, previousStats.value)
   } catch (error) {
     console.error('Failed to load stats:', error)
   }

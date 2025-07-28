@@ -85,25 +85,10 @@
         <div class="max-w-4xl mx-auto px-4 lg:px-8 py-6 space-y-6">
         
         <!-- Contextual Status Bar (Flomo-Style) -->
-        <div 
-          class="bg-card border border-border rounded-lg overflow-hidden"
-          data-testid="contextual-status"
-        >
-          <div class="p-4 bg-secondary/30 border-b border-border">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-foreground font-semibold text-base">{{ contextualMessage }}</p>
-                <p v-if="motivationalInsight" class="text-muted-foreground text-sm mt-1">
-                  {{ motivationalInsight }}
-                </p>
-              </div>
-              <div class="text-right">
-                <div class="text-primary font-bold text-2xl leading-none">{{ recentActivities.length }}</div>
-                <div class="text-muted-foreground text-sm mt-1">activities</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatusCallout 
+          :activities="recentActivities"
+          :motivational-insight="motivationalInsight"
+        />
 
         <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
         <div class="bg-card rounded-lg border border-border p-6 lg:p-8">
@@ -331,6 +316,7 @@
 import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
+import StatusCallout from '~/components/StatusCallout.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import type { HeatmapDay } from '~/composables/useActivities'
@@ -362,33 +348,6 @@ const {
 // Contextual status service - but we'll override contextualMessage to use local data
 const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
 
-// Create local contextual message based on recentActivities to ensure consistency
-const contextualMessage = computed(() => {
-  const count = recentActivities.value.length
-  
-  // First-time user
-  if (count === 0) {
-    return 'Welcome! Track your first activity to unlock insights'
-  }
-
-  // User with very few activities (building habit)
-  if (count < 5) {
-    return 'Great start! Track a few more to see patterns emerge'
-  }
-
-  // User with moderate activity count (showing progress)
-  if (count >= 5 && count < 20) {
-    return `Nice progress! You've tracked ${count} activities`
-  }
-
-  // User with many activities
-  if (count >= 20) {
-    return `Excellent! ${count} activities tracked - you're building great habits`
-  }
-
-  // Default fallback
-  return 'Ready to track your productivity?'
-})
 
 // Pagination state
 const currentPage = ref(1)

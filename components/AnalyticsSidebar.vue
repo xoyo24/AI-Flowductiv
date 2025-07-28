@@ -47,12 +47,14 @@
         <OverallSummary :loading="loading" />
       </div>
 
-      <!-- Productivity Heatmap -->
+      <!-- Productivity Overview (Flomo-style: heatmap + metrics) -->
       <div class="space-y-3">
         <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           Activity Pattern
         </h3>
-        <ProductivityHeatmap 
+        <ProductivityOverview 
+          :collapsed="false"
+          :loading="loading"
           @day-selected="handleDaySelected" 
         />
       </div>
@@ -204,7 +206,7 @@ import {
 import DailySummary from '~/components/DailySummary.vue'
 import OverallSummary from '~/components/OverallSummary.vue'
 import PatternInsights from '~/components/PatternInsights.vue'
-import ProductivityHeatmap from '~/components/ProductivityHeatmap.vue'
+import ProductivityOverview from '~/components/ProductivityOverview.vue'
 
 interface Props {
   collapsed?: boolean
@@ -234,8 +236,8 @@ const showPatterns = ref(false)
 const showInsights = ref(false) // Collapsed by default to save space
 
 // Actions
-const handleDaySelected = (date: Date) => {
-  emit('day-selected', date)
+const handleDaySelected = (day: any) => {
+  emit('day-selected', day)
 }
 
 const refreshData = () => {
