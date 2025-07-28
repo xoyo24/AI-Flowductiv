@@ -359,8 +359,36 @@ const {
   loading: activitiesLoading,
 } = useActivities()
 
-// Contextual status service
-const { contextualMessage, recentActivitiesMessage, motivationalInsight } = useContextualStatus()
+// Contextual status service - but we'll override contextualMessage to use local data
+const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
+
+// Create local contextual message based on recentActivities to ensure consistency
+const contextualMessage = computed(() => {
+  const count = recentActivities.value.length
+  
+  // First-time user
+  if (count === 0) {
+    return 'Welcome! Track your first activity to unlock insights'
+  }
+
+  // User with very few activities (building habit)
+  if (count < 5) {
+    return 'Great start! Track a few more to see patterns emerge'
+  }
+
+  // User with moderate activity count (showing progress)
+  if (count >= 5 && count < 20) {
+    return `Nice progress! You've tracked ${count} activities`
+  }
+
+  // User with many activities
+  if (count >= 20) {
+    return `Excellent! ${count} activities tracked - you're building great habits`
+  }
+
+  // Default fallback
+  return 'Ready to track your productivity?'
+})
 
 // Pagination state
 const currentPage = ref(1)
