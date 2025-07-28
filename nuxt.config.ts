@@ -5,6 +5,7 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
     // '@nuxtjs/supabase', // Disabled for Phase 0 - local SQLite only
     '@vueuse/nuxt',
     '@vite-pwa/nuxt',
@@ -79,6 +80,12 @@ export default defineNuxtConfig({
   tailwindcss: {
     cssPath: '~/assets/css/main.css',
     configPath: 'tailwind.config.js',
+  },
+
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+    classSuffix: '',
   },
 
 

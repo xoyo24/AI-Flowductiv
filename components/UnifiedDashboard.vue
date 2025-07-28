@@ -13,14 +13,17 @@
       <!-- Sidebar Header -->
       <div class="flex items-center justify-between p-4 border-b border-border">
         <h1 v-if="!sidebarCollapsed" class="text-lg font-semibold text-foreground">Flowductiv</h1>
-        <button
-          @click="sidebarCollapsed = !sidebarCollapsed"
-          class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-          data-testid="sidebar-toggle"
-          :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-        >
-          <Menu class="w-5 h-5" />
-        </button>
+        <div class="flex items-center space-x-2">
+          <ThemeToggle />
+          <button
+            @click="sidebarCollapsed = !sidebarCollapsed"
+            class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            data-testid="sidebar-toggle"
+            :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+          >
+            <Menu class="w-5 h-5" />
+          </button>
+        </div>
       </div>
       
       <!-- Analytics Section in Sidebar -->
@@ -90,7 +93,7 @@
         
         <h1 class="text-lg font-semibold text-foreground">Flowductiv</h1>
         
-        <div class="w-10 h-10"></div> <!-- Spacer for centering -->
+        <ThemeToggle />
       </header>
 
       <!-- Mobile Menu Overlay (only on mobile) -->
@@ -386,6 +389,7 @@ import { useInputParser } from '~/composables/useInputParser'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useContextualStatus } from '~/composables/useContextualStatus'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
+import ThemeToggle from '~/components/ThemeToggle.vue'
 import type { HeatmapDay } from '~/composables/useActivities'
 
 // Timer and activities

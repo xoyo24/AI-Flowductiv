@@ -133,21 +133,46 @@ const gridDays = computed(() => {
   return days.slice(0, 84) // Exactly 84 days (12 weeks)
 })
 
-const legendColors = [
-  'bg-gray-700', 
-  'bg-green-800', 
-  'bg-green-600', 
-  'bg-green-500', 
-  'bg-green-400'
-]
+// Get current color mode for theme-aware colors
+const colorMode = useColorMode()
+
+const legendColors = computed(() => {
+  if (colorMode.value === 'dark') {
+    return [
+      'bg-gray-700', 
+      'bg-green-800', 
+      'bg-green-600', 
+      'bg-green-500', 
+      'bg-green-400'
+    ]
+  } else {
+    return [
+      'bg-gray-200', 
+      'bg-green-200', 
+      'bg-green-300', 
+      'bg-green-400', 
+      'bg-green-500'
+    ]
+  }
+})
 
 // Methods
 const getColorClass = (score: number): string => {
-  if (score === 0) return 'bg-gray-700'  // Dark gray for empty days
-  if (score <= 0.25) return 'bg-green-800'  // Darkest green
-  if (score <= 0.5) return 'bg-green-600'   // Dark green
-  if (score <= 0.8) return 'bg-green-500'   // Medium green
-  return 'bg-green-400'  // Brightest green for high productivity
+  if (colorMode.value === 'dark') {
+    // Dark theme colors
+    if (score === 0) return 'bg-gray-700'  // Dark gray for empty days
+    if (score <= 0.25) return 'bg-green-800'  // Darkest green
+    if (score <= 0.5) return 'bg-green-600'   // Dark green
+    if (score <= 0.8) return 'bg-green-500'   // Medium green
+    return 'bg-green-400'  // Brightest green for high productivity
+  } else {
+    // Light theme colors
+    if (score === 0) return 'bg-gray-200'  // Light gray for empty days
+    if (score <= 0.25) return 'bg-green-200'  // Lightest green
+    if (score <= 0.5) return 'bg-green-300'   // Light green
+    if (score <= 0.8) return 'bg-green-400'   // Medium green
+    return 'bg-green-500'  // Darkest green for high productivity
+  }
 }
 
 const formatDate = (dateStr: string): string => {
