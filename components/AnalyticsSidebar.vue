@@ -6,7 +6,7 @@
         v-if="!collapsed" 
         class="text-sm font-medium text-muted-foreground uppercase tracking-wide"
       >
-        Analytics Hub
+        Flowductiv
       </h2>
       <div class="flex items-center space-x-2">
         <slot name="theme-toggle" />
@@ -57,12 +57,33 @@
         />
       </div>
 
-      <!-- AI Insights -->
+      <!-- AI Insights (Collapsible) -->
       <div class="space-y-3">
-        <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          AI Insights
-        </h3>
-        <DailySummary />
+        <button
+          @click="showInsights = !showInsights"
+          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
+        >
+          <span>AI Insights</span>
+          <ChevronDown 
+            :class="{
+              'w-3 h-3 transition-transform duration-200': true,
+              'rotate-180': showInsights
+            }"
+          />
+        </button>
+        
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div v-if="showInsights" class="space-y-2">
+            <DailySummary :compact="true" />
+          </div>
+        </Transition>
       </div>
 
       <!-- Quick Patterns (Expandable) -->
@@ -210,6 +231,7 @@ const emit = defineEmits<Emits>()
 
 // Local state
 const showPatterns = ref(false)
+const showInsights = ref(false) // Collapsed by default to save space
 
 // Actions
 const handleDaySelected = (date: Date) => {

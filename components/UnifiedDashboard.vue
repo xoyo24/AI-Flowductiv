@@ -105,50 +105,43 @@
           </div>
         </div>
 
-        <!-- Timer Display (Unified from Desktop) -->
-        <div class="text-center space-y-4">
-          <div 
-            class="text-5xl sm:text-6xl md:text-7xl font-mono font-bold text-foreground tracking-tight"
-            data-testid="unified-timer-display"
-            aria-live="polite"
-          >
-            {{ formattedTime }}
-          </div>
-          
-          <div v-if="currentActivity" class="text-lg text-muted-foreground">
-            {{ currentActivity }}
-          </div>
-
-          <!-- Timer Status Indicator -->
-          <div class="flex items-center justify-center space-x-2">
-            <div 
-              :class="{
-                'w-3 h-3 rounded-full': true,
-                'bg-green-500 animate-pulse': isRunning,
-                'bg-yellow-500': isPaused,
-                'bg-gray-300': !isRunning && !isPaused
-              }"
-              data-testid="timer-status"
-            />
-            <span class="text-sm text-muted-foreground">
-              {{ timerStatus }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Combined Timer + Input Card (Flomo-Style) -->
-        <div class="bg-card rounded-lg border border-border p-6">
-          <div class="space-y-4">
+        <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
+        <div class="bg-card rounded-lg border border-border p-6 lg:p-8">
+          <div class="space-y-6 lg:space-y-8">
             
-            <!-- Activity Input with Auto-complete -->
-            <div class="space-y-2">
-              <label for="unified-activity-input" class="text-sm font-medium text-foreground">
-                What are you working on?
-              </label>
+            <!-- Timer Display Section -->
+            <div class="text-center space-y-4 lg:space-y-6">
+              <div 
+                class="text-5xl sm:text-6xl lg:text-7xl font-mono font-bold text-foreground tracking-tight"
+                data-testid="unified-timer-display"
+                aria-live="polite"
+              >
+                {{ formattedTime }}
+              </div>
+              
+              <!-- Timer Status Indicator -->
+              <div class="flex items-center justify-center space-x-2">
+                <div 
+                  :class="{
+                    'w-3 h-3 rounded-full': true,
+                    'bg-green-500 animate-pulse': isRunning,
+                    'bg-yellow-500': isPaused,
+                    'bg-gray-300': !isRunning && !isPaused
+                  }"
+                  data-testid="timer-status"
+                />
+                <span class="text-sm text-muted-foreground">
+                  {{ timerStatus }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Activity Input Section (Centered for desktop) -->
+            <div class="max-w-2xl mx-auto space-y-4">
               
               <!-- Extracted Tags Display (Above Input) -->
-              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[24px]">
-                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[24px] justify-center">
+                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-primary/10 text-primary border border-primary/20">
                   <span class="text-primary/70 mr-1">#</span>{{ tag }}
                 </span>
               </div>
@@ -181,55 +174,39 @@
               </div>
               
               <!-- Helper Text -->
-              <div class="text-xs text-muted-foreground text-center">
+              <div class="text-sm text-muted-foreground text-center">
                 <span>Use <span class="text-primary font-medium">#tags</span> to categorize your activities</span>
               </div>
-            </div>
-
-            <!-- Quick Actions Grid (From Mobile) -->
-            <div v-if="!isRunning && !isPaused" class="space-y-3">
-              <div class="text-center text-sm text-muted-foreground">Quick starts:</div>
-              <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              
+              <!-- Quick Actions Grid -->
+              <div v-if="!isRunning && !isPaused" class="flex space-x-2 text-sm justify-center">
                 <button
                   @click="handleQuickStart('Deep work #focus')"
                   data-testid="quick-deep-work"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
-                  <Lightbulb class="w-6 h-6 mb-2 text-primary" />
-                  <span class="text-xs text-center font-medium">Deep Work</span>
+                  💡 Deep work
                 </button>
-                
                 <button
                   @click="handleQuickStart('Meeting #meeting')"
                   data-testid="quick-meeting"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
-                  <Users class="w-6 h-6 mb-2 text-primary" />
-                  <span class="text-xs text-center font-medium">Meeting</span>
+                  👥 Meeting
                 </button>
-                
-                <button
-                  @click="handleQuickStart('Break #break')"
-                  data-testid="quick-break"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
-                >
-                  <Moon class="w-6 h-6 mb-2 text-primary" />
-                  <span class="text-xs text-center font-medium">Break</span>
-                </button>
-                
                 <button
                   @click="handleQuickStart('Learning #development')"
                   data-testid="quick-learning"
-                  class="flex flex-col items-center justify-center p-4 bg-card border border-border rounded-lg hover:bg-muted/50 active:bg-muted transition-all duration-200 touch-manipulation"
+                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
-                  <BookOpen class="w-6 h-6 mb-2 text-primary" />
-                  <span class="text-xs text-center font-medium">Learning</span>
+                  📚 Learning
                 </button>
               </div>
+              
             </div>
 
             <!-- Timer Control Buttons -->
-            <div class="flex justify-center space-x-4">
+            <div class="flex justify-center space-x-3">
               <button
                 v-if="!isRunning && !isPaused"
                 @click="handleStart"
@@ -286,15 +263,20 @@
             <div 
               v-for="activity in recentActivities" 
               :key="activity.id"
-              class="bg-card rounded-lg border border-border p-5 group hover:shadow-md transition-all duration-200 cursor-pointer"
+              class="bg-card rounded-lg border border-border p-5 lg:p-6 group hover:shadow-md transition-all duration-200 cursor-pointer"
+              @click="handleActivityClick(activity)"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
-                  <p class="text-foreground font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
-                  <div class="flex items-center space-x-3 mb-3">
+                  <p class="text-foreground font-medium text-base lg:text-lg leading-relaxed mb-3">{{ activity.title }}</p>
+                  <div class="flex items-center space-x-3 lg:space-x-4 mb-3">
                     <span class="text-sm font-medium text-foreground">{{ formatDuration(activity.durationMs) }}</span>
                     <span class="text-xs text-muted-foreground">•</span>
                     <span class="text-xs text-muted-foreground">{{ formatRelativeTime(activity.endTime) }}</span>
+                    <span v-if="activity.startTime && activity.endTime" class="text-xs text-muted-foreground">•</span>
+                    <span v-if="activity.startTime && activity.endTime" class="text-xs text-muted-foreground">
+                      {{ formatTimeRange(activity.startTime, activity.endTime) }}
+                    </span>
                   </div>
                   <div class="flex space-x-2">
                     <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
@@ -302,7 +284,11 @@
                     </span>
                   </div>
                 </div>
-                <button class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3">
+                <button 
+                  class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3 lg:ml-4"
+                  @click.stop="handleActivityMenu(activity)"
+                  aria-label="Activity options"
+                >
                   <svg class="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                   </svg>
@@ -648,6 +634,33 @@ const refreshActivities = async () => {
   currentPage.value = 1
   hasMoreActivities.value = true
   await getActivities(1, 10)
+}
+
+// Activity interaction handlers
+const handleActivityClick = (activity) => {
+  // For future: implement activity detail view or inline editing
+  console.log('Activity clicked:', activity)
+}
+
+const handleActivityMenu = (activity) => {
+  // For future: implement context menu with edit/delete options
+  console.log('Activity menu:', activity)
+}
+
+// Format time range helper
+const formatTimeRange = (startTime, endTime) => {
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+  
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    })
+  }
+  
+  return `${formatTime(start)} - ${formatTime(end)}`
 }
 
 onMounted(async () => {

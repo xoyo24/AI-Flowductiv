@@ -60,8 +60,13 @@ export const useContextualStatus = () => {
     }
 
     // User with very few activities (building habit)
-    if (state.totalActivities < 3) {
+    if (state.totalActivities < 5) {
       return 'Great start! Track a few more to see patterns emerge'
+    }
+
+    // User with moderate activity count (showing progress)
+    if (state.totalActivities >= 5 && state.totalActivities < 20) {
+      return `Nice progress! You've tracked ${state.totalActivities} activities`
     }
 
     // User returning after break

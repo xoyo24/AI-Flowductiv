@@ -1,17 +1,38 @@
 <template>
-  <div class="bg-card rounded-lg border border-border p-6">
-    <div class="flex items-center justify-between mb-4">
+  <div :class="{
+    'bg-card rounded-lg border border-border': !compact,
+    'p-6': !compact,
+    'p-3': compact
+  }">
+    <div v-if="!compact" class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-foreground">Daily Summary</h2>
       <AISettingsDropdown v-if="!loading" />
     </div>
 
-    <div v-if="loading" class="flex items-center justify-center py-8">
-      <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-      <span class="ml-2 text-sm text-muted-foreground">Generating insights...</span>
+    <div v-if="loading" :class="{
+      'flex items-center justify-center py-8': !compact,
+      'flex items-center justify-center py-4': compact
+    }">
+      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+      <span v-if="!compact" class="ml-2 text-sm text-muted-foreground">Generating insights...</span>
     </div>
 
-    <!-- Rate Limit Error - Show Previous Summary + Friendly Message -->
-    <div v-else-if="isRateLimited && summary" class="space-y-4">
+    <!-- Compact Mode - Show only essential info -->
+    <div v-else-if="compact && (summary || isRateLimited)" class="space-y-2">
+      <div v-if="summary" class="text-xs text-muted-foreground line-clamp-3">
+        {{ summaryPlainText }}
+      </div>
+      <div v-else-if="isRateLimited" class="text-xs text-muted-foreground">
+        {{ rateLimitReasons[0] || 'Track more focus time to unlock insights' }}
+      </div>
+      <div class="flex justify-between text-xs">
+        <span class="text-muted-foreground">{{ focusScore }}/5 focus</span>
+        <span class="text-muted-foreground">{{ productivityLevel }}</span>
+      </div>
+    </div>
+
+    <!-- Full Mode - Rate Limit Error - Show Previous Summary + Friendly Message -->
+    <div v-else-if="!compact && isRateLimited && summary" class="space-y-4">
       <!-- Show Previous Summary -->
       <div class="prose prose-sm max-w-none text-foreground">
         <div v-html="formattedSummary" class="text-sm leading-relaxed"></div>
@@ -178,12 +199,20 @@
 <script setup lang="ts">
 import AISettingsDropdown from '~/components/AI/SettingsDropdown.vue'
 
+interface Props {
+  compact?: boolean
+}
+
 interface AISummary {
   id: string
   content: string
   provider: string
   generatedAt: string
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  compact: false,
+})
 
 const { getActivitiesForDate } = useActivities()
 
@@ -206,6 +235,17 @@ const formattedSummary = computed(() => {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\n/g, '<br>')
+})
+
+const summaryPlainText = computed(() => {
+  if (!summary.value?.content) return 'No insights available yet'
+  
+  // Strip markdown and HTML for compact display
+  return summary.value.content
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/\n+/g, ' ')
+    .trim()
 })
 
 const focusScore = computed(() => {
