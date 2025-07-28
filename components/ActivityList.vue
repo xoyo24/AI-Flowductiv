@@ -190,7 +190,7 @@
 <script setup lang="ts">
 import { InputParserService } from '~/services/inputParser'
 
-const { loading, error, getActivityStats, getActivitiesForDate, deleteActivity, formatDuration } =
+const { loading, error, getActivityStats, getActivitiesForDate, deleteActivity, updateActivity, formatDuration } =
   useActivities()
 
 // Local state for activities

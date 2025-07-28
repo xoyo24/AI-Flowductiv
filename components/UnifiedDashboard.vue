@@ -344,6 +344,7 @@
 <script setup lang="ts">
 import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
+import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import type { HeatmapDay } from '~/composables/useActivities'

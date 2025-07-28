@@ -54,7 +54,6 @@
         </h3>
         <ProductivityHeatmap 
           @day-selected="handleDaySelected" 
-          :compact="true"
         />
       </div>
 
@@ -63,7 +62,7 @@
         <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           AI Insights
         </h3>
-        <DailySummary :compact="true" />
+        <DailySummary />
       </div>
 
       <!-- Quick Patterns (Expandable) -->
@@ -181,6 +180,10 @@ import {
   RotateCw,
   Settings,
 } from 'lucide-vue-next'
+import DailySummary from '~/components/DailySummary.vue'
+import OverallSummary from '~/components/OverallSummary.vue'
+import PatternInsights from '~/components/PatternInsights.vue'
+import ProductivityHeatmap from '~/components/ProductivityHeatmap.vue'
 
 interface Props {
   collapsed?: boolean
@@ -198,7 +201,7 @@ interface Emits {
   (e: 'show-insights-modal'): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
 })

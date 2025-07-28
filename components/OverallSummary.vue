@@ -135,6 +135,7 @@
 
 <script setup lang="ts">
 import { Calendar, TrendingDown, TrendingUp } from 'lucide-vue-next'
+import TrendIndicator from '~/components/TrendIndicator.vue'
 
 interface Props {
   loading?: boolean
