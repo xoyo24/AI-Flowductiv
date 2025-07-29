@@ -100,7 +100,7 @@
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto pb-safe px-safe lg:px-0">
-        <div class="max-w-4xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+        <div class="max-w-4xl mx-auto px-4 lg:px-8 py-4 space-y-4">
         
         <!-- Contextual Status Bar (Flomo-Style) -->
         <StatusCallout 
@@ -108,13 +108,13 @@
         />
 
         <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
-        <div class="bg-card rounded-lg border border-border p-6 lg:p-8">
-          <div class="space-y-6 lg:space-y-8">
+        <div class="content-card p-5">
+          <div class="space-y-5">
             
             <!-- Timer Display Section -->
-            <div class="text-center space-y-4 lg:space-y-6">
+            <div class="text-center space-y-3">
               <div 
-                class="text-5xl sm:text-6xl lg:text-7xl font-mono font-bold text-foreground tracking-tight"
+                class="text-5xl lg:text-6xl timer-display font-bold text-foreground tracking-tight"
                 data-testid="unified-timer-display"
                 aria-live="polite"
               >
@@ -277,13 +277,13 @@
             <div 
               v-for="activity in recentActivities" 
               :key="activity.id"
-              class="bg-card rounded-lg border border-border p-5 lg:p-6 group hover:shadow-md transition-all duration-200 cursor-pointer"
+              class="content-card activity-card p-5 group cursor-pointer"
               @click="handleActivityClick(activity)"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
-                  <p class="text-foreground font-medium text-base lg:text-lg leading-relaxed mb-3">{{ activity.title }}</p>
-                  <div class="flex items-center space-x-3 lg:space-x-4 mb-3">
+                  <p class="text-foreground font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
+                  <div class="flex items-center space-x-3 mb-3">
                     <span class="text-sm font-medium text-foreground">{{ formatDuration(activity.durationMs) }}</span>
                     <span class="text-xs text-muted-foreground">•</span>
                     <span class="text-xs text-muted-foreground">{{ formatRelativeTime(activity.endTime) }}</span>
@@ -299,7 +299,7 @@
                   </div>
                 </div>
                 <button 
-                  class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3 lg:ml-4"
+                  class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3"
                   @click.stop="handleActivityMenu(activity)"
                   aria-label="Activity options"
                 >
@@ -325,12 +325,12 @@
           </div>
           
           <!-- Empty State Card -->
-          <div v-else-if="!activitiesLoading" class="bg-card rounded-lg border border-border p-8 text-center">
+          <div v-else-if="!activitiesLoading" class="content-card p-8 text-center">
             <p class="text-muted-foreground text-sm">{{ recentActivitiesMessage }}</p>
           </div>
           
           <!-- Loading State -->
-          <div v-else class="bg-card rounded-lg border border-border p-8 text-center">
+          <div v-else class="content-card p-8 text-center">
             <p class="text-muted-foreground text-sm">Loading activities...</p>
           </div>
         </div>

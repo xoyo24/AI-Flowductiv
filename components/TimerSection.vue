@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-card rounded-lg border border-border p-6">
+  <div class="content-card p-6">
     <div class="space-y-6">
       <!-- Activity Input -->
       <div class="space-y-2">
@@ -55,7 +55,7 @@
 
       <!-- Timer Display -->
       <div class="text-center space-y-4">
-        <div class="text-6xl font-mono font-bold text-foreground tracking-tight" data-testid="timer-display">
+        <div class="text-7xl timer-display font-bold text-foreground tracking-tight" data-testid="timer-display">
           {{ formattedTime }}
         </div>
         

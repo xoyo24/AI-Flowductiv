@@ -130,7 +130,7 @@
         <div
           data-testid="mobile-timer-display"
           aria-live="polite"
-          class="text-6xl sm:text-7xl font-mono font-bold text-foreground tracking-tight"
+          class="text-5xl timer-display font-bold text-foreground tracking-tight"
         >
           {{ formattedTime }}
         </div>
@@ -167,7 +167,7 @@
         <div
           data-testid="mobile-timer-display"
           aria-live="polite"
-          class="text-6xl sm:text-7xl font-mono font-bold text-foreground tracking-tight"
+          class="text-5xl timer-display font-bold text-foreground tracking-tight"
         >
           {{ formattedTime }}
         </div>

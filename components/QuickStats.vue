@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-card rounded-lg border border-border p-6">
+  <div class="content-card p-6">
     <h2 class="text-lg font-semibold text-foreground mb-4">Quick Stats</h2>
 
     <div v-if="todaysActivities.length === 0" class="text-center py-8 text-muted-foreground">

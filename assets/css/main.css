@@ -5,9 +5,9 @@
 @layer base {
   /* Light theme colors */
   :root {
-    --background: 0 0% 100%; /* white */
+    --background: 0 0% 98%; /* gray-50 */
     --foreground: 224 71% 4%; /* zinc-900 */
-    --card: 0 0% 98%; /* gray-50 */
+    --card: 0 0% 100%; /* white */
     --card-foreground: 224 71% 4%; /* zinc-900 */
     --popover: 0 0% 100%; /* white */
     --popover-foreground: 224 71% 4%; /* zinc-900 */
@@ -57,5 +57,34 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Design System Component Patterns */
+  .content-card { 
+    @apply bg-card border border-border rounded-xl shadow-sm;
+  }
+  
+  .content-card:hover {
+    @apply shadow-md;
+    transition: all 0.2s ease;
+  }
+  
+  .activity-card {
+    @apply transition-all duration-200;
+  }
+  
+  .activity-card:hover { 
+    transform: translateY(-1px); 
+    @apply shadow-md;
+  }
+  
+  .timer-display { 
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; 
+  }
+  
+  .filter-chip {
+    @apply transition-all duration-200;
   }
 }
