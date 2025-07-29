@@ -93,7 +93,7 @@
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto pb-safe px-safe lg:px-0">
         <!-- Main Area Header (Desktop/Mobile Consistency) -->
-        <div class="hidden lg:block border-b border-border bg-background">
+        <div class="hidden lg:block bg-background">
           <div class="max-w-4xl mx-auto px-4 lg:px-8 py-3">
             <div class="flex items-center justify-between">
               <h1 class="text-lg font-semibold text-foreground">FLOWDUCTIV</h1>
@@ -104,7 +104,7 @@
                     v-model="searchQuery"
                     type="text"
                     placeholder="Search activities and tags..."
-                    class="w-64 px-3 py-1.5 text-sm border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent"
+                    class="w-64 px-3 py-1.5 text-sm border border-muted rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent focus:bg-background"
                     @input="handleSearchInput"
                     @focus="handleSearchFocus"
                     @blur="handleSearchBlur"
@@ -128,11 +128,11 @@
         />
 
         <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
-        <div class="content-card p-4">
-          <div class="space-y-4">
+        <div class="content-card p-3">
+          <div class="space-y-3">
             
             <!-- Timer Display Section -->
-            <div class="text-center space-y-2">
+            <div class="text-center space-y-1">
               <div 
                 class="text-5xl lg:text-6xl timer-display font-bold text-foreground tracking-tight"
                 data-testid="unified-timer-display"
@@ -158,122 +158,142 @@
               </div>
             </div>
 
-            <!-- Activity Input Section (Centered for desktop) -->
-            <div class="max-w-2xl mx-auto space-y-3">
+            <!-- Flomo-Style Integrated Input Composer -->
+            <div class="max-w-2xl mx-auto">
               
               <!-- Extracted Tags Display (Above Input) -->
-              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[24px] justify-center">
-                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-1.5 mb-2 justify-center">
+                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                   <span class="text-primary/70 mr-1">#</span>{{ tag }}
                 </span>
               </div>
               
-              <div ref="dropdownContainer" class="relative">
-                <input
-                  id="unified-activity-input"
-                  v-model="activityInput"
-                  type="text"
-                  placeholder="Enter activity or click for suggestions"
-                  class="w-full px-4 py-2.5 text-base border-2 border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                  :disabled="isRunning || isPaused"
-                  @keyup.enter="handleEnterKey"
-                  @keydown="handleKeydown"
-                  @focus="handleInputFocus"
-                  @blur="handleInputBlur"
-                  data-testid="unified-activity-input"
-                />
-                
-                <!-- Auto-complete Suggestions Dropdown -->
-                <SuggestionDropdown
-                  :suggestions="suggestions"
-                  :visible="showSuggestions"
-                  :selected-index="selectedIndex"
-                  :loading="suggestionsLoading"
-                  @select="handleSuggestionSelect"
-                  @hover="selectIndex"
-                  @close="hideDropdown"
-                />
+              <!-- Large Integrated Input Area (Flomo-style) -->
+              <div class="relative border-2 border-input rounded-xl bg-background focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent transition-all">
+                <div class="p-4">
+                  
+                  <!-- Main Input Field (Large like Flomo) -->
+                  <div ref="dropdownContainer" class="relative">
+                    <textarea
+                      id="unified-activity-input"
+                      v-model="activityInput"
+                      placeholder="What are you working on? Use #tags to categorize..."
+                      class="w-full resize-none border-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[60px]"
+                      :disabled="isRunning || isPaused"
+                      rows="2"
+                      @keydown.enter="handleEnterKey"
+                      @keydown="handleKeydown"
+                      @focus="handleInputFocus"
+                      @blur="handleInputBlur"
+                      data-testid="unified-activity-input"
+                    />
+                    
+                    <!-- Auto-complete Suggestions Dropdown -->
+                    <SuggestionDropdown
+                      :suggestions="suggestions"
+                      :visible="showSuggestions"
+                      :selected-index="selectedIndex"
+                      :loading="suggestionsLoading"
+                      @select="handleSuggestionSelect"
+                      @hover="selectIndex"
+                      @close="hideDropdown"
+                    />
+                  </div>
+                  
+                  <!-- Bottom Toolbar (Flomo-style with integrated controls) -->
+                  <div class="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                    
+                    <!-- Left: Quick Actions (Integrated as icons) -->
+                    <div v-if="!isRunning && !isPaused" class="flex items-center space-x-1">
+                      <button
+                        @click="handleQuickStart('Deep work #focus')"
+                        data-testid="quick-deep-work"
+                        class="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+                        title="Deep work"
+                      >
+                        💡
+                      </button>
+                      <button
+                        @click="handleQuickStart('Meeting #meeting')"
+                        data-testid="quick-meeting"
+                        class="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+                        title="Meeting"
+                      >
+                        👥
+                      </button>
+                      <button
+                        @click="handleQuickStart('Learning #development')"
+                        data-testid="quick-learning"
+                        class="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+                        title="Learning"
+                      >
+                        📚
+                      </button>
+                    </div>
+                    
+                    <!-- Right: Timer Controls (Like Flomo's send button) -->
+                    <div class="flex items-center space-x-2">
+                      
+                      <!-- Secondary actions for running timer -->
+                      <div v-if="isRunning || isPaused" class="flex items-center space-x-1">
+                        <button
+                          v-if="isPaused"
+                          @click="handleFinish"
+                          class="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors"
+                          data-testid="unified-finish-button"
+                        >
+                          Finish
+                        </button>
+                        <button
+                          @click="handleReset"
+                          class="px-3 py-1.5 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors"
+                          data-testid="unified-reset-button"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      
+                      <!-- Primary timer action (prominent like Flomo's send) -->
+                      <button
+                        v-if="!isRunning && !isPaused"
+                        @click="handleStart"
+                        :disabled="!activityInput.trim()"
+                        class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors flex items-center space-x-1"
+                        data-testid="unified-start-button"
+                      >
+                        <span>Start</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8 5v10l7-5z"/>
+                        </svg>
+                      </button>
+
+                      <button
+                        v-if="isRunning"
+                        @click="handlePause"
+                        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors flex items-center space-x-1"
+                        data-testid="unified-pause-button"
+                      >
+                        <span>Pause</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6 4h2v12H6V4zm6 0h2v12h-2V4z"/>
+                        </svg>
+                      </button>
+
+                      <button
+                        v-if="isPaused"
+                        @click="handleResume"
+                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors flex items-center space-x-1"
+                        data-testid="unified-resume-button"
+                      >
+                        <span>Resume</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8 5v10l7-5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              <!-- Helper Text -->
-              <div class="text-xs text-muted-foreground text-center">
-                <span>Use <span class="text-primary font-medium">#tags</span> to categorize your activities</span>
-              </div>
-              
-              <!-- Quick Actions Grid -->
-              <div v-if="!isRunning && !isPaused" class="flex space-x-2 text-xs justify-center">
-                <button
-                  @click="handleQuickStart('Deep work #focus')"
-                  data-testid="quick-deep-work"
-                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
-                >
-                  💡 Deep work
-                </button>
-                <button
-                  @click="handleQuickStart('Meeting #meeting')"
-                  data-testid="quick-meeting"
-                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
-                >
-                  👥 Meeting
-                </button>
-                <button
-                  @click="handleQuickStart('Learning #development')"
-                  data-testid="quick-learning"
-                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
-                >
-                  📚 Learning
-                </button>
-              </div>
-              
-            </div>
-
-            <!-- Timer Control Buttons -->
-            <div class="flex justify-center space-x-3">
-              <button
-                v-if="!isRunning && !isPaused"
-                @click="handleStart"
-                :disabled="!activityInput.trim()"
-                class="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-base touch-manipulation"
-                data-testid="unified-start-button"
-              >
-                Start Timer
-              </button>
-
-              <button
-                v-if="isRunning"
-                @click="handlePause"
-                class="px-6 py-3 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 font-medium transition-colors text-base touch-manipulation"
-                data-testid="unified-pause-button"
-              >
-                Pause
-              </button>
-
-              <button
-                v-if="isPaused"
-                @click="handleResume"
-                class="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 font-medium transition-colors text-base touch-manipulation"
-                data-testid="unified-resume-button"
-              >
-                Resume
-              </button>
-
-              <button
-                v-if="isPaused"
-                @click="handleFinish"
-                class="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 font-medium transition-colors text-base touch-manipulation"
-                data-testid="unified-finish-button"
-              >
-                Finish
-              </button>
-
-              <button
-                v-if="isRunning || isPaused"
-                @click="handleReset"
-                class="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium transition-colors text-base touch-manipulation"
-                data-testid="unified-reset-button"
-              >
-                Reset
-              </button>
             </div>
           </div>
         </div>
@@ -627,6 +647,7 @@ const handleKeydown = (event) => {
         selectPrevious()
         break
       case 'Enter':
+        // Only handle Enter for suggestions, not for starting timer
         if (selectedIndex.value >= 0) {
           event.preventDefault()
           const selected = selectCurrent()
@@ -646,14 +667,15 @@ const handleKeydown = (event) => {
         hideDropdown()
         break
     }
-  }
-
-  if (!showSuggestions.value && event.key.length === 1) {
-    nextTick(() => {
-      if (suggestions.value.length > 0) {
-        showDropdown()
-      }
-    })
+  } else {
+    // Only trigger suggestions for regular typing, not Enter
+    if (event.key.length === 1 && event.key !== 'Enter') {
+      nextTick(() => {
+        if (suggestions.value.length > 0) {
+          showDropdown()
+        }
+      })
+    }
   }
 }
 
@@ -682,11 +704,17 @@ const handleInputBlur = () => {
   }, 150)
 }
 
-const handleEnterKey = () => {
+const handleEnterKey = (event: KeyboardEvent) => {
   if (justSelectedSuggestion.value) {
     return
   }
-  handleStart()
+  
+  // In textarea: Enter starts timer (Flomo-style), Shift+Enter creates new line
+  if (!event.shiftKey) {
+    event.preventDefault()
+    handleStart()
+  }
+  // Shift+Enter allows normal new line behavior
 }
 
 // Navigation handlers
