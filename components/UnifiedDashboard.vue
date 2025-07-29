@@ -13,6 +13,8 @@
       <AnalyticsSidebar
         :collapsed="sidebarCollapsed"
         :loading="analyticsLoading"
+        :tag-data="tagData"
+        :selected-tags="selectedTags"
         @toggle-collapse="sidebarCollapsed = !sidebarCollapsed"
         @day-selected="handleDaySelected"
         @refresh-data="refreshAnalytics"
@@ -21,6 +23,13 @@
         @show-analytics-modal="showAnalyticsModal = true"
         @show-heatmap-modal="showHeatmapModal = true"
         @show-insights-modal="showInsightsModal = true"
+        @tag-selected="handleTagSelected"
+        @tag-deselected="handleTagDeselected"
+        @tags-cleared="handleTagsCleared"
+        @selection-changed="handleTagSelectionChanged"
+        @tag-favorite="handleTagFavorite"
+        @tag-edit="handleTagEdit"
+        @tag-remove="handleTagRemove"
       >
         <template #theme-toggle>
           <ThemeToggle />
@@ -63,6 +72,8 @@
             <AnalyticsSidebar
               :collapsed="false"
               :loading="analyticsLoading"
+              :tag-data="tagData"
+              :selected-tags="selectedTags"
               @day-selected="handleDaySelected"
               @refresh-data="refreshAnalytics"
               @navigate-to-settings="navigateToSettings"
@@ -71,6 +82,13 @@
               @show-analytics-modal="() => {}"
               @show-heatmap-modal="() => {}"
               @show-insights-modal="() => {}"
+              @tag-selected="handleTagSelected"
+              @tag-deselected="handleTagDeselected"
+              @tags-cleared="handleTagsCleared"
+              @selection-changed="handleTagSelectionChanged"
+              @tag-favorite="handleTagFavorite"
+              @tag-edit="handleTagEdit"
+              @tag-remove="handleTagRemove"
             >
               <template #theme-toggle>
                 <!-- No theme toggle in mobile menu - it's in header -->
@@ -342,8 +360,38 @@ const {
   formatDuration,
   formatRelativeTime,
   getActivities,
+  getActivityStats,
   loading: activitiesLoading,
 } = useActivities()
+
+// Tag filtering state
+const selectedTags = ref(new Set<string>())
+
+// Computed properties for tag data and filtered activities
+const tagData = computed(() => {
+  const stats = getActivityStats.value
+  return Object.entries(stats.tagStats).map(([name, data]) => ({
+    name,
+    count: data.count,
+    totalTime: data.totalTime,
+    isFavorite: false // TODO: implement favorites
+  })).sort((a, b) => b.count - a.count) // Sort by usage
+})
+
+const filteredActivities = computed(() => {
+  if (selectedTags.value.size === 0) {
+    return activities.value
+  }
+  
+  return activities.value.filter(activity => {
+    if (!activity.tags || activity.tags.length === 0) {
+      return false
+    }
+    
+    // Activity must have at least one of the selected tags
+    return activity.tags.some(tag => selectedTags.value.has(tag))
+  })
+})
 
 // Contextual status service - but we'll override contextualMessage to use local data
 const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
@@ -353,8 +401,8 @@ const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
 const currentPage = ref(1)
 const hasMoreActivities = ref(true)
 
-// Activities are already in chronological order from the API
-const recentActivities = computed(() => activities.value)
+// Use filtered activities for display
+const recentActivities = computed(() => filteredActivities.value)
 
 // Timer status display
 const timerStatus = computed(() => {
@@ -592,6 +640,38 @@ const refreshAnalytics = async () => {
   } finally {
     analyticsLoading.value = false
   }
+}
+
+// Tag filtering handlers
+const handleTagSelected = (tag: string) => {
+  selectedTags.value.add(tag)
+}
+
+const handleTagDeselected = (tag: string) => {
+  selectedTags.value.delete(tag)
+}
+
+const handleTagsCleared = () => {
+  selectedTags.value.clear()
+}
+
+const handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
+  selectedTags.value = new Set(newSelectedTags)
+}
+
+const handleTagFavorite = (tag: any) => {
+  console.log('Toggle favorite for tag:', tag.name)
+  // TODO: Implement tag favorite functionality
+}
+
+const handleTagEdit = (tag: any) => {
+  console.log('Edit tag:', tag.name)
+  // TODO: Open tag edit modal/dialog
+}
+
+const handleTagRemove = (tag: any, includeActivities: boolean) => {
+  console.log('Remove tag:', tag.name, 'Include activities:', includeActivities)
+  // TODO: Implement tag removal functionality
 }
 
 // Click outside to dismiss dropdown

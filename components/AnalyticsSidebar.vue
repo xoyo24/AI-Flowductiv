@@ -42,7 +42,9 @@
 
       <!-- Tag Filters -->
       <TagFilters
-        :top-tags="sampleTags"
+        v-if="props.tagData.length > 0"
+        :top-tags="props.tagData"
+        :selected-tags="props.selectedTags"
         title="Tags"
         :max-display="10"
         @tag-selected="handleTagSelected"
@@ -203,9 +205,18 @@ import PatternInsights from '~/components/PatternInsights.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
 import TagFilters from '~/components/TagFilters.vue'
 
+interface TagData {
+  name: string
+  count: number
+  totalTime: number
+  isFavorite: boolean
+}
+
 interface Props {
   collapsed?: boolean
   loading?: boolean
+  tagData?: TagData[]
+  selectedTags?: Set<string>
 }
 
 interface Emits {
@@ -217,11 +228,20 @@ interface Emits {
   (e: 'show-analytics-modal'): void
   (e: 'show-heatmap-modal'): void
   (e: 'show-insights-modal'): void
+  (e: 'tag-selected', tag: string): void
+  (e: 'tag-deselected', tag: string): void
+  (e: 'tags-cleared'): void
+  (e: 'selection-changed', selectedTags: Set<string>): void
+  (e: 'tag-favorite', tag: TagData): void
+  (e: 'tag-edit', tag: TagData): void
+  (e: 'tag-remove', tag: TagData, includeActivities: boolean): void
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
+  tagData: () => [],
+  selectedTags: () => new Set<string>()
 })
 
 const emit = defineEmits<Emits>()
@@ -229,17 +249,6 @@ const emit = defineEmits<Emits>()
 // Local state
 const showPatterns = ref(false)
 const showInsights = ref(false) // Collapsed by default to save space
-
-// Sample tags data (in real app, this would come from props or composable)
-const sampleTags = ref([
-  { name: 'Area', count: 44, totalTime: 2 * 60 * 60 * 1000, isFavorite: false },
-  { name: 'GGS', count: 5, totalTime: 30 * 60 * 1000, isFavorite: true },
-  { name: 'Inbox', count: 2, totalTime: 15 * 60 * 1000, isFavorite: false },
-  { name: 'Project', count: 8, totalTime: 45 * 60 * 1000, isFavorite: false },
-  { name: 'Focus', count: 12, totalTime: 90 * 60 * 1000, isFavorite: true },
-  { name: 'Meeting', count: 6, totalTime: 60 * 60 * 1000, isFavorite: false },
-  { name: 'Learning', count: 3, totalTime: 25 * 60 * 1000, isFavorite: false }
-])
 
 // Actions
 const handleDaySelected = (day: any) => {
@@ -250,39 +259,32 @@ const refreshData = () => {
   emit('refresh-data')
 }
 
-// Tag filter event handlers
+// Tag filter event handlers - forward to parent
 const handleTagSelected = (tag: string) => {
-  console.log('Tag selected:', tag)
-  // TODO: Implement tag filtering in main activities area
+  emit('tag-selected', tag)
 }
 
 const handleTagDeselected = (tag: string) => {
-  console.log('Tag deselected:', tag)
-  // TODO: Implement tag filtering in main activities area
+  emit('tag-deselected', tag)
 }
 
 const handleTagsCleared = () => {
-  console.log('All tags cleared')
-  // TODO: Clear tag filtering in main activities area
+  emit('tags-cleared')
 }
 
 const handleTagSelectionChanged = (selectedTags: Set<string>) => {
-  console.log('Tag selection changed:', selectedTags)
-  // TODO: Update activities filtering based on selected tags
+  emit('selection-changed', selectedTags)
 }
 
-const handleTagFavorite = (tag: any) => {
-  console.log('Toggle favorite for tag:', tag.name)
-  // TODO: Implement tag favorite functionality
+const handleTagFavorite = (tag: TagData) => {
+  emit('tag-favorite', tag)
 }
 
-const handleTagEdit = (tag: any) => {
-  console.log('Edit tag:', tag.name)
-  // TODO: Open tag edit modal/dialog
+const handleTagEdit = (tag: TagData) => {
+  emit('tag-edit', tag)
 }
 
-const handleTagRemove = (tag: any, includeActivities: boolean) => {
-  console.log('Remove tag:', tag.name, 'Include activities:', includeActivities)
-  // TODO: Implement tag removal functionality
+const handleTagRemove = (tag: TagData, includeActivities: boolean) => {
+  emit('tag-remove', tag, includeActivities)
 }
 </script>
