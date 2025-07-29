@@ -104,8 +104,7 @@
         
         <!-- Contextual Status Bar (Flomo-Style) -->
         <StatusCallout 
-          :activities="recentActivities"
-          :motivational-insight="motivationalInsight"
+          :activities="activities"
         />
 
         <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->

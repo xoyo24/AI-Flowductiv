@@ -1,12 +1,5 @@
 <template>
   <div class="bg-card rounded-lg border border-border p-4 space-y-4">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div v-if="!collapsed" class="text-xs text-muted-foreground">
-        Last 12 weeks
-      </div>
-    </div>
-
     <!-- Loading State -->
     <div 
       v-if="loading" 

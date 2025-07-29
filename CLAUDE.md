@@ -18,6 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture and database schema  
 - `docs/COLLABORATION_PLAN.md` - Development workflow and session management
 - `docs/TESTING_STRATEGY.md` - Vue.js testing patterns and best practices
+- `docs/DESIGN_SYSTEM.html` - 🎨 **Visual Design System**: Flomo-inspired patterns, components, and styling guidelines
 
 ## Critical Commands & Environment
 
@@ -69,6 +70,7 @@ bun run db:studio   # Open Drizzle Studio
 - **Vue 3 Composition API** exclusively (no Options API)
 - Use `<script setup>` syntax for all components
 - Follow shadcn-vue component patterns
+- **Apply Design System**: Reference `docs/DESIGN_SYSTEM.html` for Flomo-inspired patterns, colors, spacing, and components
 - Include proper TypeScript types
 - **Commit verified changes** after each working step
 - Verify environment (Bun installation) before suggesting commands

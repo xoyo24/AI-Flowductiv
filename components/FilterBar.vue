@@ -1,45 +1,40 @@
 <template>
   <div 
     v-if="filterMetadata.hasActiveFilters" 
-    class="bg-card rounded-lg border border-border p-4 space-y-3"
+    class="space-y-2"
     data-testid="filter-bar"
   >
-    <!-- Filter Summary -->
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="text-sm font-medium text-foreground">
-          Showing {{ filterMetadata.filteredCount }} of {{ filterMetadata.totalActivities }} activities
-        </div>
-        <div 
-          v-if="filterMetadata.hiddenCount > 0"
-          class="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full"
-        >
-          {{ filterMetadata.hiddenCount }} hidden
-        </div>
+    <!-- Inline Filter Info and Chips -->
+    <div class="flex items-center justify-between text-xs text-muted-foreground">
+      <div class="flex items-center space-x-1">
+        <span>Showing {{ filterMetadata.filteredCount }} of {{ filterMetadata.totalActivities }}</span>
+        <span v-if="filterMetadata.hiddenCount > 0" class="text-muted-foreground/70">
+          ({{ filterMetadata.hiddenCount }} hidden)
+        </span>
       </div>
       
       <button
         @click="clearAllFilters"
-        class="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+        class="text-muted-foreground hover:text-foreground transition-colors"
         data-testid="clear-all-filters"
       >
-        Clear all filters
+        Clear all
       </button>
     </div>
 
     <!-- Active Filter Chips -->
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-1">
       <!-- Tag Filters -->
       <div 
         v-for="tag in activeFilters.tags || []"
         :key="`tag-${tag}`"
-        class="inline-flex items-center px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20"
+        class="inline-flex items-center px-2 py-0.5 bg-primary/5 text-primary/80 rounded text-xs"
         data-testid="filter-chip-tag"
       >
         <span class="text-primary/70 mr-1">#</span>{{ tag }}
         <button
           @click="removeTagFilter(tag)"
-          class="ml-2 hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+          class="ml-1.5 hover:bg-primary/10 rounded p-0.5 transition-colors"
           aria-label="Remove tag filter"
         >
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -51,14 +46,14 @@
       <!-- Date Range Filter -->
       <div 
         v-if="activeFilters.dateRange"
-        class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 rounded-full text-sm border border-blue-200 dark:border-blue-800"
+        class="inline-flex items-center px-2 py-0.5 bg-blue-500/5 text-blue-600/80 dark:text-blue-400/80 rounded text-xs"
         data-testid="filter-chip-date"
       >
         <span class="mr-1">📅</span>
         {{ formatDateRange(activeFilters.dateRange) }}
         <button
           @click="clearDateRangeFilter"
-          class="ml-2 hover:bg-blue-100 dark:hover:bg-blue-800/30 rounded-full p-0.5 transition-colors"
+          class="ml-1.5 hover:bg-blue-500/10 rounded p-0.5 transition-colors"
           aria-label="Remove date filter"
         >
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -71,13 +66,13 @@
       <div 
         v-for="priority in activeFilters.priority || []"
         :key="`priority-${priority}`"
-        class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300 rounded-full text-sm border border-yellow-200 dark:border-yellow-800"
+        class="inline-flex items-center px-2 py-0.5 bg-yellow-500/5 text-yellow-600/80 dark:text-yellow-400/80 rounded text-xs"
         data-testid="filter-chip-priority"
       >
         <span class="mr-1">⭐</span>Priority {{ priority }}
         <button
           @click="removePriorityFilter(priority)"
-          class="ml-2 hover:bg-yellow-100 dark:hover:bg-yellow-800/30 rounded-full p-0.5 transition-colors"
+          class="ml-1.5 hover:bg-yellow-500/10 rounded p-0.5 transition-colors"
           aria-label="Remove priority filter"
         >
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -90,13 +85,13 @@
       <div 
         v-for="focus in activeFilters.focusRating || []"
         :key="`focus-${focus}`"
-        class="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300 rounded-full text-sm border border-green-200 dark:border-green-800"
+        class="inline-flex items-center px-2 py-0.5 bg-green-500/5 text-green-600/80 dark:text-green-400/80 rounded text-xs"
         data-testid="filter-chip-focus"
       >
         <span class="mr-1">🎯</span>Focus {{ focus }}
         <button
           @click="removeFocusFilter(focus)"
-          class="ml-2 hover:bg-green-100 dark:hover:bg-green-800/30 rounded-full p-0.5 transition-colors"
+          class="ml-1.5 hover:bg-green-500/10 rounded p-0.5 transition-colors"
           aria-label="Remove focus filter"
         >
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -108,14 +103,14 @@
       <!-- Duration Filters -->
       <div 
         v-if="activeFilters.minDuration !== undefined || activeFilters.maxDuration !== undefined"
-        class="inline-flex items-center px-3 py-1 bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300 rounded-full text-sm border border-purple-200 dark:border-purple-800"
+        class="inline-flex items-center px-2 py-0.5 bg-purple-500/5 text-purple-600/80 dark:text-purple-400/80 rounded text-xs"
         data-testid="filter-chip-duration"
       >
         <span class="mr-1">⏱️</span>
         {{ formatDurationFilter() }}
         <button
           @click="clearDurationFilters"
-          class="ml-2 hover:bg-purple-100 dark:hover:bg-purple-800/30 rounded-full p-0.5 transition-colors"
+          class="ml-1.5 hover:bg-purple-500/10 rounded p-0.5 transition-colors"
           aria-label="Remove duration filter"
         >
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

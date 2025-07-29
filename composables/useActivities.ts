@@ -307,11 +307,11 @@ export const useActivities = () => {
   const filteredActivities = computed(() => {
     let filtered = [...activities.value]
     
-    // Apply tag filters
+    // Apply tag filters (AND logic - activity must have ALL selected tags)
     if (activeFilters.value.tags && activeFilters.value.tags.length > 0) {
       filtered = filtered.filter(activity => {
         if (!activity.tags || activity.tags.length === 0) return false
-        return activity.tags.some(tag => activeFilters.value.tags!.includes(tag))
+        return activeFilters.value.tags!.every(tag => activity.tags!.includes(tag))
       })
     }
     

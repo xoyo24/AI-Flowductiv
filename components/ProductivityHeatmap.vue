@@ -1,9 +1,6 @@
 <template>
   <div class="bg-card rounded-lg border border-border p-4">
-    <h2 data-testid="heatmap-title" class="text-base font-semibold text-foreground mb-4">
-      Last 12 Weeks
-    </h2>
-
+  
     <!-- Loading State -->
     <div 
       v-if="loading" 

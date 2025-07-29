@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowductiv Design System v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+        
+        /* Design Tokens - Mirroring main.css */
+        :root {
+            --background: 0 0% 100%; /* white */
+            --foreground: 224 71% 4%; /* zinc-900 */
+            --card: 0 0% 98%; /* gray-50 */
+            --card-foreground: 224 71% 4%; /* zinc-900 */
+            --primary: 221 83% 53%; /* blue-500 */
+            --primary-foreground: 210 40% 98%; /* white */
+            --secondary: 220 14% 96%; /* gray-100 */
+            --muted: 220 14% 96%; /* gray-100 */
+            --muted-foreground: 220 9% 46%; /* gray-500 */
+            --border: 220 13% 91%; /* gray-200 */
+            --radius: 0.75rem;
+        }
+
+        .dark {
+            --background: 0 0% 4%; /* near-black */
+            --foreground: 210 40% 98%; /* gray-200 */
+            --card: 0 0% 10%; /* dark gray */
+            --primary: 221 83% 53%; /* blue-500 */
+            --muted: 0 0% 15%; /* gray-800 */
+            --muted-foreground: 215 20% 65%; /* gray-500 */
+            --border: 0 0% 15%; /* gray-800 */
+        }
+
+        /* Component Patterns */
+        .content-card { 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        
+        .content-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .activity-card {
+            transition: all 0.2s ease;
+        }
+        
+        .activity-card:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        .timer-display { 
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; 
+        }
+        
+        .filter-chip {
+            transition: all 0.2s ease;
+        }
+
+        /* Interactive demos */
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        /* Navigation */
+        .nav-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Code block styling */
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        /* Interactive features */
+        .toggle-demo {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="nav-sticky border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Flowductiv Design System</h1>
+                    <p class="text-sm text-gray-600 mt-1">v1.0 • Flomo-Inspired Visual Reference</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <span class="text-xs text-gray-500">Last updated: July 29, 2025</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-16 z-40">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex space-x-8 overflow-x-auto py-4">
+                <a href="#philosophy" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Philosophy</a>
+                <a href="#tokens" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Design Tokens</a>
+                <a href="#components" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Components</a>
+                <a href="#layouts" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Layouts</a>
+                <a href="#interactions" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Interactions</a>
+                <a href="#implementation" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Implementation</a>
+                <a href="#accessibility" class="text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">Accessibility</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+
+        <!-- Design Philosophy -->
+        <section id="philosophy" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Design Philosophy</h2>
+            
+            <!-- Core Principles -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="content-card p-6">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Content First</h3>
+                    <p class="text-sm text-gray-600">Activities and timer take priority in visual hierarchy. Everything else is secondary.</p>
+                </div>
+                
+                <div class="content-card p-6">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Functional Minimalism</h3>
+                    <p class="text-sm text-gray-600">Show only essential information. Hide complexity until it's needed.</p>
+                </div>
+                
+                <div class="content-card p-6">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Contextual Relevance</h3>
+                    <p class="text-sm text-gray-600">UI elements appear only when they provide actionable value to the user.</p>
+                </div>
+                
+                <div class="content-card p-6">
+                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Progressive Enhancement</h3>
+                    <p class="text-sm text-gray-600">Mobile-first design with enhanced experiences on larger screens.</p>
+                </div>
+            </div>
+
+            <!-- Before/After Filter Optimization -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Recent Improvement: Filter Visual Hierarchy</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-medium text-red-600 mb-4">❌ Before: Prominent Filter Card</h4>
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-sm font-medium text-gray-900">Showing 7 of 10 activities</div>
+                                    <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">3 hidden</div>
+                                </div>
+                                <button class="text-xs text-blue-600 underline">Clear all filters</button>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200">#urgent</span>
+                                <span class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200">#focus</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Competed with content for attention</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-green-600 mb-4">✅ After: Subtle Inline Information</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <div class="flex items-center space-x-1">
+                                    <span>Showing 7 of 10</span>
+                                    <span>(3 hidden)</span>
+                                </div>
+                                <button class="hover:text-gray-700">Clear all</button>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="inline-flex items-center px-2 py-0.5 bg-blue-500/5 text-blue-600/80 rounded text-xs">#urgent</span>
+                                <span class="inline-flex items-center px-2 py-0.5 bg-blue-500/5 text-blue-600/80 rounded text-xs">#focus</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Minimal visual impact, information available when needed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Design Tokens -->
+        <section id="tokens" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Design Tokens</h2>
+            
+            <!-- Color System -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Color System</h3>
+                
+                <!-- Primary Colors -->
+                <div class="mb-8">
+                    <h4 class="font-medium text-gray-900 mb-4">Primary Colors</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="text-center">
+                            <div class="color-swatch bg-blue-500 mb-2" title="Click to copy"></div>
+                            <div class="text-xs text-gray-600">blue-500</div>
+                            <div class="text-xs text-gray-500">#3b82f6</div>
+                            <div class="text-xs text-gray-400">Primary</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-blue-400 mb-2"></div>
+                            <div class="text-xs text-gray-600">blue-400</div>
+                            <div class="text-xs text-gray-500">#60a5fa</div>
+                            <div class="text-xs text-gray-400">Hover</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-blue-600 mb-2"></div>
+                            <div class="text-xs text-gray-600">blue-600</div>
+                            <div class="text-xs text-gray-500">#2563eb</div>
+                            <div class="text-xs text-gray-400">Active</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-blue-50 mb-2 border border-gray-200"></div>
+                            <div class="text-xs text-gray-600">blue-50</div>
+                            <div class="text-xs text-gray-500">#eff6ff</div>
+                            <div class="text-xs text-gray-400">Background</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gray Scale -->
+                <div class="mb-8">
+                    <h4 class="font-medium text-gray-900 mb-4">Gray Scale</h4>
+                    <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-2">
+                        <div class="text-center">
+                            <div class="color-swatch bg-white border border-gray-200 mb-2"></div>
+                            <div class="text-xs text-gray-600">white</div>
+                            <div class="text-xs text-gray-500">#ffffff</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-50 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-50</div>
+                            <div class="text-xs text-gray-500">#f9fafb</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-100 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-100</div>
+                            <div class="text-xs text-gray-500">#f3f4f6</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-200 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-200</div>
+                            <div class="text-xs text-gray-500">#e5e7eb</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-400 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-400</div>
+                            <div class="text-xs text-gray-500">#9ca3af</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-500 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-500</div>
+                            <div class="text-xs text-gray-500">#6b7280</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-600 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-600</div>
+                            <div class="text-xs text-gray-500">#4b5563</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-700 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-700</div>
+                            <div class="text-xs text-gray-500">#374151</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-800 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-800</div>
+                            <div class="text-xs text-gray-500">#1f2937</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-gray-900 mb-2"></div>
+                            <div class="text-xs text-gray-600">gray-900</div>
+                            <div class="text-xs text-gray-500">#111827</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Semantic Colors -->
+                <div class="mb-6">
+                    <h4 class="font-medium text-gray-900 mb-4">Semantic Colors</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="color-swatch bg-green-500 mb-2"></div>
+                            <div class="text-xs text-gray-600">Success</div>
+                            <div class="text-xs text-gray-500">green-500</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-yellow-500 mb-2"></div>
+                            <div class="text-xs text-gray-600">Warning</div>
+                            <div class="text-xs text-gray-500">yellow-500</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-red-500 mb-2"></div>
+                            <div class="text-xs text-gray-600">Destructive</div>
+                            <div class="text-xs text-gray-500">red-500</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch bg-purple-500 mb-2"></div>
+                            <div class="text-xs text-gray-600">Accent</div>
+                            <div class="text-xs text-gray-500">purple-500</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typography -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Typography</h3>
+                
+                <div class="space-y-6">
+                    <!-- Font Families -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Font Families</h4>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-lg text-gray-900 mb-2" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                    System Font
+                                </div>
+                                <div class="text-sm text-gray-600">-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto</div>
+                                <div class="text-xs text-gray-500">Used for: UI text, headings, body content</div>
+                            </div>
+                            <div>
+                                <div class="text-lg text-gray-900 mb-2 timer-display">
+                                    Monospace Font
+                                </div>
+                                <div class="text-sm text-gray-600">'SF Mono', Monaco, 'Cascadia Code', monospace</div>
+                                <div class="text-xs text-gray-500">Used for: Timer display, code, data</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Size Scale -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Size Scale</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-7xl font-bold text-gray-900 timer-display">00:00</div>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-7xl font-bold timer-display</div>
+                                    <div class="text-xs text-gray-500">Desktop timer display</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-5xl font-bold text-gray-900 timer-display">00:00</div>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-5xl font-bold timer-display</div>
+                                    <div class="text-xs text-gray-500">Mobile timer display</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <h1 class="text-3xl font-bold text-gray-900">Heading 1</h1>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-3xl font-bold</div>
+                                    <div class="text-xs text-gray-500">Page titles</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <h2 class="text-xl font-semibold text-gray-900">Heading 2</h2>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-xl font-semibold</div>
+                                    <div class="text-xs text-gray-500">Section titles</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-base text-gray-900">Body text</div>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-base</div>
+                                    <div class="text-xs text-gray-500">Default text size</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-sm text-gray-600">Small text</div>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-sm text-gray-600</div>
+                                    <div class="text-xs text-gray-500">Secondary information</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-xs text-gray-500">Tiny text</div>
+                                <div class="text-sm text-gray-600">
+                                    <div>text-xs text-gray-500</div>
+                                    <div class="text-xs text-gray-500">Metadata, timestamps</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spacing System -->
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Spacing System</h3>
+                
+                <div class="space-y-8">
+                    <!-- Padding Scale -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Padding Scale</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-1 rounded border border-blue-200">
+                                    <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded">p-1</div>
+                                </div>
+                                <span class="text-sm text-gray-600">4px - Minimal spacing</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-2 rounded border border-blue-200">
+                                    <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded">p-2</div>
+                                </div>
+                                <span class="text-sm text-gray-600">8px - Small components</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-4 rounded border border-blue-200">
+                                    <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded">p-4</div>
+                                </div>
+                                <span class="text-sm text-gray-600">16px - Standard card padding</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-6 rounded border border-blue-200">
+                                    <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded">p-6</div>
+                                </div>
+                                <span class="text-sm text-gray-600">24px - Large card padding</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-8 rounded border border-blue-200">
+                                    <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded">p-8</div>
+                                </div>
+                                <span class="text-sm text-gray-600">32px - Desktop card padding</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gap Scale -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Gap Scale</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex gap-1">
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                </div>
+                                <span class="text-sm text-gray-600">gap-1 (4px) - Filter chips</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex gap-2">
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                </div>
+                                <span class="text-sm text-gray-600">gap-2 (8px) - Tag groups</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex gap-4">
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                </div>
+                                <span class="text-sm text-gray-600">gap-4 (16px) - Activity sections</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex gap-6">
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                </div>
+                                <span class="text-sm text-gray-600">gap-6 (24px) - Card sections</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Components -->
+        <section id="components" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Component Library</h2>
+            
+            <!-- Content Cards -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Content Cards</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Basic Content Card -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Basic Content Card</h4>
+                        <div class="content-card p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Card Title</h3>
+                            <p class="text-gray-600 text-sm">This is the standard content card pattern used throughout Flowductiv. White background, subtle shadow, rounded corners.</p>
+                        </div>
+                        <div class="code-block mt-4">
+&lt;div class="content-card p-6"&gt;
+  &lt;h3 class="text-lg font-semibold text-gray-900"&gt;Title&lt;/h3&gt;
+  &lt;p class="text-gray-600 text-sm"&gt;Content&lt;/p&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Card -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Activity Card (Hover Me)</h4>
+                        <div class="content-card p-5 group hover:shadow-md transition-all duration-200 cursor-pointer activity-card">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <p class="text-gray-900 font-medium text-base leading-relaxed mb-3">
+                                        Deep work on project planning and architecture review
+                                    </p>
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <span class="text-sm font-medium text-gray-700">2h 15m</span>
+                                        <span class="text-xs text-gray-400">•</span>
+                                        <span class="text-xs text-gray-500">2 hours ago</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">#focus</span>
+                                        <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-md font-medium">#development</span>
+                                    </div>
+                                </div>
+                                <button class="p-2 hover:bg-gray-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3">
+                                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block mt-4">
+&lt;div class="content-card p-5 group hover:shadow-md transition-all duration-200 cursor-pointer activity-card"&gt;
+  &lt;!-- Flomo-style activity card with hover 3-dot menu --&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Elements -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Filter Elements</h3>
+                
+                <div class="space-y-6">
+                    <!-- Optimized Filter Chips -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Optimized Filter Chips (Current Implementation)</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <div class="flex items-center space-x-1">
+                                    <span>Showing 7 of 10</span>
+                                    <span>(3 hidden)</span>
+                                </div>
+                                <button class="hover:text-gray-700 transition-colors">Clear all</button>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="inline-flex items-center px-2 py-0.5 bg-primary/5 text-primary/80 rounded text-xs filter-chip">
+                                    <span class="text-primary/70 mr-1">#</span>urgent
+                                    <button class="ml-1.5 hover:bg-primary/10 rounded p-0.5 transition-colors">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                        </svg>
+                                    </button>
+                                </span>
+                                <span class="inline-flex items-center px-2 py-0.5 bg-green-500/5 text-green-600/80 rounded text-xs filter-chip">
+                                    <span class="text-green-600/70 mr-1">#</span>focus
+                                    <button class="ml-1.5 hover:bg-green-500/10 rounded p-0.5 transition-colors">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                        </svg>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="code-block mt-4">
+&lt;!-- Subtle, minimal visual impact --&gt;
+&lt;div class="flex flex-wrap gap-1"&gt;
+  &lt;span class="inline-flex items-center px-2 py-0.5 bg-primary/5 text-primary/80 rounded text-xs"&gt;
+    #tag
+  &lt;/span&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+
+                    <!-- Tag Varieties -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Tag Color System</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">#focus</span>
+                            <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium">#development</span>
+                            <span class="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">#meeting</span>
+                            <span class="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-700 rounded-md text-xs font-medium">#learning</span>
+                            <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded-md text-xs font-medium">#urgent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Display -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Timer Display</h3>
+                
+                <div class="space-y-8">
+                    <!-- Desktop Timer -->
+                    <div class="text-center">
+                        <h4 class="font-medium text-gray-900 mb-4">Desktop Timer (text-7xl)</h4>
+                        <div class="timer-display text-7xl font-bold text-gray-900 mb-4">02:45</div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm text-gray-600">Running</span>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Timer -->
+                    <div class="text-center">
+                        <h4 class="font-medium text-gray-900 mb-4">Mobile Timer (text-5xl)</h4>
+                        <div class="timer-display text-5xl font-bold text-gray-900 mb-3">00:00</div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span class="text-sm text-gray-600">Stopped</span>
+                        </div>
+                    </div>
+
+                    <!-- Status Indicators -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Status Indicators</h4>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Stopped</span>
+                                </div>
+                                <code class="text-xs">bg-gray-400</code>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-gray-600">Running</span>
+                                </div>
+                                <code class="text-xs">bg-green-500 animate-pulse</code>
+                            </div>
+                            <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                                <div class="flex items-center justify-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Paused</span>
+                                </div>
+                                <code class="text-xs">bg-yellow-500</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Elements -->
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Input Elements</h3>
+                
+                <div class="space-y-8">
+                    <!-- Primary Input -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Activity Input</h4>
+                        <input 
+                            type="text" 
+                            placeholder="What are you working on?"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <div class="code-block mt-4">
+&lt;input class="w-full px-4 py-3 border border-gray-200 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" /&gt;
+                        </div>
+                    </div>
+
+                    <!-- Button Hierarchy -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Button Hierarchy</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <button class="px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors">
+                                Primary Action
+                            </button>
+                            <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+                                Secondary Action
+                            </button>
+                            <button class="px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors">
+                                Destructive Action
+                            </button>
+                            <button class="px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors">
+                                Text Button
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Quick Action Pills</h4>
+                        <div class="flex space-x-2 text-xs">
+                            <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors">💡 Deep work</button>
+                            <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors">👥 Meeting</button>
+                            <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors">📚 Learning</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Layouts -->
+        <section id="layouts" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Layout Systems</h2>
+            
+            <!-- Mobile Layout -->
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Mobile Layout Pattern</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Container System</h4>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <div class="max-w-md mx-auto bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="text-center text-sm text-gray-600 mb-4">max-w-md mx-auto</div>
+                                <div class="mx-4 space-y-4">
+                                    <div class="bg-gray-100 h-8 rounded mx-4 relative">
+                                        <span class="absolute inset-0 flex items-center justify-center text-xs text-gray-600">mx-4 spacing</span>
+                                    </div>
+                                    <div class="bg-gray-100 h-8 rounded mx-4"></div>
+                                    <div class="bg-gray-100 h-8 rounded mx-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="code-block mt-4">
+&lt;div class="max-w-md mx-auto"&gt;
+  &lt;div class="mx-4"&gt;
+    &lt;!-- Content --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Stacked Layout</h4>
+                        <div class="space-y-4 bg-gray-100 p-4 rounded-lg">
+                            <div class="bg-white p-3 rounded shadow-sm">Header Card</div>
+                            <div class="bg-white p-3 rounded shadow-sm">Status Card</div>
+                            <div class="bg-white p-3 rounded shadow-sm">Timer Card</div>
+                            <div class="bg-white p-3 rounded shadow-sm">Activity 1</div>
+                            <div class="bg-white p-3 rounded shadow-sm">Activity 2</div>
+                        </div>
+                        <div class="code-block mt-4">
+&lt;div class="space-y-4"&gt;
+  &lt;div class="content-card"&gt;...&lt;/div&gt;
+  &lt;div class="content-card"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Layout -->
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Desktop Layout Pattern</h3>
+                
+                <div class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex space-x-4 max-w-4xl mx-auto">
+                        <!-- Sidebar -->
+                        <div class="w-80 bg-white rounded-lg p-4 border border-gray-200">
+                            <div class="text-sm text-gray-600 mb-4">Analytics Sidebar (w-80)</div>
+                            <div class="space-y-3">
+                                <div class="bg-gray-100 h-4 rounded"></div>
+                                <div class="bg-gray-100 h-16 rounded"></div>
+                                <div class="bg-gray-100 h-8 rounded"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Content -->
+                        <div class="flex-1 space-y-4">
+                            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                <div class="text-sm text-gray-600 mb-2">Main Content (flex-1)</div>
+                                <div class="bg-gray-100 h-8 rounded"></div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                <div class="bg-gray-100 h-12 rounded"></div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                <div class="bg-gray-100 h-6 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block mt-4">
+&lt;div class="flex space-x-8"&gt;
+  &lt;aside class="w-80"&gt;
+    &lt;!-- Fixed width sidebar --&gt;
+  &lt;/aside&gt;
+  &lt;main class="flex-1"&gt;
+    &lt;!-- Flexible main content --&gt;
+  &lt;/main&gt;
+&lt;/div&gt;
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactions -->
+        <section id="interactions" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Interaction Patterns</h2>
+            
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Hover & Transition Effects</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Hover Demonstrations -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Standard Transitions</h4>
+                        <div class="space-y-4">
+                            <button class="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                                Color Transition (200ms)
+                            </button>
+                            <div class="content-card p-4 hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+                                <p class="text-sm">Shadow Transition on Hover</p>
+                            </div>
+                            <div class="content-card p-4 hover:scale-105 transition-transform duration-200 cursor-pointer">
+                                <p class="text-sm">Scale Transform on Hover</p>
+                            </div>
+                            <div class="content-card p-4 activity-card cursor-pointer">
+                                <p class="text-sm">Activity Card Lift (translateY(-1px))</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Focus States -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Focus & Active States</h4>
+                        <div class="space-y-4">
+                            <input 
+                                type="text" 
+                                placeholder="Focus ring on tab/click"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                            <button class="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 active:bg-gray-300 transition-all duration-200">
+                                Interactive Button (try tab + space)
+                            </button>
+                        </div>
+                        
+                        <div class="code-block mt-4">
+focus:outline-none 
+focus:ring-2 
+focus:ring-blue-500 
+focus:border-transparent
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation -->
+        <section id="implementation" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Implementation Guidelines</h2>
+            
+            <div class="content-card p-8 mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Vue Component Patterns</h3>
+                
+                <div class="space-y-6">
+                    <!-- Component Structure -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Standard Component Structure</h4>
+                        <div class="code-block">
+&lt;template&gt;
+  &lt;div class="content-card p-6"&gt;
+    &lt;h3 class="text-lg font-semibold text-gray-900 mb-4"&gt;{{ title }}&lt;/h3&gt;
+    &lt;slot /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup lang="ts"&gt;
+interface Props {
+  title: string
+}
+
+const props = defineProps&lt;Props&gt;()
+&lt;/script&gt;
+                        </div>
+                    </div>
+
+                    <!-- CSS Patterns -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Preferred CSS Patterns</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-900 mb-2">✅ Do Use</h5>
+                                <div class="code-block text-sm">
+<!-- Design tokens -->
+bg-card text-foreground
+text-muted-foreground
+border-border
+
+<!-- Consistent spacing -->
+p-4 p-6 p-8
+space-y-4 gap-2
+
+<!-- Standard transitions -->
+transition-colors duration-200
+hover:bg-primary/90
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-900 mb-2">❌ Avoid</h5>
+                                <div class="code-block text-sm">
+<!-- Arbitrary values -->
+p-[23px] text-[17px]
+
+<!-- Inconsistent spacing -->
+p-3 p-7 p-9
+
+<!-- Non-standard colors -->
+bg-blue-450 text-gray-750
+
+<!-- Complex animations -->
+animate-bounce animate-spin
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Practices -->
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Best Practices</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Component Guidelines</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-start space-x-2">
+                                <span class="text-green-500 mt-1">✓</span>
+                                <span>Use design tokens (bg-card, text-foreground) over specific colors</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-green-500 mt-1">✓</span>
+                                <span>Follow mobile-first responsive patterns (max-w-md, then md:)</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-green-500 mt-1">✓</span>
+                                <span>Include data-testid attributes for reliable testing</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-green-500 mt-1">✓</span>
+                                <span>Use content-card class for consistent card styling</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-green-500 mt-1">✓</span>
+                                <span>Apply hover states with 200ms transitions</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Performance Considerations</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-start space-x-2">
+                                <span class="text-blue-500 mt-1">→</span>
+                                <span>Minimize DOM complexity in activity cards</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-blue-500 mt-1">→</span>
+                                <span>Use CSS transforms over layout changes for animations</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-blue-500 mt-1">→</span>
+                                <span>Avoid animating properties that trigger reflow</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="text-blue-500 mt-1">→</span>
+                                <span>Keep transition durations under 300ms for responsiveness</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accessibility -->
+        <section id="accessibility" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Accessibility Guidelines</h2>
+            
+            <div class="content-card p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Essential Requirements</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Touch Targets -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Touch Targets (44px minimum)</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <button class="w-11 h-11 bg-blue-500 text-white rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </button>
+                                <span class="text-sm text-gray-600">44x44px minimum (w-11 h-11)</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <button class="px-6 py-3 bg-blue-500 text-white rounded-lg">Standard Button</button>
+                                <span class="text-sm text-gray-600">py-3 ensures 44px height</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Color Contrast -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-4">Color Contrast (WCAG AA)</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-blue-500 text-white rounded-lg">
+                                <span>Primary on Blue</span>
+                                <span class="text-xs">4.5:1 ✓</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-900 text-white rounded-lg">
+                                <span>White on Gray-900</span>
+                                <span class="text-xs">21:1 ✓</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-100 text-gray-600 rounded-lg">
+                                <span>Gray-600 on Gray-100</span>
+                                <span class="text-xs">4.6:1 ✓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keyboard Navigation -->
+                <div class="mt-8">
+                    <h4 class="font-medium text-gray-900 mb-4">Keyboard Navigation</h4>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <button class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-left">
+                            <div class="font-medium text-gray-900">Tab Navigation</div>
+                            <div class="text-sm text-gray-600 mt-1">All interactive elements focusable</div>
+                        </button>
+                        <button class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-left">
+                            <div class="font-medium text-gray-900">Space/Enter</div>
+                            <div class="text-sm text-gray-600 mt-1">Buttons activate on both keys</div>
+                        </button>
+                        <button class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-left">
+                            <div class="font-medium text-gray-900">Visual Focus</div>
+                            <div class="text-sm text-gray-600 mt-1">Clear focus ring indicators</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center py-8 border-t border-gray-200 mt-16">
+            <p class="text-gray-600 text-sm">
+                Flowductiv Design System v1.0 • 
+                <a href="https://github.com/anthropics/claude-code" class="text-blue-500 hover:text-blue-600">Built with Claude Code</a>
+            </p>
+            <p class="text-gray-500 text-xs mt-2">
+                Last updated: July 29, 2025 • Based on Flomo-inspired design principles
+            </p>
+        </footer>
+
+    </main>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Color swatch click to copy
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                const color = this.style.backgroundColor || this.className.match(/bg-(\w+-\d+)/)?.[1];
+                if (color) {
+                    navigator.clipboard.writeText(color);
+                    // Show brief feedback
+                    const feedback = document.createElement('div');
+                    feedback.textContent = 'Copied!';
+                    feedback.className = 'absolute bg-black text-white text-xs px-2 py-1 rounded z-50';
+                    feedback.style.top = this.getBoundingClientRect().top + 'px';
+                    feedback.style.left = this.getBoundingClientRect().left + 'px';
+                    document.body.appendChild(feedback);
+                    setTimeout(() => feedback.remove(), 1000);
+                }
+            });
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
