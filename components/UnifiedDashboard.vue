@@ -100,9 +100,15 @@
               <div class="flex items-center space-x-3">
                 <div class="relative">
                   <input
+                    ref="searchInput"
+                    v-model="searchQuery"
                     type="text"
                     placeholder="Search activities and tags..."
                     class="w-64 px-3 py-1.5 text-sm border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent"
+                    @input="handleSearchInput"
+                    @focus="handleSearchFocus"
+                    @blur="handleSearchBlur"
+                    @keydown.escape="clearSearch"
                   />
                   <div class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono">
                     ⌘K
@@ -418,8 +424,26 @@ const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
 const currentPage = ref(1)
 const hasMoreActivities = ref(true)
 
-// Use filtered activities for display
-const recentActivities = computed(() => filteredActivities.value)
+// Use filtered activities for display with search
+const recentActivities = computed(() => {
+  let activities = filteredActivities.value
+  
+  // Apply search filter if search query exists
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim()
+    activities = activities.filter(activity => {
+      // Search in title
+      if (activity.title.toLowerCase().includes(query)) return true
+      
+      // Search in tags
+      if (activity.tags?.some(tag => tag.toLowerCase().includes(query))) return true
+      
+      return false
+    })
+  }
+  
+  return activities
+})
 
 // Timer status display
 const timerStatus = computed(() => {
@@ -430,12 +454,16 @@ const timerStatus = computed(() => {
 
 // Local reactive state
 const activityInput = ref('')
+const searchQuery = ref('')
 const showMobileMenu = ref(false)
 const sidebarCollapsed = ref(false)
 const analyticsLoading = ref(false)
 const showAnalyticsModal = ref(false)
 const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
+
+// Search functionality
+const searchInput = ref(null)
 
 // Input parsing and auto-complete
 const {
@@ -514,6 +542,36 @@ const handleQuickStart = (activity: string) => {
   activityInput.value = activity
   if (startTimer(activity)) {
     vibrate([100])
+  }
+}
+
+// Search functionality handlers
+const handleSearchInput = () => {
+  // The computed property recentActivities will automatically update
+  // when searchQuery changes due to Vue's reactivity
+}
+
+const handleSearchFocus = () => {
+  // Optional: Could implement search suggestions
+}
+
+const handleSearchBlur = () => {
+  // Optional: Could hide search suggestions
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+  handleSearchInput()
+}
+
+// Keyboard shortcut handler for ⌘+K
+const handleKeyboardShortcuts = (event: KeyboardEvent) => {
+  // ⌘+K (Mac) or Ctrl+K (Windows/Linux) to focus search
+  if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+    event.preventDefault()
+    if (searchInput.value) {
+      searchInput.value.focus()
+    }
   }
 }
 
@@ -771,6 +829,8 @@ const formatTimeRange = (startTime, endTime) => {
 
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeyboardShortcuts)
+  
   // Load first page of activities on component mount
   await refreshActivities()
 
@@ -780,6 +840,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeyboardShortcuts)
   window.removeEventListener('activity-saved', refreshActivities)
 })
 
