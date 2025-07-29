@@ -30,34 +30,29 @@
       v-if="!collapsed" 
       class="flex-1 overflow-y-auto p-4 space-y-6"
     >
-      <!-- Overall Summary (replaces QuickStats) -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            Overview
-          </h3>
-          <button 
-            @click="refreshData"
-            class="p-1 rounded hover:bg-muted/50 transition-colors"
-            title="Refresh analytics"
-          >
-            <RotateCw class="w-3 h-3 text-muted-foreground" />
-          </button>
-        </div>
-        <OverallSummary :loading="loading" />
-      </div>
 
-      <!-- Productivity Overview (Flomo-style: heatmap + metrics) -->
+      <!-- Productivity Overview -->
       <div class="space-y-3">
-        <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Activity Pattern
-        </h3>
         <ProductivityOverview 
           :collapsed="false"
           :loading="loading"
           @day-selected="handleDaySelected" 
         />
       </div>
+
+      <!-- Tag Filters -->
+      <TagFilters
+        :top-tags="sampleTags"
+        title="Tags"
+        :max-display="10"
+        @tag-selected="handleTagSelected"
+        @tag-deselected="handleTagDeselected"
+        @tags-cleared="handleTagsCleared"
+        @selection-changed="handleTagSelectionChanged"
+        @tag-favorite="handleTagFavorite"
+        @tag-edit="handleTagEdit"
+        @tag-remove="handleTagRemove"
+      />
 
       <!-- AI Insights (Collapsible) -->
       <div class="space-y-3">
@@ -204,9 +199,9 @@ import {
   Settings,
 } from 'lucide-vue-next'
 import DailySummary from '~/components/DailySummary.vue'
-import OverallSummary from '~/components/OverallSummary.vue'
 import PatternInsights from '~/components/PatternInsights.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
+import TagFilters from '~/components/TagFilters.vue'
 
 interface Props {
   collapsed?: boolean
@@ -235,6 +230,17 @@ const emit = defineEmits<Emits>()
 const showPatterns = ref(false)
 const showInsights = ref(false) // Collapsed by default to save space
 
+// Sample tags data (in real app, this would come from props or composable)
+const sampleTags = ref([
+  { name: 'Area', count: 44, totalTime: 2 * 60 * 60 * 1000, isFavorite: false },
+  { name: 'GGS', count: 5, totalTime: 30 * 60 * 1000, isFavorite: true },
+  { name: 'Inbox', count: 2, totalTime: 15 * 60 * 1000, isFavorite: false },
+  { name: 'Project', count: 8, totalTime: 45 * 60 * 1000, isFavorite: false },
+  { name: 'Focus', count: 12, totalTime: 90 * 60 * 1000, isFavorite: true },
+  { name: 'Meeting', count: 6, totalTime: 60 * 60 * 1000, isFavorite: false },
+  { name: 'Learning', count: 3, totalTime: 25 * 60 * 1000, isFavorite: false }
+])
+
 // Actions
 const handleDaySelected = (day: any) => {
   emit('day-selected', day)
@@ -242,5 +248,41 @@ const handleDaySelected = (day: any) => {
 
 const refreshData = () => {
   emit('refresh-data')
+}
+
+// Tag filter event handlers
+const handleTagSelected = (tag: string) => {
+  console.log('Tag selected:', tag)
+  // TODO: Implement tag filtering in main activities area
+}
+
+const handleTagDeselected = (tag: string) => {
+  console.log('Tag deselected:', tag)
+  // TODO: Implement tag filtering in main activities area
+}
+
+const handleTagsCleared = () => {
+  console.log('All tags cleared')
+  // TODO: Clear tag filtering in main activities area
+}
+
+const handleTagSelectionChanged = (selectedTags: Set<string>) => {
+  console.log('Tag selection changed:', selectedTags)
+  // TODO: Update activities filtering based on selected tags
+}
+
+const handleTagFavorite = (tag: any) => {
+  console.log('Toggle favorite for tag:', tag.name)
+  // TODO: Implement tag favorite functionality
+}
+
+const handleTagEdit = (tag: any) => {
+  console.log('Edit tag:', tag.name)
+  // TODO: Open tag edit modal/dialog
+}
+
+const handleTagRemove = (tag: any, includeActivities: boolean) => {
+  console.log('Remove tag:', tag.name, 'Include activities:', includeActivities)
+  // TODO: Implement tag removal functionality
 }
 </script>

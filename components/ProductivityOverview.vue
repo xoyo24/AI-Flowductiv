@@ -2,9 +2,6 @@
   <div class="bg-card rounded-lg border border-border p-4 space-y-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
-      <h2 class="text-base font-semibold text-foreground">
-        Productivity Overview
-      </h2>
       <div v-if="!collapsed" class="text-xs text-muted-foreground">
         Last 12 weeks
       </div>
@@ -21,22 +18,18 @@
     <!-- Content -->
     <div v-else class="space-y-4">
       <!-- Key Metrics Row -->
-      <div v-if="!collapsed" class="grid grid-cols-4 gap-2 text-center text-xs">
-        <div>
-          <div class="font-bold text-foreground">{{ formatDuration(metrics.totalTime) }}</div>
-          <div class="text-muted-foreground">Total Time</div>
-        </div>
+      <div v-if="!collapsed" class="grid grid-cols-3 gap-2 text-center text-xs">
         <div>
           <div class="font-bold text-foreground">{{ metrics.activityCount }}</div>
           <div class="text-muted-foreground">Activities</div>
         </div>
         <div>
-          <div class="font-bold text-foreground">{{ metrics.averageFocus.toFixed(1) }}</div>
-          <div class="text-muted-foreground">Avg Focus</div>
+          <div class="font-bold text-foreground">{{ formatDuration(metrics.totalTime) }}</div>
+          <div class="text-muted-foreground">Total Time</div>
         </div>
         <div>
-          <div class="font-bold text-foreground">{{ metrics.streakDays }}</div>
-          <div class="text-muted-foreground">Day Streak</div>
+          <div class="font-bold text-foreground">{{ metrics.averageFocus.toFixed(1) }}</div>
+          <div class="text-muted-foreground">Avg Focus</div>
         </div>
       </div>
 

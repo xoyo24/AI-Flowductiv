@@ -46,19 +46,24 @@ const contextualMessage = computed(() => {
     return 'Welcome! Track your first activity to unlock insights'
   }
 
-  // User with very few activities (building habit)
-  if (count < 5) {
+  // User with very few activities (1-3, building habit)
+  if (count >= 1 && count <= 3) {
     return 'Great start! Keep building your tracking habit'
   }
 
-  // User with moderate activity count (showing progress)
-  if (count >= 5 && count < 20) {
-    return 'Building momentum! Track more to see deeper patterns'
+  // User with some activities (4-10, showing progress but need more for patterns)
+  if (count >= 4 && count <= 10) {
+    return 'Making progress! A few more activities will reveal patterns'
   }
 
-  // User with many activities
-  if (count >= 20) {
-    return '🔥 Strong tracking habit! Your insights are getting richer'
+  // User with good activity count (11-20, can see some patterns)
+  if (count >= 11 && count <= 20) {
+    return 'Nice work! Your activity patterns are becoming clear'
+  }
+
+  // User with many activities (21+, strong tracking habit)
+  if (count >= 21) {
+    return '🔥 Excellent tracking! Rich insights available in your data'
   }
 
   // Default fallback
