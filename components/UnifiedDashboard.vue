@@ -259,6 +259,18 @@
           </div>
         </div>
 
+        <!-- Filter Bar (positioned between input and activities) -->
+        <FilterBar
+          :active-filters="activeFilters"
+          :filter-metadata="filterMetadata"
+          @remove-tag-filter="handleRemoveTagFilter"
+          @clear-all-filters="handleClearAllFilters"
+          @clear-date-range-filter="handleClearDateRangeFilter"
+          @remove-priority-filter="(priority) => console.log('Remove priority filter:', priority)"
+          @remove-focus-filter="(focus) => console.log('Remove focus filter:', focus)"
+          @clear-duration-filters="() => console.log('Clear duration filters')"
+        />
+
         <!-- Activities Section (Individual Cards) -->
         <div class="space-y-4">
           <!-- Individual Activity Cards (Flomo Style) -->
@@ -334,6 +346,7 @@
 import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
+import FilterBar from '~/components/FilterBar.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
@@ -361,13 +374,17 @@ const {
   formatRelativeTime,
   getActivities,
   getActivityStats,
+  filteredActivities,
+  activeFilters,
+  filterMetadata,
+  addTagFilter,
+  removeTagFilter,
+  clearAllFilters,
+  clearDateRangeFilter,
   loading: activitiesLoading,
 } = useActivities()
 
-// Tag filtering state
-const selectedTags = ref(new Set<string>())
-
-// Computed properties for tag data and filtered activities
+// Computed properties for tag data
 const tagData = computed(() => {
   const stats = getActivityStats.value
   return Object.entries(stats.tagStats).map(([name, data]) => ({
@@ -378,20 +395,7 @@ const tagData = computed(() => {
   })).sort((a, b) => b.count - a.count) // Sort by usage
 })
 
-const filteredActivities = computed(() => {
-  if (selectedTags.value.size === 0) {
-    return activities.value
-  }
-  
-  return activities.value.filter(activity => {
-    if (!activity.tags || activity.tags.length === 0) {
-      return false
-    }
-    
-    // Activity must have at least one of the selected tags
-    return activity.tags.some(tag => selectedTags.value.has(tag))
-  })
-})
+const selectedTags = computed(() => new Set(activeFilters.value.tags || []))
 
 // Contextual status service - but we'll override contextualMessage to use local data
 const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
@@ -642,21 +646,43 @@ const refreshAnalytics = async () => {
   }
 }
 
-// Tag filtering handlers
+// Tag filtering handlers - now using universal filter system
 const handleTagSelected = (tag: string) => {
-  selectedTags.value.add(tag)
+  addTagFilter(tag)
 }
 
 const handleTagDeselected = (tag: string) => {
-  selectedTags.value.delete(tag)
+  removeTagFilter(tag)
 }
 
 const handleTagsCleared = () => {
-  selectedTags.value.clear()
+  // Clear only tag filters, keep other filters intact
+  if (activeFilters.value.tags) {
+    activeFilters.value.tags.forEach(tag => removeTagFilter(tag))
+  }
 }
 
 const handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
-  selectedTags.value = new Set(newSelectedTags)
+  // Clear existing tag filters first
+  if (activeFilters.value.tags) {
+    [...activeFilters.value.tags].forEach(tag => removeTagFilter(tag))
+  }
+  
+  // Add new tag filters
+  newSelectedTags.forEach(tag => addTagFilter(tag))
+}
+
+// FilterBar event handlers
+const handleRemoveTagFilter = (tag: string) => {
+  removeTagFilter(tag)
+}
+
+const handleClearAllFilters = () => {
+  clearAllFilters()
+}
+
+const handleClearDateRangeFilter = () => {
+  clearDateRangeFilter()
 }
 
 const handleTagFavorite = (tag: any) => {

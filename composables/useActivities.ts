@@ -20,11 +20,25 @@ export interface HeatmapDay {
   productivityScore: number // 0-1 based on time and activity count
 }
 
+// Filter types for the universal filter system
+export interface ActivityFilters {
+  tags?: string[]
+  dateRange?: { start: Date; end: Date }
+  priority?: number[]
+  focusRating?: number[]
+  minDuration?: number
+  maxDuration?: number
+}
+
 export const useActivities = () => {
   // Reactive state
   const activities = ref<Activity[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  
+  // Universal filter state
+  const activeFilters = ref<ActivityFilters>({})
+  const filterCount = ref(0)
 
   // Save new activity
   const saveActivity = async (activityInput: ActivityInput): Promise<Activity | null> => {
@@ -289,6 +303,114 @@ export const useActivities = () => {
     }
   }
 
+  // Universal filtering system
+  const filteredActivities = computed(() => {
+    let filtered = [...activities.value]
+    
+    // Apply tag filters
+    if (activeFilters.value.tags && activeFilters.value.tags.length > 0) {
+      filtered = filtered.filter(activity => {
+        if (!activity.tags || activity.tags.length === 0) return false
+        return activity.tags.some(tag => activeFilters.value.tags!.includes(tag))
+      })
+    }
+    
+    // Apply date range filter
+    if (activeFilters.value.dateRange) {
+      const { start, end } = activeFilters.value.dateRange
+      filtered = filtered.filter(activity => {
+        const activityDate = new Date(activity.endTime)
+        return activityDate >= start && activityDate <= end
+      })
+    }
+    
+    // Apply priority filter
+    if (activeFilters.value.priority && activeFilters.value.priority.length > 0) {
+      filtered = filtered.filter(activity => 
+        activity.priority !== null && 
+        activeFilters.value.priority!.includes(activity.priority)
+      )
+    }
+    
+    // Apply focus rating filter
+    if (activeFilters.value.focusRating && activeFilters.value.focusRating.length > 0) {
+      filtered = filtered.filter(activity => 
+        activity.focusRating !== null && 
+        activeFilters.value.focusRating!.includes(activity.focusRating)
+      )
+    }
+    
+    // Apply duration filters
+    if (activeFilters.value.minDuration !== undefined) {
+      filtered = filtered.filter(activity => activity.durationMs >= activeFilters.value.minDuration!)
+    }
+    
+    if (activeFilters.value.maxDuration !== undefined) {
+      filtered = filtered.filter(activity => activity.durationMs <= activeFilters.value.maxDuration!)
+    }
+    
+    return filtered
+  })
+  
+  // Filter metadata
+  const filterMetadata = computed(() => {
+    const totalActivities = activities.value.length
+    const filteredCount = filteredActivities.value.length
+    const hasActiveFilters = Object.values(activeFilters.value).some(filter => 
+      Array.isArray(filter) ? filter.length > 0 : filter !== undefined
+    )
+    
+    return {
+      totalActivities,
+      filteredCount,
+      hasActiveFilters,
+      hiddenCount: totalActivities - filteredCount
+    }
+  })
+  
+  // Filter actions
+  const addTagFilter = (tag: string) => {
+    if (!activeFilters.value.tags) {
+      activeFilters.value.tags = []
+    }
+    if (!activeFilters.value.tags.includes(tag)) {
+      activeFilters.value.tags.push(tag)
+      updateFilterCount()
+    }
+  }
+  
+  const removeTagFilter = (tag: string) => {
+    if (activeFilters.value.tags) {
+      activeFilters.value.tags = activeFilters.value.tags.filter(t => t !== tag)
+      if (activeFilters.value.tags.length === 0) {
+        delete activeFilters.value.tags
+      }
+      updateFilterCount()
+    }
+  }
+  
+  const setDateRangeFilter = (start: Date, end: Date) => {
+    activeFilters.value.dateRange = { start, end }
+    updateFilterCount()
+  }
+  
+  const clearDateRangeFilter = () => {
+    delete activeFilters.value.dateRange
+    updateFilterCount()
+  }
+  
+  const clearAllFilters = () => {
+    activeFilters.value = {}
+    updateFilterCount()
+  }
+  
+  const updateFilterCount = () => {
+    filterCount.value = Object.values(activeFilters.value).reduce((count, filter) => {
+      if (Array.isArray(filter)) return count + filter.length
+      return filter !== undefined ? count + 1 : count
+    }, 0)
+  }
+
   // Initialize - load today's activities (removed onMounted to fix warning)
   // Components should call getTodaysActivities() explicitly
 
@@ -300,6 +422,12 @@ export const useActivities = () => {
 
     // Computed
     getActivityStats,
+    
+    // Filtering system
+    filteredActivities: readonly(filteredActivities),
+    activeFilters: readonly(activeFilters),
+    filterMetadata: readonly(filterMetadata),
+    filterCount: readonly(filterCount),
 
     // Actions
     saveActivity,
@@ -308,6 +436,13 @@ export const useActivities = () => {
     updateActivity,
     deleteActivity,
     getHeatmapData,
+    
+    // Filter actions
+    addTagFilter,
+    removeTagFilter,
+    setDateRangeFilter,
+    clearDateRangeFilter,
+    clearAllFilters,
 
     // Utilities
     formatDuration,
