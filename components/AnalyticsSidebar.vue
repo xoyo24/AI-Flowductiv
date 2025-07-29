@@ -1,28 +1,26 @@
 <template>
   <div class="flex flex-col h-full">
     <!-- Sidebar Header -->
-    <div class="flex items-center justify-between p-4 border-b border-border bg-card/50">
-      <h2 
-        v-if="!collapsed" 
-        class="text-sm font-medium text-muted-foreground uppercase tracking-wide"
-      >
-        Flowductiv
-      </h2>
-      <div class="flex items-center space-x-2">
-        <slot name="theme-toggle" />
-        <button
-          @click="$emit('toggle-collapse')"
-          class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-          :aria-label="collapsed ? 'Expand analytics sidebar' : 'Collapse analytics sidebar'"
-        >
-          <ChevronLeft 
-            :class="{
-              'w-4 h-4 transition-transform duration-200': true,
-              'rotate-180': collapsed
-            }" 
-          />
-        </button>
+    <div class="flex items-center justify-between p-4">
+      <div class="flex-1">
+        <UserDropdown 
+          :collapsed="collapsed"
+          @navigate-to-settings="$emit('navigate-to-settings')"
+          @navigate-to-history="$emit('navigate-to-history')"
+        />
       </div>
+      <button
+        @click="$emit('toggle-collapse')"
+        class="p-2 rounded-lg hover:bg-muted/50 transition-colors ml-2"
+        :aria-label="collapsed ? 'Expand analytics sidebar' : 'Collapse analytics sidebar'"
+      >
+        <ChevronLeft 
+          :class="{
+            'w-4 h-4 transition-transform duration-200': true,
+            'rotate-180': collapsed
+          }" 
+        />
+      </button>
     </div>
 
     <!-- Analytics Content -->
@@ -142,50 +140,6 @@
       </button>
     </div>
 
-    <!-- Bottom Navigation (Tertiary Features) -->
-    <div 
-      :class="{
-        'border-t border-border p-4 space-y-2': !collapsed,
-        'border-t border-border p-2 space-y-2': collapsed
-      }"
-    >
-      <template v-if="!collapsed">
-        <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
-          Settings
-        </h3>
-        <button
-          @click="$emit('navigate-to-settings')"
-          class="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors text-left text-sm"
-        >
-          <Settings class="w-4 h-4" />
-          <span>Settings</span>
-        </button>
-        <button
-          @click="$emit('navigate-to-history')"
-          class="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors text-left text-sm"
-        >
-          <Clock class="w-4 h-4" />
-          <span>Full History</span>
-        </button>
-      </template>
-      
-      <template v-else>
-        <button
-          @click="$emit('navigate-to-settings')"
-          class="w-full p-2 rounded-lg hover:bg-muted/50 transition-colors"
-          title="Settings"
-        >
-          <Settings class="w-4 h-4 mx-auto text-muted-foreground" />
-        </button>
-        <button
-          @click="$emit('navigate-to-history')"
-          class="w-full p-2 rounded-lg hover:bg-muted/50 transition-colors"
-          title="Full History"
-        >
-          <Clock class="w-4 h-4 mx-auto text-muted-foreground" />
-        </button>
-      </template>
-    </div>
   </div>
 </template>
 
@@ -204,6 +158,7 @@ import DailySummary from '~/components/DailySummary.vue'
 import PatternInsights from '~/components/PatternInsights.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
 import TagFilters from '~/components/TagFilters.vue'
+import UserDropdown from '~/components/UserDropdown.vue'
 
 interface TagData {
   name: string

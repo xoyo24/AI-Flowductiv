@@ -8,7 +8,7 @@
         'lg:w-80': !sidebarCollapsed,
         'lg:w-16': sidebarCollapsed
       }"
-      class="flex-col border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300"
+      class="flex-col transition-all duration-300"
     >
       <AnalyticsSidebar
         :collapsed="sidebarCollapsed"
@@ -30,11 +30,7 @@
         @tag-favorite="handleTagFavorite"
         @tag-edit="handleTagEdit"
         @tag-remove="handleTagRemove"
-      >
-        <template #theme-toggle>
-          <ThemeToggle />
-        </template>
-      </AnalyticsSidebar>
+      />
     </aside>
 
     <!-- Main Content Area -->
@@ -89,17 +85,35 @@
               @tag-favorite="handleTagFavorite"
               @tag-edit="handleTagEdit"
               @tag-remove="handleTagRemove"
-            >
-              <template #theme-toggle>
-                <!-- No theme toggle in mobile menu - it's in header -->
-              </template>
-            </AnalyticsSidebar>
+            />
           </div>
         </div>
       </div>
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto pb-safe px-safe lg:px-0">
+        <!-- Main Area Header (Desktop/Mobile Consistency) -->
+        <div class="hidden lg:block border-b border-border bg-background">
+          <div class="max-w-4xl mx-auto px-4 lg:px-8 py-3">
+            <div class="flex items-center justify-between">
+              <h1 class="text-lg font-semibold text-foreground">FLOWDUCTIV</h1>
+              <div class="flex items-center space-x-3">
+                <div class="relative">
+                  <input
+                    type="text"
+                    placeholder="Search activities and tags..."
+                    class="w-64 px-3 py-1.5 text-sm border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent"
+                  />
+                  <div class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono">
+                    ⌘K
+                  </div>
+                </div>
+                <ThemeToggle />
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="max-w-4xl mx-auto px-4 lg:px-8 py-4 space-y-4">
         
         <!-- Contextual Status Bar (Flomo-Style) -->
@@ -108,11 +122,11 @@
         />
 
         <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
-        <div class="content-card p-5">
-          <div class="space-y-5">
+        <div class="content-card p-4">
+          <div class="space-y-4">
             
             <!-- Timer Display Section -->
-            <div class="text-center space-y-3">
+            <div class="text-center space-y-2">
               <div 
                 class="text-5xl lg:text-6xl timer-display font-bold text-foreground tracking-tight"
                 data-testid="unified-timer-display"
@@ -132,14 +146,14 @@
                   }"
                   data-testid="timer-status"
                 />
-                <span class="text-sm text-muted-foreground">
+                <span class="text-xs text-muted-foreground">
                   {{ timerStatus }}
                 </span>
               </div>
             </div>
 
             <!-- Activity Input Section (Centered for desktop) -->
-            <div class="max-w-2xl mx-auto space-y-4">
+            <div class="max-w-2xl mx-auto space-y-3">
               
               <!-- Extracted Tags Display (Above Input) -->
               <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[24px] justify-center">
@@ -154,7 +168,7 @@
                   v-model="activityInput"
                   type="text"
                   placeholder="Enter activity or click for suggestions"
-                  class="w-full px-4 py-3 text-base border-2 border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  class="w-full px-4 py-2.5 text-base border-2 border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   :disabled="isRunning || isPaused"
                   @keyup.enter="handleEnterKey"
                   @keydown="handleKeydown"
@@ -176,30 +190,30 @@
               </div>
               
               <!-- Helper Text -->
-              <div class="text-sm text-muted-foreground text-center">
+              <div class="text-xs text-muted-foreground text-center">
                 <span>Use <span class="text-primary font-medium">#tags</span> to categorize your activities</span>
               </div>
               
               <!-- Quick Actions Grid -->
-              <div v-if="!isRunning && !isPaused" class="flex space-x-2 text-sm justify-center">
+              <div v-if="!isRunning && !isPaused" class="flex space-x-2 text-xs justify-center">
                 <button
                   @click="handleQuickStart('Deep work #focus')"
                   data-testid="quick-deep-work"
-                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
+                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
                   💡 Deep work
                 </button>
                 <button
                   @click="handleQuickStart('Meeting #meeting')"
                   data-testid="quick-meeting"
-                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
+                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
                   👥 Meeting
                 </button>
                 <button
                   @click="handleQuickStart('Learning #development')"
                   data-testid="quick-learning"
-                  class="px-3 py-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
+                  class="px-2.5 py-1.5 bg-muted text-muted-foreground rounded-full hover:bg-muted/80 transition-colors"
                 >
                   📚 Learning
                 </button>

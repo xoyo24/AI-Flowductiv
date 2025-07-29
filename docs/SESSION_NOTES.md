@@ -336,4 +336,112 @@
 
 ---
 
-*Filter UX optimization completed • Core functionality gaps identified • Ready for activity management implementation*
+## 🔄 **Current Session: Flomo-Style UI Refinement (July 29, 2025)**
+
+**Status**: Flomo-inspired interface improvements with time tracking focus IN PROGRESS  
+**Duration**: Current session  
+**Focus**: Clean minimal interface following Flomo patterns while preserving timer prominence for time tracking
+
+### **🎯 Refinement Goals (Based on Flomo Reference)**
+
+**Core UI Issues Identified**:
+1. **Main Area Branding**: App name only in mobile header, no desktop consistency
+2. **Sidebar Visual Weight**: Heavy borders/backgrounds, not following Flomo's minimal sidebar
+3. **User Navigation**: Settings/History buttons at bottom vs Flomo's user dropdown pattern
+4. **Input Area Density**: Takes excessive vertical space vs Flomo's compact composer
+5. **Missing Search**: No search functionality like Flomo's ⌘+K pattern
+
+### **🔄 Planned Implementation**
+
+**1. Main Area Header Addition**
+- Add "FLOWDUCTIV" header to main content area (mobile/desktop consistency)
+- Position directly on background without card styling
+- Add search bar with ⌘+K shortcut following Flomo pattern
+- Include theme toggle and essential utilities
+
+**2. Sidebar User Area & Minimal Design**
+- Replace "Flowductiv" header with user profile dropdown (`xoyo24 ▼`)
+- Remove Settings/History bottom buttons (integrate in user dropdown)
+- Remove all borders and card backgrounds from sidebar
+- Elements render directly on page background like Flomo
+
+**3. Input Area Compactification (Timer Preserved)**
+- **Keep timer display prominent** (this is time tracking, not notes)
+- Redesign input composer to be more compact vertically
+- Integrate timer controls inline with input area
+- Convert quick actions to dropdown or compact layout
+- Target ~40% vertical space reduction in input section
+
+**4. Search Functionality**
+- Add search bar in main header
+- Implement ⌘+K keyboard shortcut
+- Search activities, tags, and content
+- Follow Flomo's search interaction patterns
+
+### **🎯 Time Tracking Focus Adaptations**
+
+**Timer Display Strategy**:
+- Maintain large timer display as primary element
+- Reduce surrounding spacing without compromising timer readability
+- Keep timer status indicator but make more compact
+- Preserve timer functionality while optimizing layout around it
+
+**Input Area Optimization**:
+- Compact layout while keeping timer prominent
+- Inline timer controls (Start/Pause/Stop) with input
+- Collapsible quick actions to save vertical space
+- Streamlined tag display and helper text
+
+### **📋 Implementation Sequence**
+
+**Phase 1: Layout Foundation** (20 min)
+1. Add main area header with app name and search
+2. Remove sidebar borders/backgrounds for minimal look
+3. Update responsive layout structure
+
+**Phase 2: Sidebar User Area** (15 min)
+1. Create UserDropdown component (`xoyo24 ▼`)
+2. Replace sidebar header with user profile
+3. Remove bottom navigation buttons
+
+**Phase 3: Input Area Compactification** (30 min)
+1. Redesign input composer for vertical efficiency
+2. Keep timer display large but optimize surrounding space
+3. Integrate timer controls inline
+4. Convert quick actions to compact format
+
+**Phase 4: Search Implementation** (20 min)
+1. Add search bar to main header
+2. Implement ⌘+K shortcut
+3. Basic activity/tag search functionality
+
+**Phase 5: Polish & Testing** (10 min)
+1. Ensure mobile responsiveness maintained
+2. Test timer functionality unchanged
+3. Verify all interactions work properly
+
+### **🎯 Expected Benefits**
+
+**Visual Hierarchy**:
+- ✅ Cleaner interface following Flomo minimal patterns
+- ✅ Timer remains prominent as core time tracking feature
+- ✅ Consistent branding across mobile/desktop
+- ✅ Better content focus with reduced visual noise
+
+**Space Efficiency**:
+- ✅ ~40% reduction in input area vertical space
+- ✅ More room for activity list (4+ activities vs current 3)
+- ✅ Optimized desktop screen utilization
+- ✅ Timer display preserved at full prominence
+
+**User Experience**:
+- ✅ Simplified navigation (user dropdown vs separate buttons)
+- ✅ Search functionality matching proven Flomo patterns
+- ✅ Time tracking workflow preserved and enhanced
+- ✅ More cohesive design language
+
+**Evidence**: Planned improvements align Flowductiv with Flomo aesthetic while maintaining time tracking app identity | Timer prominence preserved | Ready for implementation
+
+---
+
+*Design System alignment completed • Flomo-style UI refinement planned • Ready for minimal interface implementation*
