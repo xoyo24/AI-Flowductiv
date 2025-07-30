@@ -134,7 +134,69 @@
     <div v-if="selectedTags.size > 0" class="px-3 py-2 text-xs text-muted-foreground border-t border-border">
       Filtering by {{ selectedTags.size }} {{ selectedTags.size === 1 ? 'tag' : 'tags' }}
     </div>
+
+    <!-- Favorites Section -->
+    <div v-if="sortedFavorites.length > 0" class="border-t border-border pt-3">
+      <div class="px-3 py-2">
+        <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+          Favorite Tags
+        </h4>
+        <div class="flex flex-wrap gap-1">
+          <button
+            v-for="favoriteTag in sortedFavorites"
+            :key="favoriteTag"
+            @click="toggleTag(favoriteTag)"
+            :class="[
+              'px-2 py-1 text-xs rounded-md border transition-colors',
+              isSelected(favoriteTag)
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:text-foreground'
+            ]"
+          >
+            <span class="mr-1">⭐</span>#{{ favoriteTag }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tag Statistics Button -->
+    <div class="border-t border-border pt-3">
+      <button
+        @click="showStatistics = true"
+        class="w-full px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors rounded-md"
+      >
+        📊 View Tag Statistics
+      </button>
+    </div>
   </div>
+
+  <!-- Tag Edit Dialog -->
+  <TagEditDialog
+    :is-open="showEditDialog"
+    :tag="tagToEdit"
+    @close="showEditDialog = false"
+    @renamed="handleTagRenamed"
+  />
+
+  <!-- Tag Statistics Modal -->
+  <TagStatisticsModal
+    :is-open="showStatistics"
+    @close="showStatistics = false"
+  />
+
+  <!-- Confirm Delete Dialog -->
+  <ConfirmDialog
+    :is-open="showDeleteConfirm"
+    type="danger"
+    :title="deleteConfirmTitle"
+    :message="deleteConfirmMessage"
+    :details="deleteConfirmDetails"
+    confirm-text="Delete Tag"
+    loading-text="Deleting..."
+    @close="showDeleteConfirm = false"
+    @confirm="handleConfirmDelete"
+    ref="confirmDialogRef"
+  />
 </template>
 
 <script setup lang="ts">
@@ -177,7 +239,8 @@ const {
   renameTag, 
   removeTag, 
   loadFavorites, 
-  isFavorite 
+  isFavorite,
+  sortedFavorites 
 } = useTagManagement()
 
 // Local state
@@ -198,6 +261,43 @@ const contextMenu = ref({
   x: 0,
   y: 0,
   tag: {} as TagData
+})
+
+// Dialog states
+const showEditDialog = ref(false)
+const showStatistics = ref(false)
+const showDeleteConfirm = ref(false)
+const tagToEdit = ref<TagData | null>(null)
+const tagToDelete = ref<TagData | null>(null)
+const deleteIncludeActivities = ref(false)
+const confirmDialogRef = ref<any>(null)
+
+// Delete confirmation computed properties
+const deleteConfirmTitle = computed(() => {
+  return deleteIncludeActivities.value 
+    ? 'Delete Tag and Activities' 
+    : 'Remove Tag Only'
+})
+
+const deleteConfirmMessage = computed(() => {
+  const tag = tagToDelete.value
+  if (!tag) return ''
+  
+  return deleteIncludeActivities.value
+    ? `This will permanently delete the tag "#${tag.name}" and remove all ${tag.count || 0} activities that use this tag.`
+    : `This will remove the tag "#${tag.name}" from all ${tag.count || 0} activities, but keep the activities.`
+})
+
+const deleteConfirmDetails = computed(() => {
+  const tag = tagToDelete.value
+  if (!tag) return undefined
+  
+  return {
+    title: `${tag.count || 0} activities affected`,
+    message: deleteIncludeActivities.value
+      ? 'All activities with this tag will be permanently deleted.'
+      : 'Activities will remain but without this tag.'
+  }
 })
 
 // Computed properties
@@ -279,21 +379,70 @@ const favoriteTag = async (tag: TagData) => {
 }
 
 const editTag = (tag: TagData) => {
-  // For now, just emit the event - actual edit dialog can be implemented later
-  emit('tag-edit', tag)
+  tagToEdit.value = tag
+  showEditDialog.value = true
   hideContextMenu()
 }
 
-const removeTagHandler = async (tag: TagData, includeActivities: boolean) => {
+const removeTagHandler = (tag: TagData, includeActivities: boolean) => {
+  tagToDelete.value = tag
+  deleteIncludeActivities.value = includeActivities
+  showDeleteConfirm.value = true
+  hideContextMenu()
+}
+
+// Handle tag rename completion
+const handleTagRenamed = (oldName: string, newName: string) => {
+  // Update local tag data
+  const tagIndex = props.topTags.findIndex(t => t.name === oldName)
+  if (tagIndex !== -1) {
+    props.topTags[tagIndex].name = newName
+  }
+  
+  // Update selected tags if the renamed tag was selected
+  if (selectedTags.value.has(oldName)) {
+    selectedTags.value.delete(oldName)
+    selectedTags.value.add(newName)
+    emit('selection-changed', new Set(selectedTags.value))
+  }
+  
+  emit('tag-edit', { name: newName, totalTime: 0 })
+}
+
+// Handle confirmed tag deletion
+const handleConfirmDelete = async () => {
+  if (!tagToDelete.value || !confirmDialogRef.value) return
+  
+  const tag = tagToDelete.value
+  const includeActivities = deleteIncludeActivities.value
+  
+  confirmDialogRef.value.setLoading(true)
+  
   try {
     const result = await removeTag(tag.name, includeActivities)
+    
     if (result.success) {
+      // Remove from local tag list
+      const tagIndex = props.topTags.findIndex(t => t.name === tag.name)
+      if (tagIndex !== -1) {
+        props.topTags.splice(tagIndex, 1)
+      }
+      
+      // Remove from selected tags if selected
+      if (selectedTags.value.has(tag.name)) {
+        selectedTags.value.delete(tag.name)
+        emit('selection-changed', new Set(selectedTags.value))
+      }
+      
       emit('tag-remove', tag, includeActivities)
+      showDeleteConfirm.value = false
+    } else {
+      confirmDialogRef.value.setError(result.error || 'Failed to delete tag')
     }
-  } catch (error) {
-    console.error('Failed to remove tag:', error)
+  } catch (error: any) {
+    confirmDialogRef.value.setError(error.message || 'Failed to delete tag')
   } finally {
-    hideContextMenu()
+    confirmDialogRef.value.setLoading(false)
   }
 }
 
@@ -301,4 +450,9 @@ const removeTagHandler = async (tag: TagData, includeActivities: boolean) => {
 watch(() => props.selectedTags, (newSelectedTags) => {
   selectedTags.value = new Set(newSelectedTags)
 }, { deep: true })
+
+// Load favorites when component mounts
+onMounted(() => {
+  loadFavorites()
+})
 </script>
