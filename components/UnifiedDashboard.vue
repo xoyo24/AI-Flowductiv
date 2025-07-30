@@ -159,136 +159,131 @@
             </div>
 
             <!-- 2-Line Compact Input Section -->
-            <div class="max-w-lg mx-auto space-y-3">
+            <div class="content-card p-5 max-w-2xl mx-auto space-y-4">
               
-              <!-- Line 1: Input + Start Button -->
-              <div class="flex space-x-2">
-                <div ref="dropdownContainer" class="relative flex-1">
-                  <input
-                    id="unified-activity-input"
-                    v-model="activityInput"
-                    type="text"
-                    placeholder="Deep work #focus"
-                    class="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                    :disabled="isRunning || isPaused"
-                    @keyup.enter="handleEnterKey"
-                    @keydown="handleKeydown"
-                    @focus="handleInputFocus"
-                    @blur="handleInputBlur"
-                    data-testid="unified-activity-input"
-                  />
-                  
-                  <!-- Auto-complete Suggestions Dropdown -->
-                  <SuggestionDropdown
-                    :suggestions="suggestions"
-                    :visible="showSuggestions"
-                    :selected-index="selectedIndex"
-                    :loading="suggestionsLoading"
-                    @select="handleSuggestionSelect"
-                    @hover="selectIndex"
-                    @close="hideDropdown"
-                  />
-                </div>
-                <button
-                  v-if="!isRunning && !isPaused"
-                  @click="handleStart"
-                  :disabled="!activityInput.trim()"
-                  class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm whitespace-nowrap"
-                  data-testid="unified-start-button"
-                >
-                  Start
-                </button>
+              <!-- Line 1: Input Only (Clean & Focused) -->
+              <div ref="dropdownContainer" class="relative">
+                <input
+                  id="unified-activity-input"
+                  v-model="activityInput"
+                  type="text"
+                  placeholder="What are you working on?"
+                  class="w-full px-4 py-3 border border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  :disabled="isRunning || isPaused"
+                  @keyup.enter="handleEnterKey"
+                  @keydown="handleKeydown"
+                  @focus="handleInputFocus"
+                  @blur="handleInputBlur"
+                  data-testid="unified-activity-input"
+                />
+                
+                <!-- Auto-complete Suggestions Dropdown -->
+                <SuggestionDropdown
+                  :suggestions="suggestions"
+                  :visible="showSuggestions"
+                  :selected-index="selectedIndex"
+                  :loading="suggestionsLoading"
+                  @select="handleSuggestionSelect"
+                  @hover="selectIndex"
+                  @close="hideDropdown"
+                />
               </div>
 
-              <!-- Line 2: Quick Start + Timer Controls -->
-              <div v-if="!quickStartHidden" class="flex items-center justify-between">
-                <!-- Quick Start Buttons -->
-                <div class="flex space-x-2">
+              <!-- Line 2: Action Buttons (Consistent Styling & Positioning) -->
+              <div class="flex items-center justify-between">
+                <!-- Left Side: Quick Start Section -->
+                <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex items-center space-x-3">
+                  <span class="text-sm text-muted-foreground font-medium">Quick start:</span>
+                  <div class="flex space-x-2">
+                    <button 
+                      @click="handleQuickStart('Deep work #focus')"
+                      class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      title="Start timer with deep work activity"
+                    >
+                      #focus
+                    </button>
+                    <button 
+                      @click="handleQuickStart('Meeting #meeting')"
+                      class="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      title="Start timer with meeting activity"
+                    >
+                      #meeting
+                    </button>
+                    <button 
+                      @click="handleQuickStart('Learning session #learning')"
+                      class="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      title="Start timer with learning activity"
+                    >
+                      #learning
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Show Quick Start Toggle -->
+                <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex items-center">
                   <button 
-                    @click="handleQuickStart('Deep work #focus')"
-                    class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors text-xs font-medium"
-                    :disabled="isRunning || isPaused"
-                    title="Start timer with deep work activity"
+                    @click="quickStartHidden = false"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium underline-offset-4 hover:underline"
+                    title="Show quick start options"
                   >
-                    #focus
-                  </button>
-                  <button 
-                    @click="handleQuickStart('Meeting #meeting')"
-                    class="px-2 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors text-xs font-medium"
-                    :disabled="isRunning || isPaused"
-                    title="Start timer with meeting activity"
-                  >
-                    #meeting
-                  </button>
-                  <button 
-                    @click="handleQuickStart('Learning session #learning')"
-                    class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors text-xs font-medium"
-                    :disabled="isRunning || isPaused"
-                    title="Start timer with learning activity"
-                  >
-                    #learning
+                    Show quick start
                   </button>
                 </div>
 
-                <!-- Show again button when timer is not running -->
-                <div class="text-xs text-muted-foreground">
-                  <span>Quick start</span>
+                <!-- Right Side: Manual Start Button / Timer Controls -->
+                <div class="flex items-center space-x-2">
+                  <!-- Manual Start Button -->
+                  <button
+                    v-if="!isRunning && !isPaused"
+                    @click="handleStart"
+                    :disabled="!activityInput.trim()"
+                    class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    data-testid="unified-start-button"
+                  >
+                    Start Timer
+                  </button>
+
+                  <!-- Timer Controls (Replace Start Button) -->
+                  <button
+                    v-if="isRunning"
+                    @click="handlePause"
+                    class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    data-testid="unified-pause-button"
+                  >
+                    ⏸ Pause
+                  </button>
+
+                  <button
+                    v-if="isPaused"
+                    @click="handleResume"
+                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    data-testid="unified-resume-button"
+                  >
+                    ▶️ Resume
+                  </button>
+
+                  <button
+                    v-if="isPaused"
+                    @click="handleFinish"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    data-testid="unified-finish-button"
+                  >
+                    ⏹ Finish
+                  </button>
+
+                  <button
+                    v-if="isRunning || isPaused"
+                    @click="handleReset"
+                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    data-testid="unified-reset-button"
+                  >
+                    🔄 Reset
+                  </button>
                 </div>
-              </div>
-
-              <!-- Show quick start toggle when hidden -->
-              <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-center">
-                <button 
-                  @click="quickStartHidden = false"
-                  class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  title="Show quick start options"
-                >
-                  Show quick start
-                </button>
-              </div>
-
-              <!-- Timer Controls (when running) -->
-              <div v-if="isRunning || isPaused" class="flex items-center justify-center space-x-2">
-
-                <button
-                  v-if="isRunning"
-                  @click="handlePause"
-                  class="px-3 py-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-xs"
-                  data-testid="unified-pause-button"
-                >
-                  ⏸ Pause
-                </button>
-
-                <button
-                  v-if="isPaused"
-                  @click="handleResume"
-                  class="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-xs"
-                  data-testid="unified-resume-button"
-                >
-                  ▶️ Resume
-                </button>
-
-                <button
-                  v-if="isPaused"
-                  @click="handleFinish"
-                  class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-xs"
-                  data-testid="unified-finish-button"
-                >
-                  ⏹ Finish
-                </button>
-
-                <button
-                  v-if="isRunning || isPaused"
-                  @click="handleReset"
-                  class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-xs"
-                  data-testid="unified-reset-button"
-                >
-                  🔄 Reset
-                </button>
               </div>
 
               <!-- Extracted Tags Display -->
-              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[20px]">
+              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[20px] pt-3 border-t border-border/50">
                 <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                   <span class="text-blue-500 mr-1">#</span>{{ tag }}
                 </span>
