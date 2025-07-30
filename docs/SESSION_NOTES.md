@@ -72,6 +72,65 @@
 
 ---
 
+## ✅ **Latest Session: Tag Management Bug Fixes + Edit Dialog Improvements (July 30, 2025)**
+
+**Status**: CRITICAL FIXES COMPLETED - All tag management issues resolved  
+**Duration**: 45 minutes (user testing → bug fixes → validation)  
+**Focus**: Fix user-reported tag management bugs and edit dialog inconsistencies
+
+### **🐛 Critical Issues Fixed**
+
+**Tag Operation Bugs** (User-Reported):
+- ✅ **Tag Rename**: Now updates both tags array AND activity titles (#urgent → #urgent1 across all activities)
+- ✅ **Tag Removal**: Now removes hashtag references from activity titles (#test removed from "test #test")
+- ✅ **Auto-Refresh**: Tag operations immediately refresh UI without manual app refresh needed
+- ✅ **Edit Dialog Consistency**: Now saves hashtags in activity titles like home screen input
+
+**Edit Dialog Issues**:
+- ✅ **Dual Input Problem**: Replaced separate Title/Tags inputs with unified smart input
+- ✅ **Hashtag Saving**: Edit dialog now saves "Meeting prep #work" consistently with home screen
+- ✅ **Duplicate Hashtags**: Fixed "Learning #learning" becoming "Learning #learning #learning" on edit
+
+### **📊 Technical Fixes Applied**
+
+**Backend Database Operations**:
+- `server/api/tags/rename.patch.ts`: Added regex title replacement for hashtag references
+- `server/api/tags/remove.delete.ts`: Added regex title cleaning with whitespace normalization
+- Both operations now update `title` field AND `tags` array for complete consistency
+
+**Frontend Data Flow**:
+- `components/UnifiedDashboard.vue`: Added `refreshActivities()` after tag edit/remove operations
+- `components/Activity/SmartEditInput.vue`: Redesigned to use unified input like InputComposer
+- Fixed `useInputParser` integration and undefined reference errors
+
+**Edit Dialog Architecture**:
+- Replaced dual-input approach with unified "Meeting prep #work #planning" syntax
+- Fixed initialization logic to prevent hashtag duplication
+- Consistent save behavior between create and edit workflows
+
+### **🔧 User Experience Impact**
+
+**Before vs After**:
+- ❌ Tag rename: "urgent #urgent" → tags changed but title still showed "#urgent" 
+- ✅ Tag rename: "urgent #urgent" → "urgent1 #urgent1" (complete consistency)
+- ❌ Tag removal: #test disappeared from filters but remained in activity titles
+- ✅ Tag removal: "test #test" → "test" (clean title + tag removal)
+- ❌ Edit dialog: Separate Title and Tags inputs, hashtags not saved to title
+- ✅ Edit dialog: Unified input saves "Meeting prep #work" like home screen
+
+**Quality Assurance**:
+- All fixes tested with successful production builds
+- Tag management tests still passing (14/14)
+- No regressions in existing functionality
+
+### **📈 Git Evidence**
+
+**Commits**: `0385a62` (core fixes) + `b712d2e` (hashtag consistency) + `db7266d` (duplicate prevention)  
+**Files Modified**: 6 files across server APIs, components, and documentation  
+**Lines Changed**: 174 insertions, 153 deletions (net improvement in code quality)
+
+---
+
 ## ✅ **Recently Completed Core Features**
 
 ### **Activity Management System (July 30, 2025)**

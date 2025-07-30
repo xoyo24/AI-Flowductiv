@@ -94,13 +94,9 @@ const selectedIndex = ref(-1)
 
 // Initialize unified input with current activity data
 onMounted(() => {
-  // Reconstruct the unified input from title and tags
-  const title = props.activity.title
-  const tags = props.activity.tags || []
-  
-  // Create unified input like "Meeting prep #work #planning"
-  const tagString = tags.length > 0 ? ' ' + tags.map(tag => `#${tag}`).join(' ') : ''
-  unifiedInput.value = title + tagString
+  // Use the title as-is since it already contains hashtag references
+  // No need to reconstruct because our edit save logic now preserves the original input
+  unifiedInput.value = props.activity.title
 })
 
 // Use input parser to extract title and tags from unified input
@@ -214,10 +210,8 @@ watch(unifiedInput, () => {
 // Watch for activity prop changes to update input
 watch(() => props.activity, (newActivity) => {
   if (newActivity) {
-    const title = newActivity.title
-    const tags = newActivity.tags || []
-    const tagString = tags.length > 0 ? ' ' + tags.map(tag => `#${tag}`).join(' ') : ''
-    unifiedInput.value = title + tagString
+    // Use the title as-is since it already contains hashtag references
+    unifiedInput.value = newActivity.title
   }
 }, { deep: true })
 </script>
