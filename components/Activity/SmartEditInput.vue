@@ -198,9 +198,10 @@ const selectSuggestion = (suggestion: any) => {
 }
 
 const updateFormData = () => {
-  // Emit updated data to parent with parsed title and tags
+  // Emit updated data to parent with original input as title (includes hashtags)
+  // This makes it consistent with home screen input behavior
   emit('update', {
-    title: parsedTitle.value.trim(),
+    title: unifiedInput.value.trim(),
     tags: parsedTags.value
   })
 }
