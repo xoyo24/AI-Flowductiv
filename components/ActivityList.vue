@@ -26,15 +26,13 @@
               </span>
             </div>
           </div>
-          <button 
-            class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3"
-            @click.stop="$emit('activity-menu', activity)"
-            aria-label="Activity options"
-          >
-            <svg class="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-            </svg>
-          </button>
+          <div @click.stop class="ml-3">
+            <ActivityMenuDropdown
+              :activity="activity"
+              @edit="$emit('activity-edit', activity)"
+              @delete="$emit('activity-delete', activity)"
+            />
+          </div>
         </div>
       </div>
       
@@ -65,6 +63,8 @@
 </template>
 
 <script setup lang="ts">
+import ActivityMenuDropdown from '~/components/Activity/MenuDropdown.vue'
+
 interface Activity {
   id: string
   title: string
@@ -86,7 +86,8 @@ interface Props {
 
 interface Emits {
   (e: 'activity-click', activity: Activity): void
-  (e: 'activity-menu', activity: Activity): void
+  (e: 'activity-edit', activity: Activity): void
+  (e: 'activity-delete', activity: Activity): void
   (e: 'load-more'): void
 }
 

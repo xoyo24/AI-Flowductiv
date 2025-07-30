@@ -188,12 +188,76 @@
           :format-relative-time="formatRelativeTime"
           :format-time-range="formatTimeRange"
           @activity-click="handleActivityClick"
-          @activity-menu="handleActivityMenu"
+          @activity-edit="handleActivityEdit"
+          @activity-delete="handleActivityDelete"
           @load-more="loadMoreActivities"
         />
 
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Activity Edit Dialog -->
+  <div 
+    v-if="isEditDialogOpen" 
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    @click="isEditDialogOpen = false"
+  >
+    <div 
+      class="content-card p-6 max-w-md w-full mx-4"
+      @click.stop
+    >
+      <h3 class="text-lg font-semibold mb-4">Edit Activity</h3>
+      <ActivitySmartEditInput
+        :activity="selectedActivity"
+        @update="handleEditUpdate"
+      />
+      <div class="flex justify-end space-x-3 mt-6">
+        <button 
+          @click="isEditDialogOpen = false"
+          class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          Cancel
+        </button>
+        <button 
+          @click="saveEdit"
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Delete Confirmation Dialog -->
+  <div 
+    v-if="isDeleteDialogOpen" 
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    @click="cancelDelete"
+  >
+    <div 
+      class="content-card p-6 max-w-md w-full mx-4"
+      @click.stop
+    >
+      <h3 class="text-lg font-semibold mb-4">Delete Activity</h3>
+      <p class="text-muted-foreground mb-6">
+        Are you sure you want to delete "{{ selectedActivity?.title }}"? This action cannot be undone.
+      </p>
+      <div class="flex justify-end space-x-3">
+        <button 
+          @click="cancelDelete"
+          class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          Cancel
+        </button>
+        <button 
+          @click="confirmDelete"
+          class="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium hover:bg-destructive/90"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -202,6 +266,7 @@
 import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
+import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import InputComposer from '~/components/InputComposer.vue'
@@ -653,10 +718,78 @@ const handleActivityClick = (activity) => {
   console.log('Activity clicked:', activity)
 }
 
-const handleActivityMenu = (activity) => {
-  // For future: implement context menu with edit/delete options
-  console.log('Activity menu:', activity)
+const selectedActivity = ref(null)
+const isEditDialogOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+
+const editData = ref({
+  title: '',
+  tags: []
+})
+
+const handleActivityEdit = (activity) => {
+  selectedActivity.value = activity
+  editData.value = {
+    title: activity.title,
+    tags: [...(activity.tags || [])]
+  }
+  isEditDialogOpen.value = true
 }
+
+const handleEditUpdate = (data) => {
+  editData.value = data
+}
+
+const handleActivityDelete = (activity) => {
+  selectedActivity.value = activity
+  isDeleteDialogOpen.value = true
+}
+
+const confirmDelete = async () => {
+  if (!selectedActivity.value) return
+  
+  try {
+    await $fetch(`/api/activities/${selectedActivity.value.id}`, {
+      method: 'DELETE'
+    })
+    
+    // Refresh activities to reflect the deletion
+    await refreshActivities()
+    isDeleteDialogOpen.value = false
+    selectedActivity.value = null
+  } catch (error) {
+    console.error('Failed to delete activity:', error)
+  }
+}
+
+const cancelDelete = () => {
+  isDeleteDialogOpen.value = false
+  selectedActivity.value = null
+}
+
+const saveEdit = async () => {
+  if (!selectedActivity.value) return
+  
+  try {
+    const updateData = {
+      title: editData.value.title,
+      tags: editData.value.tags
+    }
+    
+    await $fetch(`/api/activities/${selectedActivity.value.id}`, {
+      method: 'PATCH',
+      body: updateData
+    })
+    
+    // Refresh activities to reflect the changes
+    await refreshActivities()
+    isEditDialogOpen.value = false
+    selectedActivity.value = null
+  } catch (error) {
+    console.error('Failed to update activity:', error)
+  }
+}
+
 
 // Format time range helper
 const formatTimeRange = (startTime, endTime) => {
