@@ -127,12 +127,12 @@
           :activities="activities"
         />
 
-        <!-- Combined Timer + Input Card (Flomo-Style following mockup design) -->
-        <div class="content-card p-3">
-          <div class="space-y-3">
+        <!-- Combined Timer + Input Card (Clean Integrated Design) -->
+        <div class="content-card p-6">
+          <div class="space-y-6">
             
             <!-- Timer Display Section -->
-            <div class="text-center space-y-1">
+            <div class="text-center space-y-3">
               <div 
                 class="text-6xl timer-display font-bold text-foreground tracking-tight"
                 data-testid="unified-timer-display"
@@ -145,10 +145,10 @@
               <div class="flex items-center justify-center space-x-2">
                 <div 
                   :class="{
-                    'w-3 h-3 rounded-full': true,
+                    'w-2 h-2 rounded-full': true,
                     'bg-green-500 animate-pulse': isRunning,
                     'bg-yellow-500': isPaused,
-                    'bg-gray-300': !isRunning && !isPaused
+                    'bg-gray-400': !isRunning && !isPaused
                   }"
                   data-testid="timer-status"
                 />
@@ -158,8 +158,8 @@
               </div>
             </div>
 
-            <!-- 2-Line Compact Input Section -->
-            <div class="content-card p-5 max-w-2xl mx-auto space-y-4">
+            <!-- Input Section (No Nested Card) -->
+            <div class="space-y-4">
               
               <!-- Line 1: Input Only (Clean & Focused) -->
               <div ref="dropdownContainer" class="relative">
@@ -168,7 +168,7 @@
                   v-model="activityInput"
                   type="text"
                   placeholder="What are you working on?"
-                  class="w-full px-4 py-3 border border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  class="w-full px-4 py-3 border-2 border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
                   :disabled="isRunning || isPaused"
                   @keyup.enter="handleEnterKey"
                   @keydown="handleKeydown"
@@ -189,29 +189,29 @@
                 />
               </div>
 
-              <!-- Line 2: Action Buttons (Consistent Styling & Positioning) -->
-              <div class="flex items-center justify-between">
-                <!-- Left Side: Quick Start Section -->
-                <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex items-center space-x-3">
+              <!-- Action Buttons Row -->
+              <div class="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 mt-4">
+                <!-- Quick Start Section -->
+                <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex flex-col space-y-2 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-3">
                   <span class="text-sm text-muted-foreground font-medium">Quick start:</span>
-                  <div class="flex space-x-2">
+                  <div class="flex flex-wrap gap-2">
                     <button 
                       @click="handleQuickStart('Deep work #focus')"
-                      class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
                       title="Start timer with deep work activity"
                     >
                       #focus
                     </button>
                     <button 
                       @click="handleQuickStart('Meeting #meeting')"
-                      class="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
                       title="Start timer with meeting activity"
                     >
                       #meeting
                     </button>
                     <button 
                       @click="handleQuickStart('Learning session #learning')"
-                      class="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105"
+                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
                       title="Start timer with learning activity"
                     >
                       #learning
@@ -220,24 +220,24 @@
                 </div>
 
                 <!-- Show Quick Start Toggle -->
-                <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex items-center">
+                <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-center lg:justify-start">
                   <button 
                     @click="quickStartHidden = false"
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium underline-offset-4 hover:underline"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     title="Show quick start options"
                   >
                     Show quick start
                   </button>
                 </div>
 
-                <!-- Right Side: Manual Start Button / Timer Controls -->
-                <div class="flex items-center space-x-2">
+                <!-- Primary Action Button -->
+                <div class="flex justify-center lg:justify-end space-x-2">
                   <!-- Manual Start Button -->
                   <button
                     v-if="!isRunning && !isPaused"
                     @click="handleStart"
                     :disabled="!activityInput.trim()"
-                    class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
                     data-testid="unified-start-button"
                   >
                     Start Timer
@@ -247,7 +247,7 @@
                   <button
                     v-if="isRunning"
                     @click="handlePause"
-                    class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-sm"
                     data-testid="unified-pause-button"
                   >
                     ⏸ Pause
@@ -256,7 +256,7 @@
                   <button
                     v-if="isPaused"
                     @click="handleResume"
-                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-sm"
                     data-testid="unified-resume-button"
                   >
                     ▶️ Resume
@@ -265,7 +265,7 @@
                   <button
                     v-if="isPaused"
                     @click="handleFinish"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
                     data-testid="unified-finish-button"
                   >
                     ⏹ Finish
@@ -274,7 +274,7 @@
                   <button
                     v-if="isRunning || isPaused"
                     @click="handleReset"
-                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-sm"
                     data-testid="unified-reset-button"
                   >
                     🔄 Reset
