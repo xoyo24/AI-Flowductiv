@@ -1,49 +1,25 @@
 <template>
   <div class="space-y-4">
-    <!-- Title Input -->
+    <!-- Unified Smart Input (like InputComposer) -->
     <div>
-      <label class="block text-sm font-medium mb-2">Title</label>
-      <input 
-        v-model="editForm.title"
-        type="text" 
-        class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        placeholder="Activity title"
-        data-testid="edit-title-input"
-      />
-    </div>
-
-    <!-- Smart Tag Input -->
-    <div>
-      <label class="block text-sm font-medium mb-2">Tags</label>
-      
-      <!-- Current Tags Display -->
-      <div v-if="parsedTags.length > 0" class="flex flex-wrap gap-2 mb-3">
-        <span 
-          v-for="tag in parsedTags" 
-          :key="tag"
-          class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20"
-        >
-          <span class="text-primary mr-1">#</span>{{ tag }}
-        </span>
-      </div>
-
-      <!-- Smart Tag Input Field -->
+      <label class="block text-sm font-medium mb-2">Activity</label>
       <div class="relative" ref="dropdownContainer">
         <input 
-          v-model="tagInput"
+          v-model="unifiedInput"
           type="text" 
-          class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Add tags: #work #meeting (or comma separated)"
+          class="w-full px-4 py-3 border-2 border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
+          placeholder="What are you working on? (e.g., Meeting prep #work #planning)"
           @input="handleInput"
           @focus="handleFocus"
           @blur="handleBlur"
           @keydown="handleKeydown"
-          data-testid="edit-tags-input"
+          @keyup.enter="handleSave"
+          data-testid="edit-unified-input"
         />
 
-        <!-- Tag Suggestions Dropdown -->
+        <!-- Auto-complete Suggestions Dropdown -->
         <div 
-          v-if="showSuggestions && suggestions.length > 0"
+          v-if="showSuggestions"
           class="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto content-card border shadow-lg z-50"
         >
           <div class="py-2">
@@ -65,8 +41,24 @@
         </div>
       </div>
 
-      <div class="text-xs text-muted-foreground mt-1">
-        Type #tag or use comma-separated format. Press Tab or Enter to select suggestions.
+      <!-- Parsed Tags Display -->
+      <div v-if="parsedTags.length > 0" class="mt-3">
+        <div class="flex items-center space-x-3">
+          <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+          <div class="flex flex-wrap gap-2">
+            <span 
+              v-for="tag in parsedTags" 
+              :key="tag"
+              class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+            >
+              <span class="text-primary mr-1">#</span>{{ tag }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-muted-foreground mt-2">
+        Type #tag, !priority, or use comma-separated format. Press Tab or Enter to select suggestions.
       </div>
     </div>
   </div>
@@ -88,33 +80,33 @@ interface Props {
 
 interface Emits {
   (e: 'update', data: { title: string; tags: string[] }): void
+  (e: 'save'): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Form data
-const editForm = ref({
-  title: props.activity.title,
-  tags: [...(props.activity.tags || [])]
-})
-
-const tagInput = ref('')
+// Unified input that combines title and tags (like InputComposer)
+const unifiedInput = ref('')
 const dropdownContainer = ref<HTMLElement>()
 const inputFocused = ref(false)
 const selectedIndex = ref(-1)
 
-// Initialize tag input with existing tags
+// Initialize unified input with current activity data
 onMounted(() => {
-  if (editForm.value.tags.length > 0) {
-    tagInput.value = editForm.value.tags.map(tag => `#${tag}`).join(' ')
-  }
+  // Reconstruct the unified input from title and tags
+  const title = props.activity.title
+  const tags = props.activity.tags || []
+  
+  // Create unified input like "Meeting prep #work #planning"
+  const tagString = tags.length > 0 ? ' ' + tags.map(tag => `#${tag}`).join(' ') : ''
+  unifiedInput.value = title + tagString
 })
 
-// Use input parser to extract tags from the input
-const { tags: parsedTags } = useInputParser(tagInput)
+// Use input parser to extract title and tags from unified input
+const { tags: parsedTags, cleanText: parsedTitle } = useInputParser(unifiedInput)
 
-// Use autocomplete for tag suggestions
+// Use autocomplete for suggestions
 const {
   suggestions,
   isLoading: suggestionsLoading,
@@ -122,7 +114,7 @@ const {
   selectPrevious,
   performSearch,
   getInitialSuggestions,
-} = useAutoComplete(tagInput, { debounceMs: 300, maxSuggestions: 6 })
+} = useAutoComplete(unifiedInput, { debounceMs: 300, maxSuggestions: 6 })
 
 // Filter suggestions to only show tag suggestions
 const tagSuggestions = computed(() => 
@@ -135,16 +127,16 @@ const showSuggestions = computed(() =>
 
 // Input handlers
 const handleInput = () => {
-  if (tagInput.value.trim()) {
-    performSearch(tagInput.value.trim())
+  if (unifiedInput.value.trim()) {
+    performSearch(unifiedInput.value.trim())
   }
   updateFormData()
 }
 
 const handleFocus = () => {
   inputFocused.value = true
-  if (tagInput.value.trim()) {
-    performSearch(tagInput.value.trim())
+  if (unifiedInput.value.trim()) {
+    performSearch(unifiedInput.value.trim())
   } else {
     getInitialSuggestions()
   }
@@ -169,7 +161,6 @@ const handleKeydown = (event: KeyboardEvent) => {
       event.preventDefault()
       selectedIndex.value = Math.max(selectedIndex.value - 1, -1)
       break
-    case 'Enter':
     case 'Tab':
       if (selectedIndex.value >= 0) {
         event.preventDefault()
@@ -182,19 +173,22 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+const handleSave = () => {
+  // Emit save event when Enter is pressed
+  emit('save')
+}
+
 const selectSuggestion = (suggestion: any) => {
-  const currentTags = tagInput.value.split(/[,\s]+/).filter(Boolean)
   const tagName = suggestion.text.startsWith('#') ? suggestion.text.slice(1) : suggestion.text
   
-  // Check if tag already exists
-  const hasTag = currentTags.some(tag => 
-    tag.replace('#', '').toLowerCase() === tagName.toLowerCase()
-  )
+  // Check if tag already exists in the input
+  const currentInput = unifiedInput.value.toLowerCase()
+  const tagToAdd = `#${tagName}`.toLowerCase()
   
-  if (!hasTag) {
+  if (!currentInput.includes(tagToAdd)) {
     const newTag = `#${tagName}`
-    tagInput.value = tagInput.value.trim() 
-      ? `${tagInput.value} ${newTag}`
+    unifiedInput.value = unifiedInput.value.trim() 
+      ? `${unifiedInput.value} ${newTag}`
       : newTag
   }
   
@@ -204,30 +198,25 @@ const selectSuggestion = (suggestion: any) => {
 }
 
 const updateFormData = () => {
-  // Update tags from parsed input
-  editForm.value.tags = [...parsedTags.value]
-  
-  // Emit updated data to parent
+  // Emit updated data to parent with parsed title and tags
   emit('update', {
-    title: editForm.value.title.trim(),
-    tags: editForm.value.tags
+    title: parsedTitle.value.trim(),
+    tags: parsedTags.value
   })
 }
 
-// Watch for title changes
-watch(() => editForm.value.title, () => {
-  emit('update', {
-    title: editForm.value.title.trim(),
-    tags: editForm.value.tags
-  })
+// Watch for input changes to update form data
+watch(unifiedInput, () => {
+  updateFormData()
 })
 
-// Watch for parsed tags changes
-watch(parsedTags, () => {
-  editForm.value.tags = [...parsedTags.value]
-  emit('update', {
-    title: editForm.value.title.trim(),
-    tags: editForm.value.tags
-  })
-})
+// Watch for activity prop changes to update input
+watch(() => props.activity, (newActivity) => {
+  if (newActivity) {
+    const title = newActivity.title
+    const tags = newActivity.tags || []
+    const tagString = tags.length > 0 ? ' ' + tags.map(tag => `#${tag}`).join(' ') : ''
+    unifiedInput.value = title + tagString
+  }
+}, { deep: true })
 </script>

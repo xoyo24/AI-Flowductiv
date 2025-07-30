@@ -1,5 +1,32 @@
 <template>
   <div v-if="topTags.length > 0" class="space-y-1">
+    <!-- Favorites Section (Top Priority) -->
+    <div v-if="sortedFavorites.length > 0" class="mb-4">
+      <div class="flex items-center justify-between px-3 py-2">
+        <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          Favorite Tags
+        </h3>
+      </div>
+      <div class="px-3 pb-2">
+        <div class="flex flex-wrap gap-1">
+          <button
+            v-for="favoriteTag in sortedFavorites"
+            :key="favoriteTag"
+            @click="toggleTag(favoriteTag)"
+            :class="[
+              'px-2 py-1 text-xs rounded-md border transition-colors',
+              isSelected(favoriteTag)
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:text-foreground'
+            ]"
+            :data-testid="`favorite-tag-${favoriteTag}`"
+          >
+            <span class="mr-1">⭐</span>#{{ favoriteTag }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Section Title -->
     <div class="flex items-center justify-between px-3 py-2">
       <h3 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -135,29 +162,6 @@
       Filtering by {{ selectedTags.size }} {{ selectedTags.size === 1 ? 'tag' : 'tags' }}
     </div>
 
-    <!-- Favorites Section -->
-    <div v-if="sortedFavorites.length > 0" class="border-t border-border pt-3">
-      <div class="px-3 py-2">
-        <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-          Favorite Tags
-        </h4>
-        <div class="flex flex-wrap gap-1">
-          <button
-            v-for="favoriteTag in sortedFavorites"
-            :key="favoriteTag"
-            @click="toggleTag(favoriteTag)"
-            :class="[
-              'px-2 py-1 text-xs rounded-md border transition-colors',
-              isSelected(favoriteTag)
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:text-foreground'
-            ]"
-          >
-            <span class="mr-1">⭐</span>#{{ favoriteTag }}
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Tag Statistics Button -->
     <div class="border-t border-border pt-3">

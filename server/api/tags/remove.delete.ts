@@ -38,11 +38,18 @@ export default defineEventHandler(async (event) => {
         
         deletedActivities++
       } else {
-        // Remove tag from activity
+        // Remove tag from activity and update title
+        const currentTitle = activity.title || ''
+        const updatedTitle = currentTitle.replace(
+          new RegExp(`#${tagName}\\b`, 'g'), 
+          ''
+        ).replace(/\s+/g, ' ').trim() // Clean up extra spaces
+
         await db
           .update(activities)
           .set({
             tags: remainingTags,
+            title: updatedTitle,
             updatedAt: new Date()
           })
           .where(eq(activities.id, activity.id))

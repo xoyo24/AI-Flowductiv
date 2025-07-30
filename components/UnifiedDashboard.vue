@@ -212,6 +212,7 @@
       <ActivitySmartEditInput
         :activity="selectedActivity"
         @update="handleEditUpdate"
+        @save="handleEditSave"
       />
       <div class="flex justify-end space-x-3 mt-6">
         <button 
@@ -672,19 +673,24 @@ const handleClearDateRangeFilter = () => {
   clearDateRangeFilter()
 }
 
-const handleTagFavorite = (tag: any) => {
+const handleTagFavorite = async (tag: any) => {
   console.log('Toggle favorite for tag:', tag.name)
-  // TODO: Implement tag favorite functionality
+  // Tag favorite operation is handled within TagFilters component
+  // No need for additional refresh as it's just UI state
 }
 
-const handleTagEdit = (tag: any) => {
-  console.log('Edit tag:', tag.name)
-  // TODO: Open tag edit modal/dialog
+const handleTagEdit = async (tag: any) => {
+  console.log('Tag edited:', tag.name)
+  // After tag rename, refresh activities and analytics
+  await refreshActivities()
+  await refreshAnalytics()
 }
 
-const handleTagRemove = (tag: any, includeActivities: boolean) => {
-  console.log('Remove tag:', tag.name, 'Include activities:', includeActivities)
-  // TODO: Implement tag removal functionality
+const handleTagRemove = async (tag: any, includeActivities: boolean) => {
+  console.log('Tag removed:', tag.name, 'Include activities:', includeActivities)
+  // After tag removal, refresh activities and analytics
+  await refreshActivities()
+  await refreshAnalytics()
 }
 
 // Dropdown management (simplified since moved to InputComposer)
@@ -738,6 +744,11 @@ const handleActivityEdit = (activity) => {
 
 const handleEditUpdate = (data) => {
   editData.value = data
+}
+
+const handleEditSave = () => {
+  // Save when Enter is pressed in the smart input
+  saveEdit()
 }
 
 const handleActivityDelete = (activity) => {

@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
 
     let updatedCount = 0
 
-    // Update each activity's tags
+    // Update each activity's tags and title
     for (const activity of activitiesToUpdate) {
       const currentTags = activity.tags || []
       const tagIndex = currentTags.indexOf(oldName)
@@ -51,10 +51,18 @@ export default defineEventHandler(async (event) => {
         const updatedTags = [...currentTags]
         updatedTags[tagIndex] = newName
 
+        // Also update the title to replace hashtag references
+        const currentTitle = activity.title || ''
+        const updatedTitle = currentTitle.replace(
+          new RegExp(`#${oldName}\\b`, 'g'), 
+          `#${newName}`
+        )
+
         await db
           .update(activities)
           .set({
             tags: updatedTags,
+            title: updatedTitle,
             updatedAt: new Date()
           })
           .where(eq(activities.id, activity.id))
