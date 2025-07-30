@@ -54,6 +54,7 @@ export const users = sqliteTable('users', {
       theme?: string
       privacyLevel?: 'local' | 'encrypted' | 'cloud'
       defaultTags?: string[]
+      favoriteTags?: string[]
     }>()
     .default('{}'),
   createdAt: integer('created_at', { mode: 'timestamp' })
