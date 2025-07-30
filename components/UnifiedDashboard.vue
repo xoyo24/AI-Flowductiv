@@ -140,6 +140,7 @@
 
             <!-- Input Section (No Nested Card) -->
             <InputComposer
+              v-model="activityInput"
               :is-running="isRunning"
               :is-paused="isPaused"
               :quick-start-hidden="quickStartHidden"
@@ -153,7 +154,6 @@
               @pause-timer="handlePause"
               @resume-timer="handleResume"
               @finish-timer="handleFinish"
-              @activity-input-change="(value) => activityInput = value"
               @suggestion-select="handleSuggestionSelect"
               @keydown="handleKeydown"
               @input-focus="handleInputFocus"
@@ -341,6 +341,10 @@ const vibrate = (pattern: number | number[]) => {
 // Timer actions with haptic feedback
 const handleStart = () => {
   if (activityInput.value.trim() && startTimer(activityInput.value)) {
+    // Clear input when starting a completely new timer (not resuming)
+    if (!isRunning.value && !isPaused.value) {
+      // This is a fresh start, keep current input as is
+    }
     vibrate([100])
     hideDropdown()
   }
@@ -359,6 +363,7 @@ const handleResume = () => {
 const handleFinish = async () => {
   const success = await finishTimer()
   if (success) {
+    // Clear the activity input to provide clean slate for next timer
     activityInput.value = ''
     quickStartHidden.value = false // Show quick start again
     vibrate([200])

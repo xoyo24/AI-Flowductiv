@@ -8,7 +8,7 @@
         type="text"
         placeholder="What are you working on?"
         class="w-full px-4 py-3 border-2 border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
-        :disabled="isRunning || isPaused"
+        :disabled="false"
         @keyup.enter="handleEnterKey"
         @keydown="handleKeydown"
         @focus="handleInputFocus"
@@ -32,28 +32,39 @@
     <div class="space-y-3 lg:space-y-0">
       <!-- Desktop: 2-Line Layout (Tags Left, Controls Right) -->
       <div class="hidden lg:flex lg:items-start lg:justify-between lg:space-x-4">
-        <!-- Left: Quick Start Tags -->
+        <!-- Left: Quick Start Tags or Extracted Tags -->
         <div class="flex-1">
-          <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex items-center space-x-3">
+          <!-- Show extracted tags if user has typed something -->
+          <div v-if="extractedTags.length > 0" class="flex items-center space-x-3">
+            <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+                <span class="text-primary mr-1">#</span>{{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Show quick start only if no extracted tags and conditions are met -->
+          <div v-else-if="!quickStartHidden && !isRunning && !isPaused" class="flex items-center space-x-3">
             <span class="text-sm text-muted-foreground font-medium">Quick start:</span>
             <div class="flex flex-wrap gap-2">
               <button 
                 @click="$emit('quick-start', 'Deep work #focus')"
-                class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                class="px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
                 title="Start timer with deep work activity"
               >
                 #focus
               </button>
               <button 
                 @click="$emit('quick-start', 'Meeting #meeting')"
-                class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                class="px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
                 title="Start timer with meeting activity"
               >
                 #meeting
               </button>
               <button 
                 @click="$emit('quick-start', 'Learning session #learning')"
-                class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                class="px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-sm font-medium"
                 title="Start timer with learning activity"
               >
                 #learning
@@ -61,7 +72,8 @@
             </div>
           </div>
           
-          <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-start">
+          <!-- Show quick start toggle if hidden and no extracted tags -->
+          <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0" class="flex justify-start">
             <button 
               @click="$emit('show-quick-start')"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -126,8 +138,18 @@
 
       <!-- Mobile: Stacked Layout (Preserved) -->
       <div class="flex flex-col space-y-3 lg:hidden">
-        <!-- Quick Start Section -->
-        <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex flex-col space-y-2">
+        <!-- Extracted Tags Section (Mobile) -->
+        <div v-if="extractedTags.length > 0" class="flex flex-col space-y-2">
+          <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
+              <span class="text-blue-500 mr-1">#</span>{{ tag }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Start Section (only if no extracted tags) -->
+        <div v-else-if="!quickStartHidden && !isRunning && !isPaused" class="flex flex-col space-y-2">
           <span class="text-sm text-muted-foreground font-medium">Quick start:</span>
           <div class="flex flex-wrap gap-2">
             <button 
@@ -154,8 +176,8 @@
           </div>
         </div>
 
-        <!-- Show Quick Start Toggle -->
-        <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-center">
+        <!-- Show Quick Start Toggle (only if no extracted tags) -->
+        <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0" class="flex justify-center">
           <button 
             @click="$emit('show-quick-start')"
             class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -217,13 +239,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Extracted Tags Display -->
-    <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[20px] pt-3 border-t border-border/50">
-      <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-        <span class="text-blue-500 mr-1">#</span>{{ tag }}
-      </span>
-    </div>
   </div>
 </template>
 
@@ -239,6 +254,7 @@ interface Props {
   suggestionsLoading: boolean
   selectedIndex: number
   extractedTags: string[]
+  modelValue: string // Add prop for parent's activity input
 }
 
 interface Emits {
@@ -248,7 +264,7 @@ interface Emits {
   (e: 'pause-timer'): void
   (e: 'resume-timer'): void
   (e: 'finish-timer'): void
-  (e: 'activity-input-change', value: string): void
+  (e: 'update:modelValue', value: string): void // v-model support
   (e: 'suggestion-select', suggestion: any): void
   (e: 'keydown', event: KeyboardEvent): void
   (e: 'input-focus'): void
@@ -262,7 +278,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // Local reactive state  
-const activityInput = ref('')
+const activityInput = ref(props.modelValue || '')
 const inputFocused = ref(false)
 const dropdownVisible = ref(false)
 const justSelectedSuggestion = ref(false)
@@ -275,9 +291,16 @@ const showSuggestions = computed(
     (props.suggestions.length > 0 || props.suggestionsLoading)
 )
 
-// Watch activity input and emit changes
+// Watch activity input and emit changes (child to parent)
 watch(activityInput, (newValue) => {
-  emit('activity-input-change', newValue)
+  emit('update:modelValue', newValue)
+})
+
+// Watch parent changes and sync to local state (parent to child)
+watch(() => props.modelValue, (newValue) => {
+  if (newValue !== activityInput.value) {
+    activityInput.value = newValue || ''
+  }
 })
 
 // Dropdown management

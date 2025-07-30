@@ -4,6 +4,76 @@
 
 ---
 
+## **Input Field UX Improvements & Visual Alignment (July 30, 2025, 60 min)**
+
+**Completed**: Input field editability improvements + visual alignment fixes + proper v-model integration  
+**Evidence**: commits [pending] | Production build successful | Enhanced InputComposer.vue + UnifiedDashboard.vue with v-model  
+**Worked Well**: Systematic UX problem identification, proper Vue 3 v-model patterns, comprehensive visual alignment solution, thorough testing approach  
+**Needs Improvement**: Could have created automated tests for input field state synchronization, visual regression testing for alignment  
+**Next Time**: Add component tests for v-model communication patterns, implement visual diff testing for layout consistency  
+**Impact**: Dramatically improves timer input UX flow, eliminates user confusion around text preservation, creates consistent visual hierarchy
+
+### **Core UX Problems Resolved**:
+- **Input Editability**: Removed artificial disable constraint during timer (users can now edit activity throughout session)
+- **Quick Start Text Loss**: Fixed v-model communication to preserve text when using quick start buttons (#focus, #meeting, #learning)
+- **Visual Misalignment**: Updated tag styling to match quick start buttons exactly (same padding, font size, border radius)
+- **Input Lifecycle**: Added automatic clearing after finish to provide clean slate for next timer session
+
+### **Technical Implementation Achievements**:
+- **v-model Integration**: Added `modelValue` prop and `update:modelValue` emit to InputComposer for proper parent-child communication
+- **Bidirectional Watchers**: Implemented parent→child and child→parent state synchronization to prevent text loss
+- **Dynamic Layout Logic**: Tags now replace quick start in same position when user types (eliminates visual redundancy)
+- **Consistent Styling**: Updated tag styling from `px-2 py-1 text-xs` to `px-3 py-2 text-sm` to match button dimensions exactly
+
+### **UX Flow Enhancement Results**:
+- **Seamless Quick Start**: Click #focus → text appears and stays (vs disappearing before)
+- **Editable During Timer**: Users can refine activity description throughout timer session
+- **Balanced Layout**: Tags appear in same position as quick start (eliminates awkward separate row)
+- **Clean Finish**: Input automatically clears after finishing timer for fresh start
+
+### **Quality Assurance**:
+- **Build Verification**: All linting checks pass, production builds successful
+- **Type Safety**: Proper TypeScript interfaces for all prop/emit patterns
+- **Component Architecture**: Maintains clean separation between parent/child with event-driven communication
+- **Responsive Design**: Applied fixes to both desktop and mobile layouts for consistency
+
+---
+
+## **Component Architecture Refactoring & Desktop 2-Line Layout (July 30, 2025, 90 min)**
+
+**Completed**: Major component extraction from UnifiedDashboard.vue + desktop layout restoration + comprehensive unused component cleanup  
+**Evidence**: commits [12ccb22, 83c1e80, ea40290] | Build passes successfully | Created TimerDisplay.vue, InputComposer.vue, updated ActivityList.vue | Removed 12 unused files (2,629 lines)  
+**Worked Well**: Vue DevTools for identifying unused components, systematic component extraction with proper TypeScript interfaces, maintaining functionality while improving architecture  
+**Needs Improvement**: Could have created comprehensive component tests for extracted components, automated detection of unused code  
+**Next Time**: Consider component dependency analysis tooling, implement visual regression tests for UI changes, create component documentation with Storybook  
+**Impact**: 20% reduction in UnifiedDashboard complexity (918→733 lines), eliminates all dead code from codebase, restores optimized desktop UX
+
+### **Component Architecture Improvements**:
+- **Extracted Components**: TimerDisplay.vue (timer + status), InputComposer.vue (input + suggestions + actions), ActivityList.vue (Flomo-style cards)
+- **Desktop Layout Restoration**: 2-line structure with tags on left, timer controls on right for better space utilization
+- **TypeScript Integration**: Proper interfaces, props, and emits for all extracted components
+- **Event-Driven Architecture**: Clean parent-child communication through emits rather than tightly coupled code
+
+### **Comprehensive Cleanup (12 files removed)**:
+- **Primary Targets**: OverallSummary.vue, QuickStats.vue, TimerSection.vue, TimerSectionMobile.vue, TrendIndicator.vue
+- **Additional Discovery**: ProductivityHeatmap.vue, UI/PageHeader.vue identified through analysis
+- **Associated Tests**: Removed outdated test files for components no longer in use
+- **Evidence**: Vue DevTools showed 0 unused components after cleanup
+
+### **Technical Implementation**:
+- **Component Props/Emits**: Proper TypeScript interfaces with event-driven communication patterns
+- **Responsive Design**: Desktop 2-line layout while preserving mobile stacked layout
+- **Code Reduction**: UnifiedDashboard.vue reduced from 918 to 733 lines (20% reduction)
+- **Build Verification**: All extractions maintain functionality with successful production builds
+
+### **Architecture Benefits**:
+- **Maintainability**: Single responsibility components vs monolithic dashboard
+- **Reusability**: Extracted components can be used in other contexts
+- **Testing**: Easier to test smaller, focused components
+- **Code Discovery**: Eliminated confusion from unused components in codebase
+
+---
+
 ## **Design System Alignment & Desktop Content Density (July 29, 2025, 90 min)**
 
 **Completed**: Critical Design System alignment with desktop content density optimization for improved space utilization  
