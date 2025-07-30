@@ -6,9 +6,9 @@ Simplified task management command for your development workflow. Four focused c
 
 ```bash
 /task              # View current status (default)
-/task work [focus] # Implementation + testing + git commits
-/task done [what]  # Record completion + reflection
-/task plan [idea]  # Add future work to backlog
+/task:work [focus] # Implementation + testing + git commits
+/task:done [what]  # Record completion + reflection
+/task:plan [idea]  # Add future work to backlog
 ```
 
 ---
@@ -45,7 +45,7 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ---
 
-## `/task work [focus]` - Implementation Cycle
+## `/task:work [focus]` - Implementation Cycle
 
 **Purpose:** Pure code implementation with testing and verification - no documentation updates
 
@@ -85,7 +85,7 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ---
 
-## `/task done [what-completed]` - Record Completion + Reflection
+## `/task:done [what-completed]` - Record Completion + Reflection
 
 **Purpose:** Update SESSION_NOTES.md with completed work + add reflection to SESSION_HISTORY.md
 
@@ -130,7 +130,7 @@ Prompts you to capture:
 
 ---
 
-## `/task plan [feature-idea]` - Add Future Work
+## `/task:plan [feature-idea]` - Add Future Work
 
 **Purpose:** Add new features, improvements, or ideas to FEATURE_BACKLOG.md for future phases
 
@@ -188,12 +188,12 @@ Prompts you to capture:
 
 ### Daily Development Cycle:
 1. **`/task`** → See current status and next priorities
-2. **`/task work [focus]`** → Implement code with TDD approach
-3. **`/task done [what]`** → Record completion with reflection
+2. **`/task:work [focus]`** → Implement code with TDD approach
+3. **`/task:done [what]`** → Record completion with reflection
 4. **Repeat** until session/day complete
 
 ### Occasional Planning:
-- **`/task plan [idea]`** → Capture future features as they come up
+- **`/task:plan [idea]`** → Capture future features as they come up
 
 ### Document Integration:
 - **SESSION_NOTES.md**: Current sprint focus (updated by `/task done`)
@@ -202,7 +202,7 @@ Prompts you to capture:
 - **TodoWrite**: Current session tasks (managed automatically)
 
 ### Command Integration:
-- **`/task work`** orchestrates `/implement` + `/test` + verification cycles
+- **`/task:work`** orchestrates `/implement` + `/test` + verification cycles
 - **`/implement`** follows IMPLEMENTATION_PLAN.md patterns (Vue 3 + TypeScript + shadcn-vue)
 - **`/test`** follows TESTING_STRATEGY.md best practices (user behavior focus)
 - **Quality gates**: `bun run lint`, `bun test --run`, `bun run build` must pass
