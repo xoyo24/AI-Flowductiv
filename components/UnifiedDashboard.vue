@@ -132,163 +132,37 @@
           <div class="space-y-6">
             
             <!-- Timer Display Section -->
-            <div class="text-center space-y-3">
-              <div 
-                class="text-6xl timer-display font-bold text-foreground tracking-tight"
-                data-testid="unified-timer-display"
-                aria-live="polite"
-              >
-                {{ formattedTime }}
-              </div>
-              
-              <!-- Timer Status Indicator -->
-              <div class="flex items-center justify-center space-x-2">
-                <div 
-                  :class="{
-                    'w-2 h-2 rounded-full': true,
-                    'bg-green-500 animate-pulse': isRunning,
-                    'bg-yellow-500': isPaused,
-                    'bg-gray-400': !isRunning && !isPaused
-                  }"
-                  data-testid="timer-status"
-                />
-                <span class="text-xs text-muted-foreground">
-                  {{ timerStatus }}
-                </span>
-              </div>
-            </div>
+            <TimerDisplay
+              :formatted-time="formattedTime"
+              :is-running="isRunning"
+              :is-paused="isPaused"
+            />
 
             <!-- Input Section (No Nested Card) -->
-            <div class="space-y-4">
-              
-              <!-- Line 1: Input Only (Clean & Focused) -->
-              <div ref="dropdownContainer" class="relative">
-                <input
-                  id="unified-activity-input"
-                  v-model="activityInput"
-                  type="text"
-                  placeholder="What are you working on?"
-                  class="w-full px-4 py-3 border-2 border-input rounded-xl text-base bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
-                  :disabled="isRunning || isPaused"
-                  @keyup.enter="handleEnterKey"
-                  @keydown="handleKeydown"
-                  @focus="handleInputFocus"
-                  @blur="handleInputBlur"
-                  data-testid="unified-activity-input"
-                />
-                
-                <!-- Auto-complete Suggestions Dropdown -->
-                <SuggestionDropdown
-                  :suggestions="suggestions"
-                  :visible="showSuggestions"
-                  :selected-index="selectedIndex"
-                  :loading="suggestionsLoading"
-                  @select="handleSuggestionSelect"
-                  @hover="selectIndex"
-                  @close="hideDropdown"
-                />
-              </div>
-
-              <!-- Action Buttons Row -->
-              <div class="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 mt-4">
-                <!-- Quick Start Section -->
-                <div v-if="!quickStartHidden && !isRunning && !isPaused" class="flex flex-col space-y-2 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-3">
-                  <span class="text-sm text-muted-foreground font-medium">Quick start:</span>
-                  <div class="flex flex-wrap gap-2">
-                    <button 
-                      @click="handleQuickStart('Deep work #focus')"
-                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                      title="Start timer with deep work activity"
-                    >
-                      #focus
-                    </button>
-                    <button 
-                      @click="handleQuickStart('Meeting #meeting')"
-                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                      title="Start timer with meeting activity"
-                    >
-                      #meeting
-                    </button>
-                    <button 
-                      @click="handleQuickStart('Learning session #learning')"
-                      class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                      title="Start timer with learning activity"
-                    >
-                      #learning
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Show Quick Start Toggle -->
-                <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-center lg:justify-start">
-                  <button 
-                    @click="quickStartHidden = false"
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    title="Show quick start options"
-                  >
-                    Show quick start
-                  </button>
-                </div>
-
-                <!-- Primary Action Button -->
-                <div class="flex justify-center lg:justify-end space-x-2">
-                  <!-- Start Button -->
-                  <button
-                    v-if="!isRunning && !isPaused"
-                    @click="handleStart"
-                    :disabled="!activityInput.trim()"
-                    class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
-                    data-testid="unified-start-button"
-                  >
-                    Start Timer
-                  </button>
-
-                  <!-- Running: Finish (Primary) + Pause (Secondary) -->
-                  <template v-if="isRunning">
-                    <button
-                      @click="handleFinish"
-                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
-                      data-testid="unified-finish-button"
-                    >
-                      ⏹ Finish
-                    </button>
-                    <button
-                      @click="handlePause"
-                      class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition-colors text-sm"
-                      data-testid="unified-pause-button"
-                      title="Pause timer"
-                    >
-                      ⏸
-                    </button>
-                  </template>
-
-                  <!-- Paused: Resume (Primary) + Finish (Secondary) -->
-                  <template v-if="isPaused">
-                    <button
-                      @click="handleResume"
-                      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-sm"
-                      data-testid="unified-resume-button"
-                    >
-                      ▶️ Resume
-                    </button>
-                    <button
-                      @click="handleFinish"
-                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
-                      data-testid="unified-finish-button"
-                    >
-                      ⏹ Finish
-                    </button>
-                  </template>
-                </div>
-              </div>
-
-              <!-- Extracted Tags Display -->
-              <div v-if="extractedTags.length > 0" class="flex flex-wrap gap-2 min-h-[20px] pt-3 border-t border-border/50">
-                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                  <span class="text-blue-500 mr-1">#</span>{{ tag }}
-                </span>
-              </div>
-            </div>
+            <InputComposer
+              :is-running="isRunning"
+              :is-paused="isPaused"
+              :quick-start-hidden="quickStartHidden"
+              :suggestions="suggestions"
+              :suggestions-loading="suggestionsLoading"
+              :selected-index="selectedIndex"
+              :extracted-tags="extractedTags"
+              @quick-start="handleQuickStart"
+              @show-quick-start="quickStartHidden = false"
+              @start-timer="handleStart"
+              @pause-timer="handlePause"
+              @resume-timer="handleResume"
+              @finish-timer="handleFinish"
+              @activity-input-change="(value) => activityInput = value"
+              @suggestion-select="handleSuggestionSelect"
+              @keydown="handleKeydown"
+              @input-focus="handleInputFocus"
+              @input-blur="handleInputBlur"
+              @enter-key="handleEnterKey"
+              @select-index="selectIndex"
+              @hide-dropdown="hideDropdown"
+            />
+            
           </div>
         </div>
 
@@ -304,70 +178,19 @@
           @clear-duration-filters="() => console.log('Clear duration filters')"
         />
 
-        <!-- Activities Section (Individual Cards) -->
-        <div class="space-y-4">
-          <!-- Individual Activity Cards (Flomo Style) -->
-          <div v-if="recentActivities.length > 0" class="space-y-4">
-            <div 
-              v-for="activity in recentActivities" 
-              :key="activity.id"
-              class="content-card activity-card p-5 group cursor-pointer"
-              @click="handleActivityClick(activity)"
-            >
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <p class="text-foreground font-medium text-base leading-relaxed mb-3">{{ activity.title }}</p>
-                  <div class="flex items-center space-x-3 mb-3">
-                    <span class="text-sm font-medium text-foreground">{{ formatDuration(activity.durationMs) }}</span>
-                    <span class="text-xs text-muted-foreground">•</span>
-                    <span class="text-xs text-muted-foreground">{{ formatRelativeTime(activity.endTime) }}</span>
-                    <span v-if="activity.startTime && activity.endTime" class="text-xs text-muted-foreground">•</span>
-                    <span v-if="activity.startTime && activity.endTime" class="text-xs text-muted-foreground">
-                      {{ formatTimeRange(activity.startTime, activity.endTime) }}
-                    </span>
-                  </div>
-                  <div class="flex space-x-2">
-                    <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
-                      #{{ tag }}
-                    </span>
-                  </div>
-                </div>
-                <button 
-                  class="p-2 hover:bg-muted rounded-lg opacity-0 group-hover:opacity-100 transition-opacity ml-3"
-                  @click.stop="handleActivityMenu(activity)"
-                  aria-label="Activity options"
-                >
-                  <svg class="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <!-- Load More Button -->
-            <div v-if="hasMoreActivities" class="flex justify-center pt-4">
-              <button
-                @click="loadMoreActivities"
-                :disabled="activitiesLoading"
-                class="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                data-testid="load-more-activities"
-              >
-                <span v-if="activitiesLoading">Loading...</span>
-                <span v-else>Load More</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Empty State Card -->
-          <div v-else-if="!activitiesLoading" class="content-card p-8 text-center">
-            <p class="text-muted-foreground text-sm">{{ recentActivitiesMessage }}</p>
-          </div>
-          
-          <!-- Loading State -->
-          <div v-else class="content-card p-8 text-center">
-            <p class="text-muted-foreground text-sm">Loading activities...</p>
-          </div>
-        </div>
+        <!-- Activities Section -->
+        <ActivityList
+          :activities="recentActivities"
+          :has-more-activities="hasMoreActivities"
+          :loading="activitiesLoading"
+          :empty-message="recentActivitiesMessage"
+          :format-duration="formatDuration"
+          :format-relative-time="formatRelativeTime"
+          :format-time-range="formatTimeRange"
+          @activity-click="handleActivityClick"
+          @activity-menu="handleActivityMenu"
+          @load-more="loadMoreActivities"
+        />
 
         </div>
       </main>
@@ -378,11 +201,14 @@
 <script setup lang="ts">
 import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
+import ActivityList from '~/components/ActivityList.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
+import InputComposer from '~/components/InputComposer.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
+import TimerDisplay from '~/components/TimerDisplay.vue'
 import type { HeatmapDay } from '~/composables/useActivities'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useContextualStatus } from '~/composables/useContextualStatus'
@@ -459,12 +285,6 @@ const recentActivities = computed(() => {
   return activities
 })
 
-// Timer status display
-const timerStatus = computed(() => {
-  if (isRunning.value) return 'Running'
-  if (isPaused.value) return 'Paused'
-  return 'Stopped'
-})
 
 // Local reactive state
 const activityInput = ref('')
@@ -797,13 +617,9 @@ const handleTagRemove = (tag: any, includeActivities: boolean) => {
   // TODO: Implement tag removal functionality
 }
 
-// Click outside to dismiss dropdown
-const dropdownContainer = ref(null)
-
+// Dropdown management (simplified since moved to InputComposer)
 const handleClickOutside = (event) => {
-  if (dropdownContainer.value && !dropdownContainer.value.contains(event.target)) {
-    hideDropdown()
-  }
+  // Most dropdown logic now handled by InputComposer
 }
 
 // Load more activities
