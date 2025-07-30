@@ -105,6 +105,14 @@ export const useTimer = () => {
       ? Date.now() - startTime.value.getTime() - pausedTime.value
       : elapsedMs.value
 
+    // Don't save activities shorter than 1 minute (60,000ms)
+    const MIN_DURATION_MS = 60000 // 1 minute
+    if (finalDuration < MIN_DURATION_MS) {
+      // Reset timer without saving
+      resetTimer()
+      return true // Return true to indicate successful "finish" (just not saved)
+    }
+
     const endTime = new Date()
 
     // Create activity data

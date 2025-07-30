@@ -232,7 +232,7 @@
 
                 <!-- Primary Action Button -->
                 <div class="flex justify-center lg:justify-end space-x-2">
-                  <!-- Manual Start Button -->
+                  <!-- Start Button -->
                   <button
                     v-if="!isRunning && !isPaused"
                     @click="handleStart"
@@ -243,42 +243,42 @@
                     Start Timer
                   </button>
 
-                  <!-- Timer Controls (Replace Start Button) -->
-                  <button
-                    v-if="isRunning"
-                    @click="handlePause"
-                    class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-sm"
-                    data-testid="unified-pause-button"
-                  >
-                    ⏸ Pause
-                  </button>
+                  <!-- Running: Finish (Primary) + Pause (Secondary) -->
+                  <template v-if="isRunning">
+                    <button
+                      @click="handleFinish"
+                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
+                      data-testid="unified-finish-button"
+                    >
+                      ⏹ Finish
+                    </button>
+                    <button
+                      @click="handlePause"
+                      class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition-colors text-sm"
+                      data-testid="unified-pause-button"
+                      title="Pause timer"
+                    >
+                      ⏸
+                    </button>
+                  </template>
 
-                  <button
-                    v-if="isPaused"
-                    @click="handleResume"
-                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-sm"
-                    data-testid="unified-resume-button"
-                  >
-                    ▶️ Resume
-                  </button>
-
-                  <button
-                    v-if="isPaused"
-                    @click="handleFinish"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
-                    data-testid="unified-finish-button"
-                  >
-                    ⏹ Finish
-                  </button>
-
-                  <button
-                    v-if="isRunning || isPaused"
-                    @click="handleReset"
-                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-sm"
-                    data-testid="unified-reset-button"
-                  >
-                    🔄 Reset
-                  </button>
+                  <!-- Paused: Resume (Primary) + Finish (Secondary) -->
+                  <template v-if="isPaused">
+                    <button
+                      @click="handleResume"
+                      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-sm"
+                      data-testid="unified-resume-button"
+                    >
+                      ▶️ Resume
+                    </button>
+                    <button
+                      @click="handleFinish"
+                      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-sm"
+                      data-testid="unified-finish-button"
+                    >
+                      ⏹ Finish
+                    </button>
+                  </template>
                 </div>
               </div>
 
