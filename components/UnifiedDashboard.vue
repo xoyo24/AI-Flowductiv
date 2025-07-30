@@ -200,74 +200,91 @@
                 </button>
               </div>
 
-              <!-- Line 2: Quick Actions + Timer Controls -->
-              <div class="flex items-center justify-between">
-                <!-- Quick Actions (Frequent Tags) -->
+              <!-- Line 2: Quick Start + Timer Controls -->
+              <div v-if="!quickStartHidden" class="flex items-center justify-between">
+                <!-- Quick Start Buttons -->
                 <div class="flex space-x-2">
                   <button 
-                    @click="addQuickTag('focus')"
-                    class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+                    @click="handleQuickStart('Deep work #focus')"
+                    class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors text-xs font-medium"
                     :disabled="isRunning || isPaused"
-                    title="Add #focus tag"
+                    title="Start timer with deep work activity"
                   >
-                    💡 focus
+                    #focus
                   </button>
                   <button 
-                    @click="addQuickTag('meeting')"
-                    class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+                    @click="handleQuickStart('Meeting #meeting')"
+                    class="px-2 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors text-xs font-medium"
                     :disabled="isRunning || isPaused"
-                    title="Add #meeting tag"
+                    title="Start timer with meeting activity"
                   >
-                    👥 meeting
+                    #meeting
                   </button>
                   <button 
-                    @click="addQuickTag('learning')"
-                    class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+                    @click="handleQuickStart('Learning session #learning')"
+                    class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors text-xs font-medium"
                     :disabled="isRunning || isPaused"
-                    title="Add #learning tag"
+                    title="Start timer with learning activity"
                   >
-                    📚 learning
+                    #learning
                   </button>
                 </div>
 
-                <!-- Timer Controls -->
-                <div class="flex space-x-2">
-                  <button
-                    v-if="isRunning"
-                    @click="handlePause"
-                    class="px-3 py-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-xs"
-                    data-testid="unified-pause-button"
-                  >
-                    ⏸ Pause
-                  </button>
-
-                  <button
-                    v-if="isPaused"
-                    @click="handleResume"
-                    class="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-xs"
-                    data-testid="unified-resume-button"
-                  >
-                    ▶️ Resume
-                  </button>
-
-                  <button
-                    v-if="isPaused"
-                    @click="handleFinish"
-                    class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-xs"
-                    data-testid="unified-finish-button"
-                  >
-                    ⏹ Finish
-                  </button>
-
-                  <button
-                    v-if="isRunning || isPaused"
-                    @click="handleReset"
-                    class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-xs"
-                    data-testid="unified-reset-button"
-                  >
-                    🔄 Reset
-                  </button>
+                <!-- Show again button when timer is not running -->
+                <div class="text-xs text-muted-foreground">
+                  <span>Quick start</span>
                 </div>
+              </div>
+
+              <!-- Show quick start toggle when hidden -->
+              <div v-if="quickStartHidden && !isRunning && !isPaused" class="flex justify-center">
+                <button 
+                  @click="quickStartHidden = false"
+                  class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  title="Show quick start options"
+                >
+                  Show quick start
+                </button>
+              </div>
+
+              <!-- Timer Controls (when running) -->
+              <div v-if="isRunning || isPaused" class="flex items-center justify-center space-x-2">
+
+                <button
+                  v-if="isRunning"
+                  @click="handlePause"
+                  class="px-3 py-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-xs"
+                  data-testid="unified-pause-button"
+                >
+                  ⏸ Pause
+                </button>
+
+                <button
+                  v-if="isPaused"
+                  @click="handleResume"
+                  class="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-xs"
+                  data-testid="unified-resume-button"
+                >
+                  ▶️ Resume
+                </button>
+
+                <button
+                  v-if="isPaused"
+                  @click="handleFinish"
+                  class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-xs"
+                  data-testid="unified-finish-button"
+                >
+                  ⏹ Finish
+                </button>
+
+                <button
+                  v-if="isRunning || isPaused"
+                  @click="handleReset"
+                  class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-xs"
+                  data-testid="unified-reset-button"
+                >
+                  🔄 Reset
+                </button>
               </div>
 
               <!-- Extracted Tags Display -->
@@ -463,6 +480,7 @@ const analyticsLoading = ref(false)
 const showAnalyticsModal = ref(false)
 const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
+const quickStartHidden = ref(false)
 
 // Search functionality
 const searchInput = ref(null)
@@ -527,6 +545,7 @@ const handleFinish = async () => {
   const success = await finishTimer()
   if (success) {
     activityInput.value = ''
+    quickStartHidden.value = false // Show quick start again
     vibrate([200])
   }
 }
@@ -535,27 +554,17 @@ const handleReset = () => {
   if (confirm('Reset timer? This will discard the current session.')) {
     resetTimer()
     activityInput.value = ''
+    quickStartHidden.value = false // Show quick start again
     vibrate([50, 100, 50])
   }
 }
 
-// Quick action for adding frequent tags
-const addQuickTag = (tag: string) => {
-  const currentText = activityInput.value.trim()
-  const hasTag = currentText.includes(`#${tag}`)
-  
-  if (!hasTag) {
-    activityInput.value = currentText
-      ? `${currentText} #${tag}`
-      : `#${tag}`
-    
-    // Focus input after adding tag
-    nextTick(() => {
-      const input = document.getElementById('unified-activity-input')
-      if (input) {
-        input.focus()
-      }
-    })
+// Quick start handler - set activity and start timer immediately
+const handleQuickStart = (activity: string) => {
+  activityInput.value = activity
+  if (startTimer(activity)) {
+    quickStartHidden.value = true // Hide quick start section
+    vibrate([100]) // Haptic feedback
   }
 }
 
