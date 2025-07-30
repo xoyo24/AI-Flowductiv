@@ -1,19 +1,44 @@
 <template>
   <div class="content-card p-6">
-    <div class="space-y-6">
-      <!-- Activity Input -->
-      <div class="space-y-2">
-        <label for="activity-input" class="text-sm font-medium text-foreground">
-          What are you working on?
-        </label>
+    <div class="space-y-5">
+      <!-- Timer Display -->
+      <div class="text-center space-y-3">
+        <div class="text-6xl timer-display font-bold text-foreground tracking-tight" data-testid="timer-display">
+          {{ formattedTime }}
+        </div>
+        
+        <div v-if="currentActivity" class="text-base text-muted-foreground">
+          {{ currentActivity }}
+        </div>
+
+        <!-- Timer Status -->
+        <div class="flex items-center justify-center space-x-2">
+          <div 
+            :class="{
+              'w-2 h-2 rounded-full': true,
+              'bg-green-500 animate-pulse': isRunning,
+              'bg-yellow-500': isPaused,
+              'bg-gray-400': !isRunning && !isPaused
+            }"
+            data-testid="timer-status"
+          />
+          <span class="text-xs text-muted-foreground">
+            {{ timerStatus }}
+          </span>
+        </div>
+      </div>
+
+      <!-- 2-Line Input Section -->
+      <div class="space-y-3">
+        <!-- Line 1: Input + Start Button -->
         <div class="flex space-x-2">
           <div ref="dropdownContainer" class="relative flex-1">
             <input
               id="activity-input"
               v-model="activityInput"
               type="text"
-              placeholder="Enter activity or click for suggestions"
-              class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              placeholder="Deep work #focus"
+              class="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               :disabled="isRunning || isPaused"
               @keyup.enter="handleEnterKey"
               @keydown="handleKeydown"
@@ -32,104 +57,98 @@
               @hover="selectIndex"
               @close="hideDropdown"
             />
-            <div v-if="activityInput" class="absolute right-2 top-2 flex space-x-1">
-              <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                #{{ tag }}
-              </span>
-              <span v-if="extractedPriority" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                !{{ extractedPriority }}
-              </span>
-            </div>
           </div>
           <button
             v-if="!isRunning && !isPaused"
             @click="handleStart"
             :disabled="!activityInput.trim()"
-            class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors whitespace-nowrap"
+            class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm whitespace-nowrap"
             data-testid="start-button"
           >
             Start
           </button>
         </div>
-      </div>
 
-      <!-- Timer Display -->
-      <div class="text-center space-y-4">
-        <div class="text-7xl timer-display font-bold text-foreground tracking-tight" data-testid="timer-display">
-          {{ formattedTime }}
-        </div>
-        
-        <div v-if="currentActivity" class="text-lg text-muted-foreground">
-          {{ currentActivity }}
+        <!-- Line 2: Quick Actions + Timer Controls -->
+        <div class="flex items-center justify-between">
+          <!-- Quick Actions (Frequent Tags) -->
+          <div class="flex space-x-2">
+            <button 
+              @click="addQuickTag('focus')"
+              class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+              :disabled="isRunning || isPaused"
+              title="Add #focus tag"
+            >
+              💡 focus
+            </button>
+            <button 
+              @click="addQuickTag('meeting')"
+              class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+              :disabled="isRunning || isPaused"
+              title="Add #meeting tag"
+            >
+              👥 meeting
+            </button>
+            <button 
+              @click="addQuickTag('learning')"
+              class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors text-xs"
+              :disabled="isRunning || isPaused"
+              title="Add #learning tag"
+            >
+              📚 learning
+            </button>
+          </div>
+
+          <!-- Timer Controls -->
+          <div class="flex space-x-2">
+            <button
+              v-if="canPause"
+              @click="handlePause"
+              class="px-3 py-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors text-xs"
+              data-testid="pause-timer"
+            >
+              ⏸ Pause
+            </button>
+
+            <button
+              v-if="canResume"
+              @click="handleResume"
+              class="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition-colors text-xs"
+              data-testid="resume-timer"
+            >
+              ▶️ Resume
+            </button>
+
+            <button
+              v-if="canFinish"
+              @click="handleFinish"
+              class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium transition-colors text-xs"
+              data-testid="finish-timer"
+            >
+              ⏹ Finish
+            </button>
+
+            <button
+              v-if="isRunning || isPaused"
+              @click="handleReset"
+              class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors text-xs"
+              data-testid="reset-timer"
+            >
+              🔄 Reset
+            </button>
+          </div>
         </div>
 
-        <!-- Timer Status -->
-        <div class="flex items-center justify-center space-x-2">
-          <div 
-            :class="{
-              'w-3 h-3 rounded-full': true,
-              'bg-green-500 animate-pulse': isRunning,
-              'bg-yellow-500': isPaused,
-              'bg-gray-300': !isRunning && !isPaused
-            }"
-            data-testid="timer-status"
-          />
-          <span class="text-sm text-muted-foreground">
-            {{ timerStatus }}
+        <!-- Extracted Tags Display -->
+        <div v-if="extractedTags.length > 0 || extractedPriority" class="flex flex-wrap gap-2 min-h-[20px]">
+          <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            <span class="text-blue-500 mr-1">#</span>{{ tag }}
+          </span>
+          <span v-if="extractedPriority" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
+            <span class="text-orange-500 mr-1">!</span>{{ extractedPriority }}
           </span>
         </div>
       </div>
-
-      <!-- Control Buttons -->
-      <div class="flex justify-center space-x-4">
-        <button
-          v-if="canStart"
-          @click="handleStart"
-          :disabled="!activityInput.trim()"
-          class="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-          data-testid="start-timer"
-        >
-          Start Timer
-        </button>
-
-        <button
-          v-if="canPause"
-          @click="handlePause"
-          class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 font-medium transition-colors"
-          data-testid="pause-timer"
-        >
-          Pause
-        </button>
-
-        <button
-          v-if="canResume"
-          @click="handleResume"
-          class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 font-medium transition-colors"
-          data-testid="resume-timer"
-        >
-          Resume
-        </button>
-
-        <button
-          v-if="canFinish"
-          @click="handleFinish"
-          class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 font-medium transition-colors"
-          data-testid="finish-timer"
-        >
-          Finish
-        </button>
-
-        <button
-          v-if="isRunning || isPaused"
-          @click="handleReset"
-          class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 font-medium transition-colors"
-          data-testid="reset-timer"
-        >
-          Reset
-        </button>
-      </div>
-
-      <!-- Note: Quick Actions removed - dynamic suggestions provide better UX -->
     </div>
   </div>
 </template>
@@ -401,6 +420,26 @@ const handleReset = () => {
   if (confirm('Are you sure you want to reset the timer? This will discard the current session.')) {
     resetTimer()
     activityInput.value = ''
+  }
+}
+
+// Quick action for adding frequent tags
+const addQuickTag = (tag: string) => {
+  const currentText = activityInput.value.trim()
+  const hasTag = currentText.includes(`#${tag}`)
+  
+  if (!hasTag) {
+    activityInput.value = currentText
+      ? `${currentText} #${tag}`
+      : `#${tag}`
+    
+    // Focus input after adding tag
+    nextTick(() => {
+      const input = document.getElementById('activity-input')
+      if (input) {
+        input.focus()
+      }
+    })
   }
 }
 
