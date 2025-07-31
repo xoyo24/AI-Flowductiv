@@ -8,10 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Current Phase**: Phase 1B Mobile-First UX + Security implementation
 
-📚 **Documentation Structure**: Optimized 3-file system:
-- `docs/SESSION_NOTES.md` - Current sprint focus (Phase 1B status & immediate actions)
-- `docs/FEATURE_BACKLOG.md` - Detailed planning (Phase 1C+ features & task breakdowns)
-- `docs/SESSION_HISTORY.md` - Development archive (completed sessions & key decisions)
+📚 **Documentation Structure**: Simplified task-focused system:
+- `docs/SESSION_NOTES.md` - Pure sprint dashboard (✅/❌ task status only)
+- `docs/IMPLEMENTATION_PLAN.md` - Technical architecture & implementation patterns
+- `docs/FEATURE_BACKLOG.md` - Future feature planning & detailed breakdowns
+- `docs/history/` - Individual session logs (concise, no redundant details)
 
 📋 **Additional References**:
 - `docs/PRD.md` - Product requirements and roadmap
@@ -80,7 +81,7 @@ bun run db:studio   # Open Drizzle Studio
 2. **Plan** - Break down tasks, identify dependencies  
 3. **Code** - Implement following established patterns
 4. **Test** - Verify functionality works as expected
-5. **Commit** - Save working changes with clear messages
+5. **Commit** - Save working changes with concise messages (details in session history files)
 
 ## Key Patterns & Examples
 

@@ -87,46 +87,57 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ## `/task:done [what-completed]` - Record Completion + Reflection
 
-**Purpose:** Update SESSION_NOTES.md with completed work + add reflection to SESSION_HISTORY.md
+**Purpose:** Update SESSION_NOTES.md with completed work + create concise session log in `docs/history/`
 
 ### What It Does:
-1. **Mark Complete**: Update current priorities in SESSION_NOTES.md as completed
-2. **Record Evidence**: Reference git commits, tests, and files created
-3. **Capture Reflection**: Add learning insights to SESSION_HISTORY.md
-4. **Update TodoWrite**: Mark relevant tasks as completed
-5. **Plan Next**: Identify immediate next priority
+1. **Mark Complete**: Update current priorities in SESSION_NOTES.md as completed (✅/❌ status only)
+2. **Create Session Log**: Add concise session file to `docs/history/session-YYYY-MM-DD-topic.md`
+3. **Update TodoWrite**: Mark relevant tasks as completed
+4. **Plan Next**: Identify immediate next priority
 
-### Reflection Process:
-Prompts you to capture:
-- **What was completed?** (specific deliverables)
-- **What evidence exists?** (git commits, test files, components created)
-- **What worked well?** (effective processes, good decisions)
-- **What needs improvement?** (blockers encountered, better approaches)
-- **Next time insights** (lessons for future similar work)
+### Session Log Content (Concise):
+- **Issues Resolved** - What problems were fixed
+- **Technical Changes** - Key files/components modified (no implementation details)
+- **User Experience Impact** - How this improves the user experience
+- **Quality Assurance** - Build status, test results
 
 ### Example Usage:
 ```bash
 /task done mobile-timer    # After implementing TimerSectionMobile.vue
-/task done api-security    # After completing rate limiting work
+/task done tag-bugs        # After fixing user-reported tag issues
 /task done testing-setup   # After adding comprehensive test coverage
 ```
 
-### SESSION_HISTORY.md Entry Format:
+### Session File Template:
 ```markdown
-## [Task Name] ([Date], [Duration])
-**Completed**: [Specific deliverables]
-**Evidence**: commits [hash1, hash2] | [N] tests passing | files: [list]
-**Worked Well**: [Process insights, effective decisions]
-**Needs Improvement**: [Blockers, inefficiencies, better approaches]
-**Next Time**: [Lessons for future similar work]
-**Impact**: [How this advances current Phase goals]
+# [Session Topic]
+
+**Date**: [Date]
+**Duration**: [Duration]
+**Type**: [Feature/Bug fix/Refactor]
+
+## Issues Resolved
+1. [Problem 1]: [Brief description]
+2. [Problem 2]: [Brief description]
+
+## Technical Changes
+- `file1.ts`: [Brief change description]
+- `file2.vue`: [Brief change description]
+
+## User Experience Impact
+- [UX improvement 1]
+- [UX improvement 2]
+
+## Quality Assurance
+- Build status: [Success/Issues]
+- Tests: [N/N passing]
+- Regressions: [None/List]
 ```
 
 ### SESSION_NOTES.md Updates:
-- Mark weekly priorities as completed with checkmarks
-- Update current session summary with actual accomplishments
-- Reference git commits and measurable evidence
-- Identify next immediate priority based on dependencies
+- Mark sprint priorities as completed with ✅ checkmarks
+- Add brief one-line summary to "Recent Bug Fixes" or "Completed This Sprint"
+- NO implementation details (those are in session history files)
 
 ---
 
@@ -196,8 +207,9 @@ Prompts you to capture:
 - **`/task:plan [idea]`** → Capture future features as they come up
 
 ### Document Integration:
-- **SESSION_NOTES.md**: Current sprint focus (updated by `/task done`)
-- **SESSION_HISTORY.md**: Completed work with reflections (updated by `/task done`)
+- **SESSION_NOTES.md**: Pure sprint dashboard (✅/❌ status only, updated by `/task done`)
+- **docs/history/**: Individual session logs (concise, no redundant details, created by `/task done`)
+- **IMPLEMENTATION_PLAN.md**: Technical architecture & patterns (updated when architecture changes)
 - **FEATURE_BACKLOG.md**: Future work ideas (updated by `/task plan`)
 - **TodoWrite**: Current session tasks (managed automatically)
 
