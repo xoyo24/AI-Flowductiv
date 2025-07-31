@@ -15,6 +15,7 @@
         :loading="analyticsLoading"
         :tag-data="tagData"
         :selected-tags="selectedTags"
+        :active-date-filter="activeDateFilter"
         @toggle-collapse="sidebarCollapsed = !sidebarCollapsed"
         @day-selected="handleDaySelected"
         @refresh-data="refreshAnalytics"
@@ -70,6 +71,7 @@
               :loading="analyticsLoading"
               :tag-data="tagData"
               :selected-tags="selectedTags"
+              :active-date-filter="activeDateFilter"
               @day-selected="handleDaySelected"
               @refresh-data="refreshAnalytics"
               @navigate-to-settings="navigateToSettings"
@@ -322,6 +324,29 @@ const tagData = computed(() => {
 })
 
 const selectedTags = computed(() => new Set(activeFilters.value.tags || []))
+
+// Extract selected date from active date range filter
+const activeDateFilter = computed(() => {
+  const dateRange = activeFilters.value.dateRange
+  if (!dateRange) return null
+  
+  // Check if it's a single day filter (start and end are on the same day)
+  const start = new Date(dateRange.start)
+  const end = new Date(dateRange.end)
+  
+  // Reset hours to compare dates only
+  const startDate = new Date(start)
+  startDate.setHours(0, 0, 0, 0)
+  const endDate = new Date(end)
+  endDate.setHours(0, 0, 0, 0)
+  
+  if (startDate.getTime() === endDate.getTime()) {
+    // It's a single day filter, return the date in YYYY-MM-DD format
+    return start.toISOString().split('T')[0]
+  }
+  
+  return null // Multi-day range, don't show as selected
+})
 
 // Contextual status service - but we'll override contextualMessage to use local data
 const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()

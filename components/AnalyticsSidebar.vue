@@ -34,6 +34,7 @@
         <ProductivityOverview 
           :collapsed="false"
           :loading="loading"
+          :selected-date-filter="activeDateFilter"
           @day-selected="handleDaySelected" 
         />
       </div>
@@ -172,6 +173,7 @@ interface Props {
   loading?: boolean
   tagData?: TagData[]
   selectedTags?: Set<string>
+  activeDateFilter?: string | null
 }
 
 interface Emits {

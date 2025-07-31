@@ -30,7 +30,7 @@
       <div class="space-y-2">
         <!-- Main Grid: 12 weeks arranged compactly -->
         <div 
-          class="grid grid-cols-12 gap-1"
+          class="grid grid-cols-12 gap-0.5"
           data-testid="productivity-heatmap-grid"
         >
           <div
@@ -39,8 +39,12 @@
             :data-testid="`heatmap-day-${day.date}`"
             :data-date="day.date"
             :class="[
-              'w-3 h-3 rounded cursor-pointer transition-all duration-200',
+              'w-4 h-4 cursor-pointer transition-all duration-200',
               'hover:ring-1 hover:ring-primary hover:ring-offset-1',
+              // Base shape - rounded corners for normal, circle for selected
+              selectedDate === day.date ? 'rounded-full' : 'rounded-sm',
+              // Selected state styling
+              selectedDate === day.date ? 'ring-2 ring-primary ring-offset-1' : '',
               getColorClass(day.productivityScore)
             ]"
             :title="day.date ? `${formatDate(day.date)}: ${day.count} activities, ${formatDuration(day.totalTime)}` : ''"
@@ -92,6 +96,7 @@ import type { HeatmapDay } from '~/composables/useActivities'
 interface Props {
   collapsed?: boolean
   loading?: boolean
+  selectedDateFilter?: string | null
 }
 
 interface ActivityMetrics {
@@ -103,7 +108,8 @@ interface ActivityMetrics {
 
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
-  loading: false
+  loading: false,
+  selectedDateFilter: null
 })
 
 // Define emits
@@ -128,6 +134,14 @@ const tooltip = ref({
   y: 0,
   day: {} as HeatmapDay,
 })
+
+// Track selected date for visual feedback
+const selectedDate = ref<string | null>(null)
+
+// Sync selected date with prop (when filter is cleared externally)
+watch(() => props.selectedDateFilter, (newValue) => {
+  selectedDate.value = newValue
+}, { immediate: true })
 
 // Computed properties
 const gridDays = computed(() => {
@@ -201,6 +215,7 @@ const formatDate = (dateStr: string): string => {
 
 const handleDayClick = (day: HeatmapDay) => {
   if (day.date) {
+    selectedDate.value = day.date
     emit('day-selected', day)
   }
 }
