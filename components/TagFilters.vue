@@ -53,7 +53,7 @@
       >
         <button
           :class="[
-            'w-full flex items-center justify-between px-3 py-2 text-left transition-colors rounded-md',
+            'w-full flex items-center justify-between px-3 py-2 text-left transition-colors rounded-md relative',
             'hover:bg-muted/50 focus:outline-none focus:bg-muted/70',
             isSelected(tag.name) 
               ? 'bg-primary/10 text-primary' 
@@ -75,10 +75,16 @@
             </svg>
           </div>
           
-          <div class="flex items-center space-x-2">
-            <span class="text-xs text-muted-foreground">{{ tag.count || 0 }}</span>
+          <!-- Always visible count -->
+          <span class="text-xs text-muted-foreground">{{ tag.count || 0 }}</span>
+          
+          <!-- Hover overlay menu button -->
+          <div 
+            class="absolute inset-0 flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+            style="background: linear-gradient(to left, hsl(var(--muted)) 0%, hsl(var(--muted)) 40%, transparent 100%)"
+          >
             <button
-              class="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded transition-all"
+              class="p-1 hover:bg-muted-foreground/20 rounded transition-all pointer-events-auto"
               @click.stop="showContextMenu(tag, $event)"
               aria-label="Tag options"
             >

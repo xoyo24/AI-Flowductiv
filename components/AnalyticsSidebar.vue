@@ -26,18 +26,16 @@
     <!-- Analytics Content -->
     <div 
       v-if="!collapsed" 
-      class="flex-1 overflow-y-auto p-4 space-y-6"
+      class="flex-1 overflow-y-auto px-4 py-3 space-y-6"
     >
 
       <!-- Productivity Overview -->
-      <div class="space-y-3">
-        <ProductivityOverview 
-          :collapsed="false"
-          :loading="loading"
-          :selected-date-filter="activeDateFilter"
-          @day-selected="handleDaySelected" 
-        />
-      </div>
+      <ProductivityOverview 
+        :collapsed="false"
+        :loading="loading"
+        :selected-date-filter="activeDateFilter"
+        @day-selected="handleDaySelected" 
+      />
 
       <!-- Tag Filters -->
       <TagFilters
