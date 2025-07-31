@@ -352,4 +352,181 @@ describe('useActivities - Integration Tests', () => {
       expect(activities.value).toHaveLength(0)
     })
   })
+
+  describe('Heatmap Date Filtering', () => {
+    it('should filter activities by specific date when date range filter is set', async () => {
+      // Mock activities data
+      const mockActivities = [
+        {
+          id: '1',
+          title: 'Activity 1',
+          description: null,
+          durationMs: 1800000, // 30 minutes
+          startTime: new Date('2025-01-15T09:30:00Z'),
+          endTime: new Date('2025-01-15T10:00:00Z'),
+          tags: ['work'],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: '2',
+          title: 'Activity 2',
+          description: null,
+          durationMs: 3600000, // 1 hour
+          startTime: new Date('2025-01-16T13:00:00Z'),
+          endTime: new Date('2025-01-16T14:00:00Z'),
+          tags: ['personal'],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: '3',
+          title: 'Activity 3',
+          description: null,
+          durationMs: 2700000, // 45 minutes
+          startTime: new Date('2025-01-15T15:15:00Z'),
+          endTime: new Date('2025-01-15T16:00:00Z'),
+          tags: ['work'],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ]
+
+      // Mock the fetch response
+      mockFetch.mockResolvedValueOnce({ data: mockActivities })
+
+      const { getActivities, filteredActivities, setDateRangeFilter } = useActivities()
+
+      // Load activities
+      await getActivities(1, 10)
+
+      // Apply date filter for 2025-01-15 (UTC)
+      const startOfDay = new Date('2025-01-15T00:00:00.000Z')
+      const endOfDay = new Date('2025-01-15T23:59:59.999Z')
+
+      setDateRangeFilter(startOfDay, endOfDay)
+
+      // Should only show activities from 2025-01-15
+      expect(filteredActivities.value).toHaveLength(2)
+      expect(filteredActivities.value[0].id).toBe('1')
+      expect(filteredActivities.value[1].id).toBe('3')
+    })
+
+    it('should clear date range filter and show all activities', async () => {
+      // Mock activities data
+      const mockActivities = [
+        {
+          id: '1',
+          title: 'Activity 1',
+          description: null,
+          durationMs: 1800000,
+          startTime: new Date('2025-01-15T10:00:00Z'),
+          endTime: new Date('2025-01-15T10:30:00Z'),
+          tags: [],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: '2',
+          title: 'Activity 2',
+          description: null,
+          durationMs: 3600000,
+          startTime: new Date('2025-01-16T13:00:00Z'),
+          endTime: new Date('2025-01-16T14:00:00Z'),
+          tags: [],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ]
+
+      mockFetch.mockResolvedValueOnce({ data: mockActivities })
+      
+      const { getActivities, filteredActivities, setDateRangeFilter, clearDateRangeFilter } = useActivities()
+      
+      await getActivities(1, 10)
+
+      // Apply and then clear date filter
+      const startOfDay = new Date('2025-01-15T00:00:00.000Z')
+      const endOfDay = new Date('2025-01-15T23:59:59.999Z')
+
+      setDateRangeFilter(startOfDay, endOfDay)
+      expect(filteredActivities.value).toHaveLength(1)
+
+      clearDateRangeFilter()
+      expect(filteredActivities.value).toHaveLength(2)
+    })
+
+    it('should update filter metadata when date filter is applied', async () => {
+      const mockActivities = [
+        {
+          id: '1',
+          title: 'Activity 1',
+          description: null,
+          durationMs: 1800000,
+          startTime: new Date('2025-01-15T10:00:00Z'),
+          endTime: new Date('2025-01-15T10:30:00Z'),
+          tags: [],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: '2',
+          title: 'Activity 2',
+          description: null,
+          durationMs: 3600000,
+          startTime: new Date('2025-01-16T13:00:00Z'),
+          endTime: new Date('2025-01-16T14:00:00Z'),
+          tags: [],
+          priority: null,
+          focusRating: null,
+          energyLevel: null,
+          userId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ]
+
+      mockFetch.mockResolvedValueOnce({ data: mockActivities })
+      
+      const { getActivities, filterMetadata, setDateRangeFilter } = useActivities()
+      
+      await getActivities(1, 10)
+
+      // Apply date filter
+      const startOfDay = new Date('2025-01-15T00:00:00.000Z')
+      const endOfDay = new Date('2025-01-15T23:59:59.999Z')
+
+      setDateRangeFilter(startOfDay, endOfDay)
+
+      const metadata = filterMetadata.value
+      expect(metadata.hasActiveFilters).toBe(true)
+      expect(metadata.totalActivities).toBe(2)
+      expect(metadata.filteredCount).toBe(1)
+      expect(metadata.hiddenCount).toBe(1)
+    })
+  })
 })

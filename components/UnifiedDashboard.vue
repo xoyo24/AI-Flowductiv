@@ -304,6 +304,7 @@ const {
   filterMetadata,
   addTagFilter,
   removeTagFilter,
+  setDateRangeFilter,
   clearAllFilters,
   clearDateRangeFilter,
   loading: activitiesLoading,
@@ -617,8 +618,21 @@ const navigateToHistory = () => navigateAndCloseMenu('/history')
 
 // Handle heatmap day selection
 const handleDaySelected = (day: HeatmapDay) => {
-  console.log('Selected day:', day)
-  // TODO: Show detailed view for selected day
+  if (!day.date) return
+  
+  // Create date range for the selected day (full day in UTC)
+  const selectedDate = new Date(day.date + 'T00:00:00.000Z')
+  const startOfDay = new Date(selectedDate)
+  startOfDay.setUTCHours(0, 0, 0, 0)
+  
+  const endOfDay = new Date(selectedDate)
+  endOfDay.setUTCHours(23, 59, 59, 999)
+  
+  // Apply date filter using the universal filter system
+  setDateRangeFilter(startOfDay, endOfDay)
+  
+  // Haptic feedback for mobile
+  vibrate([100])
 }
 
 // Analytics handlers
