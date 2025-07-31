@@ -1,15 +1,15 @@
 <template>
-  <div class="bg-card rounded-lg border border-border p-4 space-y-4">
+  <div class="space-y-3">
     <!-- Loading State -->
     <div 
       v-if="loading" 
-      class="text-center py-8 text-muted-foreground"
+      class="text-center py-8 text-muted-foreground text-xs"
     >
       <div class="mb-2">Loading productivity data...</div>
     </div>
 
     <!-- Content -->
-    <div v-else class="space-y-4">
+    <div v-else class="space-y-3">
       <!-- Key Metrics Row -->
       <div v-if="!collapsed" class="grid grid-cols-3 gap-2 text-center text-xs">
         <div>
@@ -28,9 +28,9 @@
 
       <!-- Heatmap Grid -->
       <div class="space-y-2">
-        <!-- Main Grid: 12 weeks arranged compactly -->
+        <!-- Main Grid: Full width, larger squares for mobile -->
         <div 
-          class="grid grid-cols-12 gap-0.5"
+          class="grid grid-cols-12 gap-1"
           data-testid="productivity-heatmap-grid"
         >
           <div
@@ -39,12 +39,10 @@
             :data-testid="`heatmap-day-${day.date}`"
             :data-date="day.date"
             :class="[
-              'w-4 h-4 cursor-pointer transition-all duration-200',
-              'hover:ring-1 hover:ring-primary hover:ring-offset-1',
-              // Base shape - rounded corners for normal, circle for selected
-              selectedDate === day.date ? 'rounded-full' : 'rounded-sm',
-              // Selected state styling
-              selectedDate === day.date ? 'ring-2 ring-primary ring-offset-1' : '',
+              'w-5 h-5 cursor-pointer transition-all duration-200 rounded-sm',
+              'hover:scale-110 hover:shadow-sm',
+              // Selected state - keep square but add subtle highlight
+              selectedDate === day.date ? 'ring-2 ring-primary/60 ring-offset-1 scale-105 shadow-md' : '',
               getColorClass(day.productivityScore)
             ]"
             :title="day.date ? `${formatDate(day.date)}: ${day.count} activities, ${formatDuration(day.totalTime)}` : ''"
@@ -55,13 +53,13 @@
         </div>
 
         <!-- Legend -->
-        <div v-if="!collapsed" class="flex items-center justify-between text-xs text-muted-foreground">
+        <div v-if="!collapsed" class="flex items-center justify-between text-xs text-muted-foreground mt-2">
           <span>Less</span>
           <div class="flex items-center space-x-1">
             <div
               v-for="(color, index) in legendColors"
               :key="index"
-              :class="`w-3 h-3 rounded ${color}`"
+              :class="`w-3 h-3 rounded-sm ${color}`"
             />
           </div>
           <span>More</span>

@@ -56,10 +56,6 @@
           </div>
         </div>
       </div>
-
-      <div class="text-xs text-muted-foreground mt-2">
-        Type #tag, !priority, or use comma-separated format. Press Tab or Enter to select suggestions.
-      </div>
     </div>
   </div>
 </template>
