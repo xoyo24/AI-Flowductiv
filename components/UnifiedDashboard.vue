@@ -181,30 +181,6 @@
           @clear-duration-filters="clearDurationRangeFilter"
         />
 
-        <!-- Advanced Filters Panel (collapsible) -->
-        <div class="flex items-center justify-between">
-          <button
-            @click="showAdvancedFilters = !showAdvancedFilters"
-            class="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2"
-            data-testid="toggle-advanced-filters"
-          >
-            <span>Advanced Filters</span>
-            <svg 
-              :class="[
-                'w-4 h-4 transition-transform',
-                showAdvancedFilters ? 'rotate-180' : ''
-              ]"
-              fill="currentColor" 
-              viewBox="0 0 20 20"
-            >
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-          </button>
-        </div>
-
-        <div v-if="showAdvancedFilters" class="space-y-4">
-          <AdvancedFilterPanel />
-        </div>
 
         <!-- Activities Section -->
         <ActivityList
@@ -296,7 +272,6 @@ import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
-import AdvancedFilterPanel from '~/components/AdvancedFilterPanel.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import InputComposer from '~/components/InputComposer.vue'
@@ -424,7 +399,6 @@ const analyticsLoading = ref(false)
 const showAnalyticsModal = ref(false)
 const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
-const showAdvancedFilters = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
