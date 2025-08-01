@@ -323,4 +323,132 @@ describe('useAdvancedFilters', () => {
       expect(mockActiveFilters.value.maxDuration).toBe(2000)
     })
   })
+
+  describe('Filter Combinations', () => {
+    beforeEach(() => {
+      // Clear localStorage before each test
+      vi.stubGlobal('localStorage', {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn()
+      })
+      vi.stubGlobal('process', { client: true })
+    })
+
+    it('should save current filter combination', () => {
+      const { saveCurrentFilterCombination, setPriorityFilter, setFocusRatingFilter } = useAdvancedFilters()
+      
+      // Set some filters
+      setPriorityFilter([1, 2])
+      setFocusRatingFilter([4, 5])
+      
+      // Save the combination
+      const combinationId = saveCurrentFilterCombination('My Custom Filters')
+      
+      expect(combinationId).toBeDefined()
+      expect(combinationId).toMatch(/^filter-\d+-[a-z0-9]+$/)
+    })
+
+    it('should apply saved filter combination', () => {
+      const { 
+        saveCurrentFilterCombination, 
+        applySavedFilterCombination,
+        setPriorityFilter, 
+        setFocusRatingFilter 
+      } = useAdvancedFilters()
+      
+      // Set and save filters
+      setPriorityFilter([1, 2])
+      setFocusRatingFilter([4, 5])
+      const combinationId = saveCurrentFilterCombination('Test Combination')
+      
+      // Clear current filters
+      mockActiveFilters.value = {}
+      
+      // Apply saved combination
+      const success = applySavedFilterCombination(combinationId)
+      
+      expect(success).toBe(true)
+      expect(mockClearAllFilters).toHaveBeenCalled()
+    })
+
+    it('should return false when applying non-existent combination', () => {
+      const { applySavedFilterCombination } = useAdvancedFilters()
+      
+      const success = applySavedFilterCombination('non-existent-id')
+      
+      expect(success).toBe(false)
+    })
+
+    it('should delete saved filter combination', () => {
+      const { 
+        saveCurrentFilterCombination, 
+        deleteSavedFilterCombination,
+        savedCombinations,
+        setPriorityFilter 
+      } = useAdvancedFilters()
+      
+      // Save a combination
+      setPriorityFilter([1])
+      const combinationId = saveCurrentFilterCombination('To Delete')
+      
+      expect(savedCombinations.value).toHaveLength(1)
+      
+      // Delete the combination
+      const success = deleteSavedFilterCombination(combinationId)
+      
+      expect(success).toBe(true)
+      expect(savedCombinations.value).toHaveLength(0)
+    })
+
+    it('should rename saved filter combination', () => {
+      const { 
+        saveCurrentFilterCombination, 
+        renameSavedFilterCombination,
+        savedCombinations,
+        setPriorityFilter 
+      } = useAdvancedFilters()
+      
+      // Save a combination
+      setPriorityFilter([1])
+      const combinationId = saveCurrentFilterCombination('Original Name')
+      
+      // Rename the combination
+      const success = renameSavedFilterCombination(combinationId, 'New Name')
+      
+      expect(success).toBe(true)
+      expect(savedCombinations.value[0].name).toBe('New Name')
+    })
+
+    it('should return false when renaming non-existent combination', () => {
+      const { renameSavedFilterCombination } = useAdvancedFilters()
+      
+      const success = renameSavedFilterCombination('non-existent-id', 'New Name')
+      
+      expect(success).toBe(false)
+    })
+
+    it('should detect when current filters differ from saved combination', () => {
+      const { 
+        saveCurrentFilterCombination, 
+        hasCurrentFiltersChanged,
+        setPriorityFilter,
+        setFocusRatingFilter 
+      } = useAdvancedFilters()
+      
+      // Save initial combination
+      setPriorityFilter([1])
+      const combinationId = saveCurrentFilterCombination('Test')
+      
+      // Initially should not be changed
+      expect(hasCurrentFiltersChanged(combinationId)).toBe(false)
+      
+      // Change filters
+      setFocusRatingFilter([5])
+      
+      // Now should be changed
+      expect(hasCurrentFiltersChanged(combinationId)).toBe(true)
+    })
+  })
 })

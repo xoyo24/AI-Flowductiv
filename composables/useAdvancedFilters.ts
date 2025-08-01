@@ -1,4 +1,4 @@
-import { computed, readonly } from 'vue'
+import { computed, ref, readonly } from 'vue'
 import { useActivities } from './useActivities'
 
 export type EnergyLevel = 'low' | 'medium' | 'high'
@@ -12,6 +12,19 @@ export interface AdvancedFilterState {
   maxDuration?: number
 }
 
+export interface SavedFilterCombination {
+  id: string
+  name: string
+  filters: AdvancedFilterState & {
+    tags?: string[]
+    dateRange?: {
+      start: string
+      end: string
+    }
+  }
+  createdAt: string
+}
+
 export const useAdvancedFilters = () => {
   const {
     activeFilters,
@@ -21,6 +34,37 @@ export const useAdvancedFilters = () => {
     clearDateRangeFilter,
     clearAllFilters
   } = useActivities()
+
+  // Saved filter combinations state
+  const savedCombinations = ref<SavedFilterCombination[]>([])
+  const STORAGE_KEY = 'flowductiv-saved-filter-combinations'
+
+  // Load saved combinations from localStorage on initialization
+  const loadSavedCombinations = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        savedCombinations.value = JSON.parse(stored)
+      }
+    } catch (error) {
+      console.error('Failed to load saved filter combinations:', error)
+      savedCombinations.value = []
+    }
+  }
+
+  // Save combinations to localStorage
+  const saveCombinationsToStorage = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedCombinations.value))
+    } catch (error) {
+      console.error('Failed to save filter combinations:', error)
+    }
+  }
+
+  // Initialize saved combinations
+  if (process.client) {
+    loadSavedCombinations()
+  }
 
   // Validation helpers
   const validatePriorities = (priorities: number[]): number[] => {
@@ -224,10 +268,95 @@ export const useAdvancedFilters = () => {
     }
   }
 
+  // Filter combination management
+  const saveCurrentFilterCombination = (name: string): string => {
+    const id = `filter-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const combination: SavedFilterCombination = {
+      id,
+      name: name.trim(),
+      filters: {
+        ...getCurrentFilters(),
+        tags: activeFilters.value.tags ? [...activeFilters.value.tags] : undefined,
+        dateRange: activeFilters.value.dateRange ? {
+          start: activeFilters.value.dateRange.start,
+          end: activeFilters.value.dateRange.end
+        } : undefined
+      },
+      createdAt: new Date().toISOString()
+    }
+    
+    savedCombinations.value.push(combination)
+    saveCombinationsToStorage()
+    return id
+  }
+
+  const applySavedFilterCombination = (id: string) => {
+    const combination = savedCombinations.value.find(c => c.id === id)
+    if (!combination) return false
+
+    // Clear all current filters
+    clearAllFilters()
+
+    // Apply saved filters
+    const { filters } = combination
+    
+    if (filters.priority) setPriorityFilter(filters.priority)
+    if (filters.focusRating) setFocusRatingFilter(filters.focusRating)
+    if (filters.energyLevel) setEnergyLevelFilter(filters.energyLevel)
+    if (filters.minDuration !== undefined || filters.maxDuration !== undefined) {
+      setDurationRangeFilter(filters.minDuration, filters.maxDuration)
+    }
+    if (filters.tags) {
+      filters.tags.forEach(tag => addTagFilter(tag))
+    }
+    if (filters.dateRange) {
+      setDateRangeFilter(filters.dateRange.start, filters.dateRange.end)
+    }
+
+    return true
+  }
+
+  const deleteSavedFilterCombination = (id: string) => {
+    const index = savedCombinations.value.findIndex(c => c.id === id)
+    if (index > -1) {
+      savedCombinations.value.splice(index, 1)
+      saveCombinationsToStorage()
+      return true
+    }
+    return false
+  }
+
+  const renameSavedFilterCombination = (id: string, newName: string) => {
+    const combination = savedCombinations.value.find(c => c.id === id)
+    if (combination) {
+      combination.name = newName.trim()
+      saveCombinationsToStorage()
+      return true
+    }
+    return false
+  }
+
+  const hasCurrentFiltersChanged = (savedFiltersId: string) => {
+    const combination = savedCombinations.value.find(c => c.id === savedFiltersId)
+    if (!combination) return false
+
+    const current = {
+      ...getCurrentFilters(),
+      tags: activeFilters.value.tags ? [...activeFilters.value.tags] : undefined,
+      dateRange: activeFilters.value.dateRange ? {
+        start: activeFilters.value.dateRange.start,
+        end: activeFilters.value.dateRange.end
+      } : undefined
+    }
+
+    return JSON.stringify(current) !== JSON.stringify(combination.filters)
+  }
+
   return {
     // State
     hasAdvancedFilters: readonly(hasAdvancedFilters),
     advancedFilterCount: readonly(advancedFilterCount),
+    savedCombinations: readonly(savedCombinations),
     
     // Priority filters
     setPriorityFilter,
@@ -251,6 +380,13 @@ export const useAdvancedFilters = () => {
     
     // Presets
     applyFilterPreset,
+    
+    // Filter combinations
+    saveCurrentFilterCombination,
+    applySavedFilterCombination,
+    deleteSavedFilterCombination,
+    renameSavedFilterCombination,
+    hasCurrentFiltersChanged,
     
     // Re-export base filter actions for convenience
     addTagFilter,
