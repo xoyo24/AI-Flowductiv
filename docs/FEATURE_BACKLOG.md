@@ -111,6 +111,112 @@
 
 ---
 
+## 🎨 **Phase 1C.6: Sidebar Filter Reorganization (Week 2)**
+
+**Goal**: Transform sidebar from action-focused to filter-focused hub, moving all Advanced Filters from main content area to sidebar for cleaner UX
+
+### **Task 1C.6.1: Sidebar Architecture Redesign (90 min)**
+
+#### **Problem Analysis**
+- Current AdvancedFilterPanel takes up too much space in main content area
+- Main area should focus on timer, input, activities (high-frequency actions)
+- Filter controls are medium-frequency and belong in sidebar
+- Current sidebar has mixed analytics + navigation, needs logical grouping
+
+#### **Solution: Two-Section Sidebar**
+**Insight Area (Analytics - View Only)**
+1. **Heatmap** - ProductivityOverview (existing, keep)
+2. **Patterns** - PatternInsights (existing, keep) 
+3. **AI Insights** - DailySummary (existing, keep)
+
+**Filter Area (Interactive Controls)**
+4. **Favorites** - Saved filter combinations (move from AdvancedFilterPanel)
+5. **Priority** - 1-5 rating buttons (move from AdvancedFilterPanel)
+6. **Focus** - 1-5 rating buttons (move from AdvancedFilterPanel)
+7. **Duration** - Slider-style range picker (new component, replaces duration buttons)
+8. **Tags** - TagFilters (existing, keep)
+
+#### **Implementation Tasks (90 min)**
+
+**Task 1C.6.1.1: Enhance AnalyticsSidebar.vue (45 min)**
+- Add new "Filter Area" section after existing analytics content
+- Move Priority/Focus controls from AdvancedFilterPanel with same functionality
+- Integrate Saved Combinations (Favorites) section with proper positioning
+- Add proper spacing, collapsible sections, and visual separation between areas
+- Ensure all existing event handlers continue working
+
+**Task 1C.6.1.2: Create DurationSlider Component (30 min)**
+- Replace current duration buttons with clean range slider component
+- Dual-handle slider for min/max range selection
+- Show current values in readable format (e.g., "15min - 2h")
+- Allow custom input via text fields when clicked
+- Follow design system patterns from docs/DESIGN_SYSTEM.html
+- Integrate with existing useAdvancedFilters composable
+
+**Task 1C.6.1.3: Update UnifiedDashboard.vue (15 min)**
+- Remove `<AdvancedFilterPanel />` from main content area (line 172)
+- Clean up unused imports and event handlers related to AdvancedFilterPanel
+- Ensure FilterBar continues working for active filter chips display
+- Test that all filter events properly flow through sidebar components
+
+#### **Saved Filter Placement Strategy**
+**Location**: Top of Filter Area section in sidebar (after analytics, before individual filters)
+**Rationale**: 
+- Favorites represent saved combinations of other filters → logical to be first in filter section
+- Users can quickly apply saved combinations, then adjust individual filters below
+- Visual hierarchy: saved (convenient) → individual controls (precise)
+
+**Design Pattern**:
+```vue
+<!-- AnalyticsSidebar.vue structure -->
+<div class="sidebar-content">
+  <!-- INSIGHT AREA -->
+  <ProductivityOverview />
+  <PatternInsights />
+  <DailySummary />
+  
+  <!-- FILTER AREA -->
+  <div class="filter-section">
+    <!-- Favorites (Saved Combinations) -->
+    <SavedFilterCombinations />
+    
+    <!-- Individual Filter Controls -->
+    <PriorityFilter />
+    <FocusFilter />
+    <DurationSlider />
+    <TagFilters />
+  </div>
+</div>
+```
+
+### **Task 1C.6.2: Mobile Filter Experience (45 min)**
+- Ensure new filter layout works well in mobile menu overlay
+- Test collapsible sections work properly on mobile
+- Verify touch targets meet 44px minimum
+- Ensure saved filters are easily accessible on mobile
+
+### **Task 1C.6.3: Filter State Persistence (30 min)**
+- Ensure all moved filter components maintain their state
+- Test that filter combinations save/load correctly
+- Verify FilterBar shows correct active filter chips
+- Test filter clear functionality works across all components
+
+### **Expected Benefits**
+- **Cleaner main area**: Focus on timer, input, activities (high-frequency actions)
+- **Logical grouping**: All filters consolidated in one place with clear hierarchy
+- **Better mobile UX**: Sidebar organization scales better to mobile overlay
+- **More content space**: Activities list gets more vertical space
+- **Improved workflow**: Insights → Favorites → Individual filters → Activities
+
+### **Technical Validation**
+- All existing filter composables continue working unchanged
+- Event handling properly forwards between sidebar and dashboard components
+- Filter persistence and URL state management maintained
+- Test coverage updated for new component locations
+- No breaking changes to existing filter functionality
+
+---
+
 ## 🔧 **Technical Infrastructure Improvements**
 
 ### **Technical Debt & Code Quality**

@@ -84,41 +84,46 @@ graph TB
 - Mobile-optimized components and responsive design patterns
 - Production-ready mobile experience with integrated desktop navigation
 
-### **🎯 Phase 1C: Analytics Hub Sidebar (Current Focus)**
-**Technical Focus:** Redesign sidebar from action-focused to analytics-focused hub, solving UX confusion between main area (all activities) and sidebar (today-only data)
+### **🎯 Phase 1C: Filter-Focused Sidebar Redesign (Current Focus)**
+**Technical Focus:** Reorganize sidebar from mixed analytics/navigation to logical Insight Area + Filter Area structure, moving AdvancedFilterPanel from main content to sidebar
 
-**Problem Identified:** Current sidebar with QuickStats and DailySummary shows today-only data while main UnifiedDashboard shows paginated all-time activities, creating cognitive dissonance for users.
+**Problem Identified:** Current AdvancedFilterPanel in main content area creates cramped UX and distracts from primary timer/activities workflow. Sidebar has mixed analytics + navigation without clear hierarchy.
 
-**Solution:** Transform sidebar into frequency-based analytics hub following Flomo's hierarchy pattern (high-frequency actions prominent, low-frequency analytics accessible but secondary).
+**Solution:** Transform sidebar into two-section design following logical frequency-based hierarchy:
+- **High-frequency actions** (timer, input, activities) stay in main area
+- **Medium-frequency controls** (filters, analytics) consolidated in sidebar  
+- **Low-frequency settings** (configuration, export) remain in collapsed menus
 
 **Key Components:** 
-- **AnalyticsSidebar.vue** - Analytics-focused hub replacing current sidebar
-- **OverallSummary.vue** - Comprehensive stats replacing QuickStats (all-time vs today-only)
-- **ProductivityHeatmap.vue** - 12-week productivity visualization (existing, integrate better)
-- **InsightsPanels.vue** - Trend analysis and pattern recognition
-- **MobileAnalyticsSheet.vue** - Collapsible mobile analytics access
+- **AnalyticsSidebar.vue** - Enhanced with two-section layout (Insight Area + Filter Area)
+- **DurationSlider.vue** - New slider component replacing duration buttons  
+- **SavedFilterCombinations.vue** - Moved from AdvancedFilterPanel to sidebar
+- **PriorityFilter.vue** - Extracted from AdvancedFilterPanel for sidebar integration
+- **FocusFilter.vue** - Extracted from AdvancedFilterPanel for sidebar integration
 
-**Frequency-Based Design Hierarchy:**
+**Two-Section Sidebar Architecture:**
 ```typescript
-// Primary (High Frequency): Timer, Activity Input, Recent Activities
-interface PrimaryActions {
-  timer: 'always-visible'           // Most frequent action
-  activityInput: 'prominent'        // Second most frequent  
-  recentActivities: 'main-area'     // Frequent reference
+// Insight Area (Analytics - View Only)  
+interface InsightArea {
+  heatmap: 'ProductivityOverview'     // 12-week visualization
+  patterns: 'PatternInsights'         // Trend analysis  
+  aiInsights: 'DailySummary'          // AI-generated insights
 }
 
-// Secondary (Medium Frequency): Analytics, Patterns, Goals
-interface SecondaryAnalytics {
-  overallSummary: 'sidebar-top'     // Weekly reference
-  productivityHeatmap: 'sidebar'    // Pattern recognition
-  insights: 'sidebar-expandable'    // Monthly deep-dive
+// Filter Area (Interactive Controls)
+interface FilterArea {
+  favorites: 'SavedFilterCombinations'  // Saved filter presets
+  priority: 'PriorityFilter'           // 1-5 rating buttons
+  focus: 'FocusFilter'                 // 1-5 rating buttons  
+  duration: 'DurationSlider'           // Min/max range slider
+  tags: 'TagFilters'                   // Existing tag controls
 }
 
-// Tertiary (Low Frequency): Settings, History, Export
-interface TertiaryFeatures {
-  settings: 'collapsed-menu'        // Infrequent configuration
-  fullHistory: 'analytics-drill'    // Rare deep analysis
-  export: 'settings-submenu'        // Occasional data export
+// Removed from Main Area
+interface RemovedFromMain {
+  advancedFilterPanel: 'moved-to-sidebar'  // Entire panel relocated
+  quickPresets: 'integrated-with-favorites' // Combined with saved filters
+  durationButtons: 'replaced-with-slider'   // Better UX with slider
 }
 ```
 

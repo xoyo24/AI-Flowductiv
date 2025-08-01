@@ -31,6 +31,10 @@
         @tag-favorite="handleTagFavorite"
         @tag-edit="handleTagEdit"
         @tag-remove="handleTagRemove"
+        @apply-filter-combination="handleApplyFilterCombination"
+        @priority-toggle="handlePriorityToggle"
+        @focus-toggle="handleFocusToggle"
+        @duration-changed="handleDurationChanged"
       />
     </aside>
 
@@ -87,6 +91,10 @@
               @tag-favorite="handleTagFavorite"
               @tag-edit="handleTagEdit"
               @tag-remove="handleTagRemove"
+              @apply-filter-combination="handleApplyFilterCombination"
+              @priority-toggle="handlePriorityToggle"
+              @focus-toggle="handleFocusToggle"
+              @duration-changed="handleDurationChanged"
             />
           </div>
         </div>
@@ -168,8 +176,6 @@
           </div>
         </div>
 
-        <!-- Advanced Filters (Always Visible) -->
-        <AdvancedFilterPanel />
         
         <!-- Filter Bar (positioned between advanced filters and activities) -->
         <FilterBar
@@ -275,7 +281,6 @@ import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
-import AdvancedFilterPanel from '~/components/AdvancedFilterPanel.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import InputComposer from '~/components/InputComposer.vue'
@@ -746,6 +751,27 @@ const handleTagRemove = async (tag: any, includeActivities: boolean) => {
   // After tag removal, refresh activities and analytics
   await refreshActivities()
   await refreshAnalytics()
+}
+
+// Filter event handlers for sidebar components
+const handleApplyFilterCombination = (combinationId: string) => {
+  // This will be handled by the useAdvancedFilters composable through applySavedFilterCombination
+  console.log('Apply filter combination:', combinationId)
+}
+
+const handlePriorityToggle = (priority: number) => {
+  // This is already handled by the PriorityFilter component using togglePriorityFilter
+  console.log('Priority toggled:', priority)
+}
+
+const handleFocusToggle = (focus: number) => {
+  // This is already handled by the FocusFilter component using toggleFocusRatingFilter
+  console.log('Focus toggled:', focus)
+}
+
+const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+  // This is already handled by the DurationSlider component using setDurationRangeFilter
+  console.log('Duration changed:', minDuration, maxDuration)
 }
 
 // Dropdown management (simplified since moved to InputComposer)

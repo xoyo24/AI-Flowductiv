@@ -110,6 +110,59 @@
           </div>
         </Transition>
       </div>
+
+      <!-- Filter Area Separator -->
+      <div class="border-t border-border my-6"></div>
+
+      <!-- Filter Area -->
+      <div class="space-y-6">
+        <!-- Saved Filter Combinations (Favorites) -->
+        <div class="space-y-3">
+          <button
+            @click="showFilters = !showFilters"
+            class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
+          >
+            <span>Filters</span>
+            <ChevronDown 
+              :class="{
+                'w-3 h-3 transition-transform duration-200': true,
+                'rotate-180': showFilters
+              }"
+            />
+          </button>
+          
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            enter-from-class="opacity-0 -translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-2"
+          >
+            <div v-if="showFilters" class="space-y-4">
+              <!-- Saved Filter Combinations -->
+              <SavedFilterCombinations 
+                @apply-combination="handleApplyCombination"
+              />
+
+              <!-- Priority Filter -->
+              <PriorityFilter 
+                @priority-toggle="handlePriorityToggle"
+              />
+
+              <!-- Focus Filter -->
+              <FocusFilter 
+                @focus-toggle="handleFocusToggle"
+              />
+
+              <!-- Duration Slider -->
+              <DurationSlider 
+                @duration-changed="handleDurationChanged"
+              />
+            </div>
+          </Transition>
+        </div>
+      </div>
     </div>
 
     <!-- Collapsed State - Icons Only -->
@@ -154,8 +207,12 @@ import {
   Settings,
 } from 'lucide-vue-next'
 import DailySummary from '~/components/DailySummary.vue'
+import DurationSlider from '~/components/DurationSlider.vue'
+import FocusFilter from '~/components/FocusFilter.vue'
 import PatternInsights from '~/components/PatternInsights.vue'
+import PriorityFilter from '~/components/PriorityFilter.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
+import SavedFilterCombinations from '~/components/SavedFilterCombinations.vue'
 import TagFilters from '~/components/TagFilters.vue'
 import UserDropdown from '~/components/UserDropdown.vue'
 
@@ -190,6 +247,10 @@ interface Emits {
   (e: 'tag-favorite', tag: TagData): void
   (e: 'tag-edit', tag: TagData): void
   (e: 'tag-remove', tag: TagData, includeActivities: boolean): void
+  (e: 'apply-filter-combination', combinationId: string): void
+  (e: 'priority-toggle', priority: number): void
+  (e: 'focus-toggle', focus: number): void
+  (e: 'duration-changed', minDuration?: number, maxDuration?: number): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -204,6 +265,7 @@ const emit = defineEmits<Emits>()
 // Local state
 const showPatterns = ref(false)
 const showInsights = ref(false) // Collapsed by default to save space
+const showFilters = ref(true) // Expanded by default for easy access
 
 // Actions
 const handleDaySelected = (day: any) => {
@@ -241,5 +303,24 @@ const handleTagEdit = (tag: TagData) => {
 
 const handleTagRemove = (tag: TagData, includeActivities: boolean) => {
   emit('tag-remove', tag, includeActivities)
+}
+
+// Filter event handlers
+const handleApplyCombination = (combinationId: string) => {
+  // This will be handled by the useAdvancedFilters composable
+  // We'll emit an event that the parent can handle
+  emit('apply-filter-combination', combinationId)
+}
+
+const handlePriorityToggle = (priority: number) => {
+  emit('priority-toggle', priority)
+}
+
+const handleFocusToggle = (focus: number) => {
+  emit('focus-toggle', focus)
+}
+
+const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+  emit('duration-changed', minDuration, maxDuration)
 }
 </script>

@@ -14,29 +14,6 @@
       </div>
       
       <div class="flex items-center space-x-2">
-        <!-- Advanced Filters Toggle - only show when basic filters are active -->
-        <button
-          v-if="hasBasicFilters"
-          @click="showAdvancedFilters = !showAdvancedFilters"
-          :class="[
-            'text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1',
-            showAdvancedFilters ? 'text-foreground' : ''
-          ]"
-          data-testid="toggle-advanced-filters"
-        >
-          <span>{{ hasAdvancedFilters ? `Advanced (${advancedFilterCount})` : 'More filters' }}</span>
-          <svg 
-            :class="[
-              'w-3 h-3 transition-transform',
-              showAdvancedFilters ? 'rotate-180' : ''
-            ]"
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-          >
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </button>
-
         <!-- Clear All Button -->
         <button
           @click="clearAllFilters"
@@ -151,9 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import type { ActivityFilters } from '~/composables/useActivities'
-import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
 interface Props {
   activeFilters: ActivityFilters
@@ -179,16 +154,6 @@ const emit = defineEmits<Emits>()
 
 // Composables
 const { formatDuration } = useActivities()
-const { hasAdvancedFilters, advancedFilterCount } = useAdvancedFilters()
-
-// Local state
-const showAdvancedFilters = ref(false)
-
-// Computed properties
-const hasBasicFilters = computed(() => {
-  const { tags, dateRange } = props.activeFilters
-  return (tags && tags.length > 0) || dateRange !== undefined
-})
 
 // Methods
 const removeTagFilter = (tag: string) => {
@@ -214,8 +179,6 @@ const clearDurationFilters = () => {
 
 const clearAllFilters = () => {
   emit('clear-all-filters')
-  // Also close advanced filters when clearing all
-  showAdvancedFilters.value = false
 }
 
 const formatDateRange = (dateRange: { start: Date; end: Date }) => {
