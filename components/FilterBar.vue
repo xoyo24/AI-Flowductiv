@@ -147,20 +147,11 @@
       </div>
     </div>
 
-    <!-- Advanced Filters Panel (expanded within FilterBar) -->
-    <div 
-      v-if="showAdvancedFilters"
-      class="pt-2 border-t border-border"
-      data-testid="advanced-filters-expansion"
-    >
-      <AdvancedFilterPanel />
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import AdvancedFilterPanel from '~/components/AdvancedFilterPanel.vue'
 import type { ActivityFilters } from '~/composables/useActivities'
 import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 

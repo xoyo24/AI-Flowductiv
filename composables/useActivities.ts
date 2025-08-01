@@ -56,7 +56,6 @@ export const useActivities = () => {
           tags: activityInput.tags || [],
           priority: activityInput.priority,
           focusRating: activityInput.focusRating,
-          energyLevel: activityInput.energyLevel,
         },
       })
 

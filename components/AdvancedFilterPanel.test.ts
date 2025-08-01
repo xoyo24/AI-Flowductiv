@@ -8,7 +8,6 @@ const mockHasAdvancedFilters = ref(false)
 const mockAdvancedFilterCount = ref(0)
 const mockTogglePriorityFilter = vi.fn()
 const mockToggleFocusRatingFilter = vi.fn()
-const mockToggleEnergyLevelFilter = vi.fn()
 const mockSetDurationRangeFilter = vi.fn()
 const mockClearDurationRangeFilter = vi.fn()
 const mockClearAllAdvancedFilters = vi.fn()
@@ -21,7 +20,6 @@ mockNuxtImport('useAdvancedFilters', () => {
     advancedFilterCount: mockAdvancedFilterCount,
     togglePriorityFilter: mockTogglePriorityFilter,
     toggleFocusRatingFilter: mockToggleFocusRatingFilter,
-    toggleEnergyLevelFilter: mockToggleEnergyLevelFilter,
     setDurationRangeFilter: mockSetDurationRangeFilter,
     clearDurationRangeFilter: mockClearDurationRangeFilter,
     clearAllAdvancedFilters: mockClearAllAdvancedFilters,
@@ -94,7 +92,6 @@ describe('AdvancedFilterPanel Component', () => {
       expect(wrapper.find('[data-testid="preset-high-performance"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="preset-deep-work"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="preset-quick-tasks"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="preset-low-energy"]').exists()).toBe(true)
     })
 
     it('should apply filter preset when clicked', async () => {
@@ -165,35 +162,6 @@ describe('AdvancedFilterPanel Component', () => {
     })
   })
 
-  describe('Energy Level Filter', () => {
-    it('should render energy level buttons', async () => {
-      const wrapper = await mountSuspended(AdvancedFilterPanel)
-      
-      expect(wrapper.find('[data-testid="energy-low"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="energy-medium"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="energy-high"]').exists()).toBe(true)
-    })
-
-    it('should highlight active energy level filters', async () => {
-      mockGetCurrentFilters.mockReturnValue({ energyLevel: ['high'] })
-      const wrapper = await mountSuspended(AdvancedFilterPanel)
-      
-      const low = wrapper.find('[data-testid="energy-low"]')
-      const medium = wrapper.find('[data-testid="energy-medium"]')
-      const high = wrapper.find('[data-testid="energy-high"]')
-      
-      expect(low.classes()).not.toContain('bg-blue-500/10')
-      expect(medium.classes()).not.toContain('bg-blue-500/10')
-      expect(high.classes()).toContain('bg-blue-500/10')
-    })
-
-    it('should toggle energy level filter when clicked', async () => {
-      const wrapper = await mountSuspended(AdvancedFilterPanel)
-      
-      await wrapper.find('[data-testid="energy-medium"]').trigger('click')
-      expect(mockToggleEnergyLevelFilter).toHaveBeenCalledWith('medium')
-    })
-  })
 
   describe('Duration Range Filter', () => {
     it('should render quick duration buttons', async () => {

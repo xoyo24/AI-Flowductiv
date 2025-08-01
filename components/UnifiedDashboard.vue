@@ -168,7 +168,10 @@
           </div>
         </div>
 
-        <!-- Filter Bar (positioned between input and activities) -->
+        <!-- Advanced Filters (Always Visible) -->
+        <AdvancedFilterPanel />
+        
+        <!-- Filter Bar (positioned between advanced filters and activities) -->
         <FilterBar
           :active-filters="activeFilters"
           :filter-metadata="filterMetadata"
@@ -272,6 +275,7 @@ import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
+import AdvancedFilterPanel from '~/components/AdvancedFilterPanel.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import InputComposer from '~/components/InputComposer.vue'

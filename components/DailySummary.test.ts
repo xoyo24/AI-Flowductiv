@@ -14,7 +14,6 @@ const sampleActivities = [
     tags: ['urgent'],
     priority: 2,
     focusRating: 8,
-    energyLevel: 7,
   },
   {
     id: '2',
@@ -25,7 +24,6 @@ const sampleActivities = [
     tags: ['work'],
     priority: null,
     focusRating: 6,
-    energyLevel: 5,
   },
 ]
 

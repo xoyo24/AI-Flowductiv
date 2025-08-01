@@ -12,6 +12,10 @@ const mockRemoveTagFilter = vi.fn()
 const mockSetDateRangeFilter = vi.fn()
 const mockClearDateRangeFilter = vi.fn()
 const mockClearAllFilters = vi.fn()
+const mockSetPriorityFilter = vi.fn()
+const mockSetFocusRatingFilter = vi.fn()
+const mockSetDurationRangeFilter = vi.fn()
+const mockClearDurationRangeFilter = vi.fn()
 
 vi.mock('./useActivities', () => ({
   useActivities: () => ({
@@ -22,7 +26,11 @@ vi.mock('./useActivities', () => ({
     removeTagFilter: mockRemoveTagFilter,
     setDateRangeFilter: mockSetDateRangeFilter,
     clearDateRangeFilter: mockClearDateRangeFilter,
-    clearAllFilters: mockClearAllFilters
+    clearAllFilters: mockClearAllFilters,
+    setPriorityFilter: mockSetPriorityFilter,
+    setFocusRatingFilter: mockSetFocusRatingFilter,
+    setDurationRangeFilter: mockSetDurationRangeFilter,
+    clearDurationRangeFilter: mockClearDurationRangeFilter
   })
 }))
 
@@ -40,7 +48,7 @@ describe('useAdvancedFilters', () => {
       
       setPriorityFilter([1])
       
-      expect(mockActiveFilters.value.priority).toEqual([1])
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([1])
     })
 
     it('should set priority filter with multiple values', () => {
@@ -48,7 +56,7 @@ describe('useAdvancedFilters', () => {
       
       setPriorityFilter([1, 2, 3])
       
-      expect(mockActiveFilters.value.priority).toEqual([1, 2, 3])
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([1, 2, 3])
     })
 
     it('should clear priority filter when empty array provided', () => {
@@ -57,20 +65,23 @@ describe('useAdvancedFilters', () => {
       
       setPriorityFilter([])
       
-      expect(mockActiveFilters.value.priority).toBeUndefined()
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([])
     })
 
     it('should toggle priority value correctly', () => {
       const { togglePriorityFilter } = useAdvancedFilters()
+      
+      // Mock state changes for toggles
       mockActiveFilters.value.priority = [1, 2]
       
-      // Remove existing priority
+      // Remove existing priority - simulate state change
       togglePriorityFilter(1)
-      expect(mockActiveFilters.value.priority).toEqual([2])
+      mockActiveFilters.value.priority = [2] // Update mock state
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([2])
       
-      // Add new priority
+      // Add new priority - simulate state change
       togglePriorityFilter(3)
-      expect(mockActiveFilters.value.priority).toEqual([2, 3])
+      expect(mockSetPriorityFilter).toHaveBeenLastCalledWith([2, 3])
     })
   })
 
@@ -80,7 +91,7 @@ describe('useAdvancedFilters', () => {
       
       setFocusRatingFilter([5])
       
-      expect(mockActiveFilters.value.focusRating).toEqual([5])
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([5])
     })
 
     it('should set focus rating filter with multiple values', () => {
@@ -88,53 +99,26 @@ describe('useAdvancedFilters', () => {
       
       setFocusRatingFilter([4, 5])
       
-      expect(mockActiveFilters.value.focusRating).toEqual([4, 5])
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([4, 5])
     })
 
     it('should toggle focus rating value correctly', () => {
       const { toggleFocusRatingFilter } = useAdvancedFilters()
+      
+      // Mock state changes for toggles
       mockActiveFilters.value.focusRating = [3, 4]
       
-      // Remove existing rating
+      // Remove existing rating - simulate state change
       toggleFocusRatingFilter(3)
-      expect(mockActiveFilters.value.focusRating).toEqual([4])
+      mockActiveFilters.value.focusRating = [4] // Update mock state
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([4])
       
-      // Add new rating
+      // Add new rating - simulate state change
       toggleFocusRatingFilter(5)
-      expect(mockActiveFilters.value.focusRating).toEqual([4, 5])
+      expect(mockSetFocusRatingFilter).toHaveBeenLastCalledWith([4, 5])
     })
   })
 
-  describe('Energy Level Filtering', () => {
-    it('should set energy level filter with single value', () => {
-      const { setEnergyLevelFilter } = useAdvancedFilters()
-      
-      setEnergyLevelFilter(['high'])
-      
-      expect(mockActiveFilters.value.energyLevel).toEqual(['high'])
-    })
-
-    it('should set energy level filter with multiple values', () => {
-      const { setEnergyLevelFilter } = useAdvancedFilters()
-      
-      setEnergyLevelFilter(['low', 'medium', 'high'])
-      
-      expect(mockActiveFilters.value.energyLevel).toEqual(['low', 'medium', 'high'])
-    })
-
-    it('should toggle energy level value correctly', () => {
-      const { toggleEnergyLevelFilter } = useAdvancedFilters()
-      mockActiveFilters.value.energyLevel = ['low', 'medium']
-      
-      // Remove existing level
-      toggleEnergyLevelFilter('low')
-      expect(mockActiveFilters.value.energyLevel).toEqual(['medium'])
-      
-      // Add new level
-      toggleEnergyLevelFilter('high')
-      expect(mockActiveFilters.value.energyLevel).toEqual(['medium', 'high'])
-    })
-  })
 
   describe('Duration Range Filtering', () => {
     it('should set duration range filter', () => {
@@ -142,8 +126,7 @@ describe('useAdvancedFilters', () => {
       
       setDurationRangeFilter(300000, 1800000) // 5 min to 30 min
       
-      expect(mockActiveFilters.value.minDuration).toBe(300000)
-      expect(mockActiveFilters.value.maxDuration).toBe(1800000)
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(300000, 1800000)
     })
 
     it('should set minimum duration only', () => {
@@ -151,8 +134,7 @@ describe('useAdvancedFilters', () => {
       
       setDurationRangeFilter(600000) // 10 min minimum
       
-      expect(mockActiveFilters.value.minDuration).toBe(600000)
-      expect(mockActiveFilters.value.maxDuration).toBeUndefined()
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(600000, undefined)
     })
 
     it('should clear duration range filter', () => {
@@ -162,8 +144,7 @@ describe('useAdvancedFilters', () => {
       
       clearDurationRangeFilter()
       
-      expect(mockActiveFilters.value.minDuration).toBeUndefined()
-      expect(mockActiveFilters.value.maxDuration).toBeUndefined()
+      expect(mockClearDurationRangeFilter).toHaveBeenCalled()
     })
   })
 
@@ -173,7 +154,6 @@ describe('useAdvancedFilters', () => {
       mockActiveFilters.value = {
         priority: [1, 2],
         focusRating: [4, 5],
-        energyLevel: ['high'],
         minDuration: 300000,
         maxDuration: 1800000
       }
@@ -183,7 +163,6 @@ describe('useAdvancedFilters', () => {
       expect(filters).toEqual({
         priority: [1, 2],
         focusRating: [4, 5],
-        energyLevel: ['high'],
         minDuration: 300000,
         maxDuration: 1800000
       })
@@ -223,16 +202,16 @@ describe('useAdvancedFilters', () => {
         tags: ['work'], // Should be preserved
         priority: [1, 2],
         focusRating: [5],
-        energyLevel: ['high'],
         minDuration: 300000,
         maxDuration: 1800000
       }
       
       clearAllAdvancedFilters()
       
-      expect(mockActiveFilters.value).toEqual({
-        tags: ['work'] // Only tags should remain
-      })
+      // Verify the correct functions were called to clear advanced filters
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([])
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([])
+      expect(mockClearDurationRangeFilter).toHaveBeenCalled()
     })
   })
 
@@ -242,9 +221,8 @@ describe('useAdvancedFilters', () => {
       
       applyFilterPreset('high-performance')
       
-      expect(mockActiveFilters.value.focusRating).toEqual([4, 5])
-      expect(mockActiveFilters.value.energyLevel).toEqual(['high'])
-      expect(mockActiveFilters.value.minDuration).toBe(1800000) // 30 min
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([4, 5])
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(1800000) // 30 min
     })
 
     it('should apply deep-work preset', () => {
@@ -252,8 +230,8 @@ describe('useAdvancedFilters', () => {
       
       applyFilterPreset('deep-work')
       
-      expect(mockActiveFilters.value.focusRating).toEqual([5])
-      expect(mockActiveFilters.value.minDuration).toBe(3600000) // 60 min
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([5])
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(3600000) // 60 min
     })
 
     it('should apply quick-tasks preset', () => {
@@ -261,18 +239,10 @@ describe('useAdvancedFilters', () => {
       
       applyFilterPreset('quick-tasks')
       
-      expect(mockActiveFilters.value.maxDuration).toBe(900000) // 15 min
-      expect(mockActiveFilters.value.priority).toEqual([1, 2])
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(undefined, 900000) // 15 min
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([1, 2])
     })
 
-    it('should apply low-energy preset', () => {
-      const { applyFilterPreset } = useAdvancedFilters()
-      
-      applyFilterPreset('low-energy')
-      
-      expect(mockActiveFilters.value.energyLevel).toEqual(['low'])
-      expect(mockActiveFilters.value.maxDuration).toBe(1800000) // 30 min
-    })
   })
 
   describe('Filter Validation', () => {
@@ -284,7 +254,7 @@ describe('useAdvancedFilters', () => {
       
       // Invalid priorities should be filtered out
       setPriorityFilter([0, 1, 6, 2])
-      expect(mockActiveFilters.value.priority).toEqual([1, 2])
+      expect(mockSetPriorityFilter).toHaveBeenCalledWith([1, 2])
     })
 
     it('should validate focus rating values', () => {
@@ -295,32 +265,20 @@ describe('useAdvancedFilters', () => {
       
       // Invalid ratings should be filtered out
       setFocusRatingFilter([0, 3, 6, 4])
-      expect(mockActiveFilters.value.focusRating).toEqual([3, 4])
+      expect(mockSetFocusRatingFilter).toHaveBeenCalledWith([3, 4])
     })
 
-    it('should validate energy level values', () => {
-      const { setEnergyLevelFilter } = useAdvancedFilters()
-      
-      // Valid energy levels
-      expect(() => setEnergyLevelFilter(['low', 'medium', 'high'])).not.toThrow()
-      
-      // Invalid energy levels should be filtered out
-      setEnergyLevelFilter(['low', 'invalid', 'high'])
-      expect(mockActiveFilters.value.energyLevel).toEqual(['low', 'high'])
-    })
 
     it('should validate duration values', () => {
       const { setDurationRangeFilter } = useAdvancedFilters()
       
       // Negative durations should be converted to 0
       setDurationRangeFilter(-100, 1000)
-      expect(mockActiveFilters.value.minDuration).toBe(0)
-      expect(mockActiveFilters.value.maxDuration).toBe(1000)
+      expect(mockSetDurationRangeFilter).toHaveBeenCalledWith(0, 1000)
       
       // Max should be greater than min
       setDurationRangeFilter(2000, 1000)
-      expect(mockActiveFilters.value.minDuration).toBe(1000)
-      expect(mockActiveFilters.value.maxDuration).toBe(2000)
+      expect(mockSetDurationRangeFilter).toHaveBeenLastCalledWith(1000, 2000)
     })
   })
 
@@ -437,15 +395,17 @@ describe('useAdvancedFilters', () => {
         setFocusRatingFilter 
       } = useAdvancedFilters()
       
-      // Save initial combination
+      // Set initial filters and update mock state
       setPriorityFilter([1])
+      mockActiveFilters.value.priority = [1]
       const combinationId = saveCurrentFilterCombination('Test')
       
       // Initially should not be changed
       expect(hasCurrentFiltersChanged(combinationId)).toBe(false)
       
-      // Change filters
+      // Change filters and update mock state
       setFocusRatingFilter([5])
+      mockActiveFilters.value.focusRating = [5]
       
       // Now should be changed
       expect(hasCurrentFiltersChanged(combinationId)).toBe(true)

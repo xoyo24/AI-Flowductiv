@@ -31,10 +31,10 @@ export const useAdvancedFilters = () => {
     setDateRangeFilter,
     clearDateRangeFilter,
     clearAllFilters,
-    setPriorityFilter: setInternalPriorityFilter,
-    setFocusRatingFilter: setInternalFocusRatingFilter,
-    setDurationRangeFilter: setInternalDurationRangeFilter,
-    clearDurationRangeFilter: clearInternalDurationRangeFilter
+    setPriorityFilter,
+    setFocusRatingFilter,
+    setDurationRangeFilter,
+    clearDurationRangeFilter
   } = useActivities()
 
   // Saved filter combinations state
@@ -82,10 +82,10 @@ export const useAdvancedFilters = () => {
     return Math.max(0, duration)
   }
 
-  // Priority filtering
-  const setPriorityFilter = (priorities: number[]) => {
+  // Priority filtering (wrapped with validation)
+  const setPriorityFilterWithValidation = (priorities: number[]) => {
     const validPriorities = validatePriorities(priorities)
-    setInternalPriorityFilter(validPriorities)
+    setPriorityFilter(validPriorities)
   }
 
   const togglePriorityFilter = (priority: number) => {
@@ -101,13 +101,13 @@ export const useAdvancedFilters = () => {
       newPriorities = [...currentPriorities, priority]
     }
     
-    setInternalPriorityFilter(newPriorities)
+    setPriorityFilter(newPriorities)
   }
 
-  // Focus rating filtering
-  const setFocusRatingFilter = (ratings: number[]) => {
+  // Focus rating filtering (wrapped with validation)
+  const setFocusRatingFilterWithValidation = (ratings: number[]) => {
     const validRatings = validateFocusRatings(ratings)
-    setInternalFocusRatingFilter(validRatings)
+    setFocusRatingFilter(validRatings)
   }
 
   const toggleFocusRatingFilter = (rating: number) => {
@@ -123,12 +123,12 @@ export const useAdvancedFilters = () => {
       newRatings = [...currentRatings, rating]
     }
     
-    setInternalFocusRatingFilter(newRatings)
+    setFocusRatingFilter(newRatings)
   }
 
 
-  // Duration range filtering
-  const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
+  // Duration range filtering (wrapped with validation)
+  const setDurationRangeFilterWithValidation = (minDuration?: number, maxDuration?: number) => {
     let validMinDuration = minDuration !== undefined ? validateDuration(minDuration) : undefined
     let validMaxDuration = maxDuration !== undefined ? validateDuration(maxDuration) : undefined
 
@@ -141,11 +141,7 @@ export const useAdvancedFilters = () => {
       }
     }
 
-    setInternalDurationRangeFilter(validMinDuration, validMaxDuration)
-  }
-
-  const clearDurationRangeFilter = () => {
-    clearInternalDurationRangeFilter()
+    setDurationRangeFilter(validMinDuration, validMaxDuration)
   }
 
   // Filter state management
@@ -153,7 +149,6 @@ export const useAdvancedFilters = () => {
     return {
       priority: activeFilters.value.priority,
       focusRating: activeFilters.value.focusRating,
-      energyLevel: activeFilters.value.energyLevel,
       minDuration: activeFilters.value.minDuration,
       maxDuration: activeFilters.value.maxDuration
     }
@@ -175,9 +170,9 @@ export const useAdvancedFilters = () => {
 
   const clearAllAdvancedFilters = () => {
     // Clear only advanced filters, preserve tags and date filters
-    setInternalPriorityFilter([])
-    setInternalFocusRatingFilter([])
-    clearInternalDurationRangeFilter()
+    setPriorityFilter([])
+    setFocusRatingFilter([])
+    clearDurationRangeFilter()
   }
 
   // Filter presets
@@ -293,15 +288,15 @@ export const useAdvancedFilters = () => {
     savedCombinations: readonly(savedCombinations),
     
     // Priority filters
-    setPriorityFilter,
+    setPriorityFilter: setPriorityFilterWithValidation,
     togglePriorityFilter,
     
     // Focus rating filters
-    setFocusRatingFilter,
+    setFocusRatingFilter: setFocusRatingFilterWithValidation,
     toggleFocusRatingFilter,
     
     // Duration filters
-    setDurationRangeFilter,
+    setDurationRangeFilter: setDurationRangeFilterWithValidation,
     clearDurationRangeFilter,
     
     // State management

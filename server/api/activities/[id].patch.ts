@@ -33,9 +33,6 @@ export default defineEventHandler(async (event) => {
     if (body.focusRating !== undefined) {
       updateData.focusRating = body.focusRating
     }
-    if (body.energyLevel !== undefined) {
-      updateData.energyLevel = body.energyLevel
-    }
 
     // Update in database
     const result = await db

@@ -92,7 +92,6 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       tags: ['work', 'project'],
       priority: 2,
       focusRating: 8,
-      energyLevel: 7,
       userId: null,
     },
     {
@@ -105,7 +104,6 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       tags: ['meeting', 'team'],
       priority: 1,
       focusRating: 6,
-      energyLevel: 5,
       userId: null,
     },
     {
@@ -118,7 +116,6 @@ export async function seedTestActivities(customActivities?: Partial<NewActivity>
       tags: ['code', 'review'],
       priority: 3,
       focusRating: 9,
-      energyLevel: 8,
       userId: null,
     },
   ]

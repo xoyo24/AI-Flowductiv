@@ -34,7 +34,6 @@ export default defineEventHandler(async (event) => {
       tags: Array.isArray(body.tags) ? body.tags : [],
       priority: body.priority || null,
       focusRating: body.focusRating || null,
-      energyLevel: body.energyLevel || null,
       userId: null, // For now, no auth required
     }
 

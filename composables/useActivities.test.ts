@@ -32,7 +32,6 @@ describe('useActivities - Integration Tests', () => {
         tags: ['test', 'integration'],
         priority: 2,
         focusRating: 4,
-        energyLevel: 'high',
       }
 
       const result = await saveActivity(activityInput)
@@ -196,8 +195,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work', 'coding'],
           priority: 2,
           focusRating: 4,
-          energyLevel: 'high',
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -211,8 +209,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work', 'meeting'],
           priority: 1,
           focusRating: 3,
-          energyLevel: 'medium',
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -337,7 +334,6 @@ describe('useActivities - Integration Tests', () => {
         tags: [],
         priority: null,
         focusRating: null,
-        energyLevel: null,
         userId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -367,8 +363,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work'],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -382,8 +377,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['personal'],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -397,8 +391,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work'],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -437,8 +430,7 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -452,8 +444,7 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -488,8 +479,7 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -503,8 +493,7 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-          energyLevel: null,
-          userId: null,
+            userId: null,
           createdAt: new Date(),
           updatedAt: new Date()
         }
