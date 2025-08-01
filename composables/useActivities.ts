@@ -10,7 +10,6 @@ export interface ActivityInput {
   tags?: string[]
   priority?: number | null
   focusRating?: number | null
-  energyLevel?: string | null
 }
 
 export interface HeatmapDay {
@@ -26,7 +25,6 @@ export interface ActivityFilters {
   dateRange?: { start: Date; end: Date }
   priority?: number[]
   focusRating?: number[]
-  energyLevel?: string[]
   minDuration?: number
   maxDuration?: number
 }
@@ -341,13 +339,6 @@ export const useActivities = () => {
       )
     }
     
-    // Apply energy level filter
-    if (activeFilters.value.energyLevel && activeFilters.value.energyLevel.length > 0) {
-      filtered = filtered.filter(activity => 
-        activity.energyLevel !== null && 
-        activeFilters.value.energyLevel!.includes(activity.energyLevel)
-      )
-    }
     
     // Apply duration filters
     if (activeFilters.value.minDuration !== undefined) {
@@ -432,14 +423,6 @@ export const useActivities = () => {
     updateFilterCount()
   }
 
-  const setEnergyLevelFilter = (levels: string[]) => {
-    if (levels.length > 0) {
-      activeFilters.value.energyLevel = levels
-    } else {
-      delete activeFilters.value.energyLevel
-    }
-    updateFilterCount()
-  }
 
   const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
     if (minDuration !== undefined) {
@@ -507,7 +490,6 @@ export const useActivities = () => {
     // Advanced filter actions
     setPriorityFilter,
     setFocusRatingFilter,
-    setEnergyLevelFilter,
     setDurationRangeFilter,
     clearDurationRangeFilter,
 

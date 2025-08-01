@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="space-y-4 p-4 border rounded-lg bg-card"
+    class="space-y-3 p-3 border rounded-lg bg-card"
     data-testid="advanced-filter-panel"
   >
     <!-- Header -->
@@ -31,16 +31,16 @@
     <!-- Filter Presets -->
     <div class="space-y-2">
       <label class="text-xs font-medium text-muted-foreground">Quick Filters</label>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="flex flex-wrap gap-2">
         <button
           v-for="preset in filterPresets"
           :key="preset.key"
           @click="applyFilterPreset(preset.key)"
-          class="p-2 text-left text-xs border rounded hover:bg-accent transition-colors"
+          class="px-3 py-1.5 text-xs border rounded hover:bg-accent transition-colors flex items-center space-x-1"
           :data-testid="`preset-${preset.key}`"
+          :title="preset.description"
         >
-          <div class="font-medium">{{ preset.name }}</div>
-          <div class="text-muted-foreground text-xs">{{ preset.description }}</div>
+          <span>{{ preset.name }}</span>
         </button>
       </div>
     </div>
@@ -169,134 +169,132 @@
       </div>
     </div>
 
-    <!-- Priority Filter -->
+    <!-- Priority & Focus Rating - Combined -->
     <div class="space-y-2">
-      <label class="text-xs font-medium text-muted-foreground">Priority Level</label>
-      <div class="flex space-x-1">
-        <button
-          v-for="priority in [1, 2, 3, 4, 5]"
-          :key="priority"
-          @click="togglePriorityFilter(priority)"
-          :class="[
-            'px-3 py-1.5 text-xs rounded border transition-colors',
-            currentFilters.priority?.includes(priority)
-              ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
-              : 'border-border hover:bg-accent'
-          ]"
-          :data-testid="`priority-${priority}`"
-        >
-          ⭐ {{ priority }}
-        </button>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Priority -->
+        <div>
+          <label class="text-xs font-medium text-muted-foreground">Priority</label>
+          <div class="flex space-x-1 mt-1">
+            <button
+              v-for="priority in [1, 2, 3, 4, 5]"
+              :key="priority"
+              @click="togglePriorityFilter(priority)"
+              :class="[
+                'px-2 py-1 text-xs rounded border transition-colors',
+                currentFilters.priority?.includes(priority)
+                  ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                  : 'border-border hover:bg-accent'
+              ]"
+              :data-testid="`priority-${priority}`"
+            >
+              ⭐{{ priority }}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Focus Rating -->
+        <div>
+          <label class="text-xs font-medium text-muted-foreground">Focus</label>
+          <div class="flex space-x-1 mt-1">
+            <button
+              v-for="rating in [1, 2, 3, 4, 5]"
+              :key="rating"
+              @click="toggleFocusRatingFilter(rating)"
+              :class="[
+                'px-2 py-1 text-xs rounded border transition-colors',
+                currentFilters.focusRating?.includes(rating)
+                  ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+                  : 'border-border hover:bg-accent'
+              ]"
+              :data-testid="`focus-${rating}`"
+            >
+              🎯{{ rating }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Focus Rating Filter -->
-    <div class="space-y-2">
-      <label class="text-xs font-medium text-muted-foreground">Focus Rating</label>
-      <div class="flex space-x-1">
-        <button
-          v-for="rating in [1, 2, 3, 4, 5]"
-          :key="rating"
-          @click="toggleFocusRatingFilter(rating)"
-          :class="[
-            'px-3 py-1.5 text-xs rounded border transition-colors',
-            currentFilters.focusRating?.includes(rating)
-              ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
-              : 'border-border hover:bg-accent'
-          ]"
-          :data-testid="`focus-${rating}`"
-        >
-          🎯 {{ rating }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Energy Level Filter -->
-    <div class="space-y-2">
-      <label class="text-xs font-medium text-muted-foreground">Energy Level</label>
-      <div class="flex space-x-1">
-        <button
-          v-for="level in energyLevels"
-          :key="level.value"
-          @click="toggleEnergyLevelFilter(level.value)"
-          :class="[
-            'px-3 py-1.5 text-xs rounded border transition-colors flex items-center space-x-1',
-            currentFilters.energyLevel?.includes(level.value)
-              ? 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400'
-              : 'border-border hover:bg-accent'
-          ]"
-          :data-testid="`energy-${level.value}`"
-        >
-          <span>{{ level.icon }}</span>
-          <span>{{ level.label }}</span>
-        </button>
-      </div>
-    </div>
 
     <!-- Duration Range Filter -->
     <div class="space-y-2">
-      <label class="text-xs font-medium text-muted-foreground">Duration Range</label>
-      <div class="space-y-3">
+      <label class="text-xs font-medium text-muted-foreground">Duration</label>
+      <div class="space-y-2">
         <!-- Quick Duration Buttons -->
-        <div class="grid grid-cols-3 gap-2">
+        <div class="flex space-x-2">
           <button
             v-for="duration in quickDurations"
             :key="duration.key"
             @click="setDurationRangeFilter(duration.min, duration.max)"
             :class="[
-              'p-2 text-xs rounded border transition-colors',
+              'px-3 py-1.5 text-xs rounded border transition-colors',
               isDurationRangeActive(duration.min, duration.max)
                 ? 'bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400'
                 : 'border-border hover:bg-accent'
             ]"
             :data-testid="`duration-${duration.key}`"
+            :title="duration.description"
           >
-            <div class="font-medium">{{ duration.label }}</div>
-            <div class="text-muted-foreground text-xs">{{ duration.description }}</div>
+            {{ duration.label }}
           </button>
         </div>
 
-        <!-- Custom Duration Inputs -->
-        <div class="flex items-center space-x-2 pt-2 border-t">
-          <div class="flex-1">
-            <label class="text-xs text-muted-foreground">Min (minutes)</label>
-            <input
-              v-model.number="customMinDuration"
-              type="number"
-              min="0"
-              step="5"
-              placeholder="0"
-              class="w-full mt-1 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              data-testid="custom-min-duration"
-            />
-          </div>
-          <div class="flex-1">
-            <label class="text-xs text-muted-foreground">Max (minutes)</label>
-            <input
-              v-model.number="customMaxDuration"
-              type="number"
-              min="0"
-              step="5"
-              placeholder="∞"
-              class="w-full mt-1 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              data-testid="custom-max-duration"
-            />
-          </div>
+        <!-- Expandable Custom Duration -->
+        <div class="border-t pt-2">
           <button
-            @click="applyCustomDuration"
-            :disabled="!isCustomDurationValid"
-            class="px-3 py-1 text-xs rounded bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
-            data-testid="apply-custom-duration"
+            @click="showCustomDuration = !showCustomDuration"
+            class="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1"
           >
-            Apply
+            <svg 
+              :class="['w-3 h-3 transition-transform', showCustomDuration ? 'rotate-90' : '']"
+              fill="currentColor" 
+              viewBox="0 0 20 20"
+            >
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span>Custom Range</span>
           </button>
+          
+          <div v-if="showCustomDuration" class="flex items-center space-x-2 mt-2">
+            <div class="flex-1">
+              <input
+                v-model.number="customMinDuration"
+                type="number"
+                min="0"
+                step="5"
+                placeholder="Min (minutes)"
+                class="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-primary"
+                data-testid="custom-min-duration"
+              />
+            </div>
+            <div class="flex-1">
+              <input
+                v-model.number="customMaxDuration"
+                type="number"
+                min="0"
+                step="5"
+                placeholder="Max (minutes)"
+                class="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-primary"
+                data-testid="custom-max-duration"
+              />
+            </div>
+            <button
+              @click="applyCustomDuration"
+              :disabled="!isCustomDurationValid"
+              class="px-2 py-1 text-xs rounded bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+              data-testid="apply-custom-duration"
+            >
+              Apply
+            </button>
+          </div>
         </div>
 
         <!-- Clear Duration Filter -->
         <button
           v-if="currentFilters.minDuration !== undefined || currentFilters.maxDuration !== undefined"
           @click="clearDurationRangeFilter"
-          class="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
           data-testid="clear-duration-filter"
         >
           Clear Duration Filter
@@ -310,7 +308,7 @@
 import { computed, ref } from 'vue'
 import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 import { useActivities } from '~/composables/useActivities'
-import type { EnergyLevel, FilterPreset } from '~/composables/useAdvancedFilters'
+import type { FilterPreset } from '~/composables/useAdvancedFilters'
 
 // Composables
 const {
@@ -319,7 +317,6 @@ const {
   savedCombinations,
   togglePriorityFilter,
   toggleFocusRatingFilter,
-  toggleEnergyLevelFilter,
   setDurationRangeFilter,
   clearDurationRangeFilter,
   clearAllAdvancedFilters,
@@ -343,6 +340,9 @@ const saveFormName = ref('')
 const editingCombination = ref<string | null>(null)
 const editFormName = ref('')
 
+// Duration form state
+const showCustomDuration = ref(false)
+
 // Current filter state
 const currentFilters = computed(() => getCurrentFilters())
 
@@ -362,19 +362,9 @@ const filterPresets = [
     key: 'quick-tasks' as FilterPreset,
     name: '⚡ Quick Tasks',
     description: 'Priority 1-2, Under 15 min'
-  },
-  {
-    key: 'low-energy' as FilterPreset,
-    name: '🔋 Low Energy',
-    description: 'Low energy, Under 30 min'
   }
 ]
 
-const energyLevels = [
-  { value: 'low' as EnergyLevel, label: 'Low', icon: '🔋' },
-  { value: 'medium' as EnergyLevel, label: 'Medium', icon: '⚡' },
-  { value: 'high' as EnergyLevel, label: 'High', icon: '🚀' }
-]
 
 const quickDurations = [
   {
@@ -396,27 +386,6 @@ const quickDurations = [
     label: 'Long',
     description: '≥ 60 min',
     min: 3600000, // 60 minutes
-    max: undefined
-  },
-  {
-    key: 'focused',
-    label: 'Focused',
-    description: '30-120 min',
-    min: 1800000, // 30 minutes
-    max: 7200000 // 120 minutes
-  },
-  {
-    key: 'micro',
-    label: 'Micro',
-    description: '≤ 5 min',
-    min: undefined,
-    max: 300000 // 5 minutes
-  },
-  {
-    key: 'extended',
-    label: 'Extended',
-    description: '≥ 2 hours',
-    min: 7200000, // 2 hours
     max: undefined
   }
 ]
@@ -479,9 +448,6 @@ const getActiveFiltersDescription = () => {
   }
   if (currentFilters.value.focusRating?.length) {
     parts.push(`Focus: ${currentFilters.value.focusRating.join(', ')}`)
-  }
-  if (currentFilters.value.energyLevel?.length) {
-    parts.push(`Energy: ${currentFilters.value.energyLevel.join(', ')}`)
   }
   if (currentFilters.value.minDuration || currentFilters.value.maxDuration) {
     const min = currentFilters.value.minDuration ? `${Math.round(currentFilters.value.minDuration / 60000)}min` : '0'

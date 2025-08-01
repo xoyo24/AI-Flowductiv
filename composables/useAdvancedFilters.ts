@@ -1,13 +1,11 @@
 import { computed, ref, readonly } from 'vue'
 import { useActivities } from './useActivities'
 
-export type EnergyLevel = 'low' | 'medium' | 'high'
-export type FilterPreset = 'high-performance' | 'deep-work' | 'quick-tasks' | 'low-energy'
+export type FilterPreset = 'high-performance' | 'deep-work' | 'quick-tasks'
 
 export interface AdvancedFilterState {
   priority?: number[]
   focusRating?: number[]
-  energyLevel?: EnergyLevel[]
   minDuration?: number
   maxDuration?: number
 }
@@ -35,7 +33,6 @@ export const useAdvancedFilters = () => {
     clearAllFilters,
     setPriorityFilter: setInternalPriorityFilter,
     setFocusRatingFilter: setInternalFocusRatingFilter,
-    setEnergyLevelFilter: setInternalEnergyLevelFilter,
     setDurationRangeFilter: setInternalDurationRangeFilter,
     clearDurationRangeFilter: clearInternalDurationRangeFilter
   } = useActivities()
@@ -80,10 +77,6 @@ export const useAdvancedFilters = () => {
     return ratings.filter(r => r >= 1 && r <= 5)
   }
 
-  const validateEnergyLevels = (levels: string[]): EnergyLevel[] => {
-    const validLevels: EnergyLevel[] = ['low', 'medium', 'high']
-    return levels.filter(level => validLevels.includes(level as EnergyLevel)) as EnergyLevel[]
-  }
 
   const validateDuration = (duration: number): number => {
     return Math.max(0, duration)
@@ -133,28 +126,6 @@ export const useAdvancedFilters = () => {
     setInternalFocusRatingFilter(newRatings)
   }
 
-  // Energy level filtering
-  const setEnergyLevelFilter = (levels: string[]) => {
-    const validLevels = validateEnergyLevels(levels)
-    setInternalEnergyLevelFilter(validLevels)
-  }
-
-  const toggleEnergyLevelFilter = (level: EnergyLevel) => {
-    const validLevels: EnergyLevel[] = ['low', 'medium', 'high']
-    if (!validLevels.includes(level)) return
-    
-    const currentLevels = activeFilters.value.energyLevel || []
-    const index = currentLevels.indexOf(level)
-    
-    let newLevels: string[]
-    if (index > -1) {
-      newLevels = currentLevels.filter(l => l !== level)
-    } else {
-      newLevels = [...currentLevels, level]
-    }
-    
-    setInternalEnergyLevelFilter(newLevels)
-  }
 
   // Duration range filtering
   const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
@@ -189,7 +160,7 @@ export const useAdvancedFilters = () => {
   }
 
   const hasAdvancedFilters = computed(() => {
-    const advancedFilterKeys = ['priority', 'focusRating', 'energyLevel', 'minDuration', 'maxDuration']
+    const advancedFilterKeys = ['priority', 'focusRating', 'minDuration', 'maxDuration']
     return advancedFilterKeys.some(key => activeFilters.value[key] !== undefined)
   })
 
@@ -197,7 +168,6 @@ export const useAdvancedFilters = () => {
     let count = 0
     if (activeFilters.value.priority) count++
     if (activeFilters.value.focusRating) count++
-    if (activeFilters.value.energyLevel) count++
     if (activeFilters.value.minDuration !== undefined) count++
     if (activeFilters.value.maxDuration !== undefined) count++
     return count
@@ -207,7 +177,6 @@ export const useAdvancedFilters = () => {
     // Clear only advanced filters, preserve tags and date filters
     setInternalPriorityFilter([])
     setInternalFocusRatingFilter([])
-    setInternalEnergyLevelFilter([])
     clearInternalDurationRangeFilter()
   }
 
@@ -219,7 +188,6 @@ export const useAdvancedFilters = () => {
     switch (preset) {
       case 'high-performance':
         setFocusRatingFilter([4, 5])
-        setEnergyLevelFilter(['high'])
         setDurationRangeFilter(1800000) // 30 min minimum
         break
         
@@ -231,11 +199,6 @@ export const useAdvancedFilters = () => {
       case 'quick-tasks':
         setPriorityFilter([1, 2])
         setDurationRangeFilter(undefined, 900000) // 15 min maximum
-        break
-        
-      case 'low-energy':
-        setEnergyLevelFilter(['low'])
-        setDurationRangeFilter(undefined, 1800000) // 30 min maximum
         break
     }
   }
@@ -274,7 +237,6 @@ export const useAdvancedFilters = () => {
     
     if (filters.priority) setPriorityFilter(filters.priority)
     if (filters.focusRating) setFocusRatingFilter(filters.focusRating)
-    if (filters.energyLevel) setEnergyLevelFilter(filters.energyLevel)
     if (filters.minDuration !== undefined || filters.maxDuration !== undefined) {
       setDurationRangeFilter(filters.minDuration, filters.maxDuration)
     }
@@ -337,10 +299,6 @@ export const useAdvancedFilters = () => {
     // Focus rating filters
     setFocusRatingFilter,
     toggleFocusRatingFilter,
-    
-    // Energy level filters
-    setEnergyLevelFilter,
-    toggleEnergyLevelFilter,
     
     // Duration filters
     setDurationRangeFilter,
