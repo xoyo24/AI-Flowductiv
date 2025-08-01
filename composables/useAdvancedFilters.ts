@@ -32,7 +32,12 @@ export const useAdvancedFilters = () => {
     removeTagFilter,
     setDateRangeFilter,
     clearDateRangeFilter,
-    clearAllFilters
+    clearAllFilters,
+    setPriorityFilter: setInternalPriorityFilter,
+    setFocusRatingFilter: setInternalFocusRatingFilter,
+    setEnergyLevelFilter: setInternalEnergyLevelFilter,
+    setDurationRangeFilter: setInternalDurationRangeFilter,
+    clearDurationRangeFilter: clearInternalDurationRangeFilter
   } = useActivities()
 
   // Saved filter combinations state
@@ -87,111 +92,89 @@ export const useAdvancedFilters = () => {
   // Priority filtering
   const setPriorityFilter = (priorities: number[]) => {
     const validPriorities = validatePriorities(priorities)
-    if (validPriorities.length > 0) {
-      activeFilters.value.priority = validPriorities
-    } else {
-      delete activeFilters.value.priority
-    }
+    setInternalPriorityFilter(validPriorities)
   }
 
   const togglePriorityFilter = (priority: number) => {
     if (priority < 1 || priority > 5) return
     
-    if (!activeFilters.value.priority) {
-      activeFilters.value.priority = []
-    }
-
-    const index = activeFilters.value.priority.indexOf(priority)
+    const currentPriorities = activeFilters.value.priority || []
+    const index = currentPriorities.indexOf(priority)
+    
+    let newPriorities: number[]
     if (index > -1) {
-      activeFilters.value.priority.splice(index, 1)
-      if (activeFilters.value.priority.length === 0) {
-        delete activeFilters.value.priority
-      }
+      newPriorities = currentPriorities.filter(p => p !== priority)
     } else {
-      activeFilters.value.priority.push(priority)
+      newPriorities = [...currentPriorities, priority]
     }
+    
+    setInternalPriorityFilter(newPriorities)
   }
 
   // Focus rating filtering
   const setFocusRatingFilter = (ratings: number[]) => {
     const validRatings = validateFocusRatings(ratings)
-    if (validRatings.length > 0) {
-      activeFilters.value.focusRating = validRatings
-    } else {
-      delete activeFilters.value.focusRating
-    }
+    setInternalFocusRatingFilter(validRatings)
   }
 
   const toggleFocusRatingFilter = (rating: number) => {
     if (rating < 1 || rating > 5) return
     
-    if (!activeFilters.value.focusRating) {
-      activeFilters.value.focusRating = []
-    }
-
-    const index = activeFilters.value.focusRating.indexOf(rating)
+    const currentRatings = activeFilters.value.focusRating || []
+    const index = currentRatings.indexOf(rating)
+    
+    let newRatings: number[]
     if (index > -1) {
-      activeFilters.value.focusRating.splice(index, 1)
-      if (activeFilters.value.focusRating.length === 0) {
-        delete activeFilters.value.focusRating
-      }
+      newRatings = currentRatings.filter(r => r !== rating)
     } else {
-      activeFilters.value.focusRating.push(rating)
+      newRatings = [...currentRatings, rating]
     }
+    
+    setInternalFocusRatingFilter(newRatings)
   }
 
   // Energy level filtering
   const setEnergyLevelFilter = (levels: string[]) => {
     const validLevels = validateEnergyLevels(levels)
-    if (validLevels.length > 0) {
-      activeFilters.value.energyLevel = validLevels
-    } else {
-      delete activeFilters.value.energyLevel
-    }
+    setInternalEnergyLevelFilter(validLevels)
   }
 
   const toggleEnergyLevelFilter = (level: EnergyLevel) => {
     const validLevels: EnergyLevel[] = ['low', 'medium', 'high']
     if (!validLevels.includes(level)) return
     
-    if (!activeFilters.value.energyLevel) {
-      activeFilters.value.energyLevel = []
-    }
-
-    const index = activeFilters.value.energyLevel.indexOf(level)
+    const currentLevels = activeFilters.value.energyLevel || []
+    const index = currentLevels.indexOf(level)
+    
+    let newLevels: string[]
     if (index > -1) {
-      activeFilters.value.energyLevel.splice(index, 1)
-      if (activeFilters.value.energyLevel.length === 0) {
-        delete activeFilters.value.energyLevel
-      }
+      newLevels = currentLevels.filter(l => l !== level)
     } else {
-      activeFilters.value.energyLevel.push(level)
+      newLevels = [...currentLevels, level]
     }
+    
+    setInternalEnergyLevelFilter(newLevels)
   }
 
   // Duration range filtering
   const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
-    if (minDuration !== undefined) {
-      activeFilters.value.minDuration = validateDuration(minDuration)
-    }
-    
-    if (maxDuration !== undefined) {
-      activeFilters.value.maxDuration = validateDuration(maxDuration)
-    }
+    let validMinDuration = minDuration !== undefined ? validateDuration(minDuration) : undefined
+    let validMaxDuration = maxDuration !== undefined ? validateDuration(maxDuration) : undefined
 
     // Ensure min <= max
-    if (activeFilters.value.minDuration && activeFilters.value.maxDuration) {
-      if (activeFilters.value.minDuration > activeFilters.value.maxDuration) {
-        const temp = activeFilters.value.minDuration
-        activeFilters.value.minDuration = activeFilters.value.maxDuration
-        activeFilters.value.maxDuration = temp
+    if (validMinDuration !== undefined && validMaxDuration !== undefined) {
+      if (validMinDuration > validMaxDuration) {
+        const temp = validMinDuration
+        validMinDuration = validMaxDuration
+        validMaxDuration = temp
       }
     }
+
+    setInternalDurationRangeFilter(validMinDuration, validMaxDuration)
   }
 
   const clearDurationRangeFilter = () => {
-    delete activeFilters.value.minDuration
-    delete activeFilters.value.maxDuration
+    clearInternalDurationRangeFilter()
   }
 
   // Filter state management
@@ -221,22 +204,11 @@ export const useAdvancedFilters = () => {
   })
 
   const clearAllAdvancedFilters = () => {
-    // Preserve tag and date filters, only clear advanced filters
-    const preservedFilters = {
-      tags: activeFilters.value.tags,
-      dateRange: activeFilters.value.dateRange
-    }
-    
-    // Clear all filters first
-    activeFilters.value = {}
-    
-    // Restore preserved filters
-    if (preservedFilters.tags) {
-      activeFilters.value.tags = preservedFilters.tags
-    }
-    if (preservedFilters.dateRange) {
-      activeFilters.value.dateRange = preservedFilters.dateRange
-    }
+    // Clear only advanced filters, preserve tags and date filters
+    setInternalPriorityFilter([])
+    setInternalFocusRatingFilter([])
+    setInternalEnergyLevelFilter([])
+    clearInternalDurationRangeFilter()
   }
 
   // Filter presets

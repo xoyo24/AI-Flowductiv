@@ -412,6 +412,57 @@ export const useActivities = () => {
     activeFilters.value = {}
     updateFilterCount()
   }
+
+  // Advanced filter actions
+  const setPriorityFilter = (priorities: number[]) => {
+    if (priorities.length > 0) {
+      activeFilters.value.priority = priorities
+    } else {
+      delete activeFilters.value.priority
+    }
+    updateFilterCount()
+  }
+
+  const setFocusRatingFilter = (ratings: number[]) => {
+    if (ratings.length > 0) {
+      activeFilters.value.focusRating = ratings
+    } else {
+      delete activeFilters.value.focusRating
+    }
+    updateFilterCount()
+  }
+
+  const setEnergyLevelFilter = (levels: string[]) => {
+    if (levels.length > 0) {
+      activeFilters.value.energyLevel = levels
+    } else {
+      delete activeFilters.value.energyLevel
+    }
+    updateFilterCount()
+  }
+
+  const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
+    if (minDuration !== undefined) {
+      activeFilters.value.minDuration = minDuration
+    }
+    if (maxDuration !== undefined) {
+      activeFilters.value.maxDuration = maxDuration
+    }
+    // Remove undefined values
+    if (activeFilters.value.minDuration === undefined) {
+      delete activeFilters.value.minDuration
+    }
+    if (activeFilters.value.maxDuration === undefined) {
+      delete activeFilters.value.maxDuration
+    }
+    updateFilterCount()
+  }
+
+  const clearDurationRangeFilter = () => {
+    delete activeFilters.value.minDuration
+    delete activeFilters.value.maxDuration
+    updateFilterCount()
+  }
   
   const updateFilterCount = () => {
     filterCount.value = Object.values(activeFilters.value).reduce((count, filter) => {
@@ -452,6 +503,13 @@ export const useActivities = () => {
     setDateRangeFilter,
     clearDateRangeFilter,
     clearAllFilters,
+    
+    // Advanced filter actions
+    setPriorityFilter,
+    setFocusRatingFilter,
+    setEnergyLevelFilter,
+    setDurationRangeFilter,
+    clearDurationRangeFilter,
 
     // Utilities
     formatDuration,

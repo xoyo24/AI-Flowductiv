@@ -123,6 +123,8 @@ export const useTimer = () => {
       endTime: endTime,
       tags: extractTags(currentActivity.value),
       priority: extractPriority(currentActivity.value),
+      focusRating: 3, // Default focus rating (1-5 scale) - TODO: collect from user
+      energyLevel: 'medium', // Default energy level - TODO: collect from user
     }
 
     try {
