@@ -100,6 +100,25 @@
         </button>
       </div>
 
+      <!-- Energy Level Filters -->
+      <div 
+        v-for="energy in activeFilters.energyLevel || []"
+        :key="`energy-${energy}`"
+        class="inline-flex items-center px-2 py-0.5 bg-blue-500/5 text-blue-600/80 dark:text-blue-400/80 rounded text-xs"
+        data-testid="filter-chip-energy"
+      >
+        <span class="mr-1">{{ getEnergyIcon(energy) }}</span>{{ getEnergyLabel(energy) }}
+        <button
+          @click="removeEnergyFilter(energy)"
+          class="ml-1.5 hover:bg-blue-500/10 rounded p-0.5 transition-colors"
+          aria-label="Remove energy filter"
+        >
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      </div>
+
       <!-- Duration Filters -->
       <div 
         v-if="activeFilters.minDuration !== undefined || activeFilters.maxDuration !== undefined"
@@ -139,6 +158,7 @@ interface Emits {
   (e: 'remove-tag-filter', tag: string): void
   (e: 'remove-priority-filter', priority: number): void
   (e: 'remove-focus-filter', focus: number): void
+  (e: 'remove-energy-filter', energy: string): void
   (e: 'clear-date-range-filter'): void
   (e: 'clear-duration-filters'): void
   (e: 'clear-all-filters'): void
@@ -161,6 +181,10 @@ const removePriorityFilter = (priority: number) => {
 
 const removeFocusFilter = (focus: number) => {
   emit('remove-focus-filter', focus)
+}
+
+const removeEnergyFilter = (energy: string) => {
+  emit('remove-energy-filter', energy)
 }
 
 const clearDateRangeFilter = () => {
@@ -193,5 +217,18 @@ const formatDurationFilter = () => {
   }
   
   return 'Duration'
+}
+
+const getEnergyIcon = (energy: string) => {
+  switch (energy) {
+    case 'low': return '🔋'
+    case 'medium': return '⚡'
+    case 'high': return '🚀'
+    default: return '⚡'
+  }
+}
+
+const getEnergyLabel = (energy: string) => {
+  return energy.charAt(0).toUpperCase() + energy.slice(1)
 }
 </script>

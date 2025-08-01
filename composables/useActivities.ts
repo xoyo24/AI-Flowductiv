@@ -26,6 +26,7 @@ export interface ActivityFilters {
   dateRange?: { start: Date; end: Date }
   priority?: number[]
   focusRating?: number[]
+  energyLevel?: string[]
   minDuration?: number
   maxDuration?: number
 }
@@ -337,6 +338,14 @@ export const useActivities = () => {
       filtered = filtered.filter(activity => 
         activity.focusRating !== null && 
         activeFilters.value.focusRating!.includes(activity.focusRating)
+      )
+    }
+    
+    // Apply energy level filter
+    if (activeFilters.value.energyLevel && activeFilters.value.energyLevel.length > 0) {
+      filtered = filtered.filter(activity => 
+        activity.energyLevel !== null && 
+        activeFilters.value.energyLevel!.includes(activity.energyLevel)
       )
     }
     
