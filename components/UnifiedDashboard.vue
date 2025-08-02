@@ -204,6 +204,7 @@
           @activity-click="handleActivityClick"
           @activity-edit="handleActivityEdit"
           @activity-delete="handleActivityDelete"
+          @activity-focus-rating="handleActivityFocusRating"
           @load-more="loadMoreActivities"
         />
 
@@ -828,6 +829,21 @@ const refreshActivities = async () => {
 const handleActivityClick = (activity) => {
   // For future: implement activity detail view or inline editing
   console.log('Activity clicked:', activity)
+}
+
+const handleActivityFocusRating = async (activity, rating: number) => {
+  try {
+    const { updateActivity } = useActivities()
+    await updateActivity(activity.id, { focusRating: rating })
+    
+    // Refresh activities to reflect the changes
+    await refreshActivities()
+    
+    // Haptic feedback for successful rating
+    vibrate([100])
+  } catch (error) {
+    console.error('Failed to update focus rating:', error)
+  }
 }
 
 const selectedActivity = ref(null)

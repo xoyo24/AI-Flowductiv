@@ -20,23 +20,46 @@
                 {{ formatTimeRange(activity.startTime, activity.endTime) }}
               </span>
             </div>
-            <div class="flex items-center space-x-2">
-              <!-- Tags -->
-              <div class="flex space-x-2">
-                <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
-                  #{{ tag }}
+            <div class="flex items-center justify-between">
+              <!-- Left side: Tags and Priority -->
+              <div class="flex items-center space-x-2">
+                <!-- Tags -->
+                <div class="flex space-x-2">
+                  <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
+                    #{{ tag }}
+                  </span>
+                </div>
+                
+                <!-- Priority -->
+                <span v-if="activity.priority" class="text-xs px-2 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-md font-medium">
+                  !{{ activity.priority }}
                 </span>
               </div>
-              
-              <!-- Priority -->
-              <span v-if="activity.priority" class="text-xs px-2 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-md font-medium">
-                !{{ activity.priority }}
-              </span>
-              
-              <!-- Focus Rating -->
-              <span v-if="activity.focusRating" class="text-xs px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md font-medium">
-                *{{ activity.focusRating }}
-              </span>
+
+              <!-- Right side: Focus Rating Stars -->
+              <div @click.stop class="flex items-center space-x-1">
+                <span class="text-xs text-muted-foreground mr-1">Focus:</span>
+                <button
+                  v-for="star in 5"
+                  :key="star"
+                  :data-testid="`activity-${activity.id}-star-${star}`"
+                  type="button"
+                  :class="{
+                    'text-yellow-400': star <= (activity.focusRating || 0),
+                    'text-gray-300 hover:text-yellow-300': star > (activity.focusRating || 0)
+                  }"
+                  class="p-0.5 transition-colors duration-150"
+                  @click="handleFocusRating(activity, star)"
+                  :title="`Rate focus: ${star} star${star > 1 ? 's' : ''}`"
+                >
+                  <Star
+                    :class="{
+                      'fill-current': star <= (activity.focusRating || 0)
+                    }"
+                    class="w-4 h-4"
+                  />
+                </button>
+              </div>
             </div>
           </div>
           <div @click.stop class="ml-3">
@@ -76,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+import { Star } from 'lucide-vue-next'
 import ActivityMenuDropdown from '~/components/Activity/MenuDropdown.vue'
 
 interface Activity {
@@ -85,6 +109,8 @@ interface Activity {
   startTime: string
   endTime: string
   tags: string[]
+  priority?: number | null
+  focusRating?: number | null
 }
 
 interface Props {
@@ -101,9 +127,15 @@ interface Emits {
   (e: 'activity-click', activity: Activity): void
   (e: 'activity-edit', activity: Activity): void
   (e: 'activity-delete', activity: Activity): void
+  (e: 'activity-focus-rating', activity: Activity, rating: number): void
   (e: 'load-more'): void
 }
 
 defineProps<Props>()
-defineEmits<Emits>()
+const emit = defineEmits<Emits>()
+
+// Focus rating handler
+const handleFocusRating = (activity: Activity, rating: number) => {
+  emit('activity-focus-rating', activity, rating)
+}
 </script>
