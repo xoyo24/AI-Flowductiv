@@ -58,53 +58,10 @@
       </div>
     </div>
 
-    <!-- Focus Rating Section -->
-    <div>
-      <label class="block text-sm font-medium mb-3">Focus Rating</label>
-      <div class="flex items-center space-x-3">
-        <div class="flex space-x-1">
-          <button
-            v-for="star in 5"
-            :key="star"
-            :data-testid="`focus-star-${star}`"
-            type="button"
-            :class="{
-              'text-yellow-400': star <= currentFocusRating,
-              'text-gray-300': star > currentFocusRating
-            }"
-            class="p-1 transition-all duration-200 hover:scale-110 hover:text-yellow-400"
-            @click="setFocusRating(star)"
-          >
-            <Star
-              :class="{
-                'fill-current': star <= currentFocusRating
-              }"
-              class="w-6 h-6"
-            />
-          </button>
-        </div>
-        
-        <div class="flex items-center space-x-2">
-          <span v-if="currentFocusRating" class="text-sm text-muted-foreground">
-            {{ getFocusRatingLabel(currentFocusRating) }}
-          </span>
-          <button
-            v-if="currentFocusRating"
-            type="button"
-            @click="clearFocusRating"
-            class="text-xs text-muted-foreground hover:text-foreground underline"
-            data-testid="clear-focus-rating"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Star } from 'lucide-vue-next'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useInputParser } from '~/composables/useInputParser'
 
@@ -112,7 +69,6 @@ interface Activity {
   id: string
   title: string
   tags: string[]
-  focusRating?: number | null
 }
 
 interface Props {
@@ -120,7 +76,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update', data: { title: string; tags: string[]; focusRating?: number | null }): void
+  (e: 'update', data: { title: string; tags: string[] }): void
   (e: 'save'): void
 }
 
@@ -133,17 +89,11 @@ const dropdownContainer = ref<HTMLElement>()
 const inputFocused = ref(false)
 const selectedIndex = ref(-1)
 
-// Focus rating state
-const currentFocusRating = ref<number>(0)
-
 // Initialize unified input with current activity data
 onMounted(() => {
   // Use the title as-is since it already contains hashtag references
   // No need to reconstruct because our edit save logic now preserves the original input
   unifiedInput.value = props.activity.title
-  
-  // Initialize focus rating
-  currentFocusRating.value = props.activity.focusRating || 0
 })
 
 // Use input parser to extract title and tags from unified input
@@ -245,31 +195,8 @@ const updateFormData = () => {
   // This makes it consistent with home screen input behavior
   emit('update', {
     title: unifiedInput.value.trim(),
-    tags: parsedTags.value,
-    focusRating: currentFocusRating.value || null
+    tags: parsedTags.value
   })
-}
-
-// Focus rating methods
-const setFocusRating = (rating: number) => {
-  currentFocusRating.value = rating
-  updateFormData()
-}
-
-const clearFocusRating = () => {
-  currentFocusRating.value = 0
-  updateFormData()
-}
-
-const getFocusRatingLabel = (rating: number): string => {
-  const labels = {
-    1: 'Very distracted',
-    2: 'Somewhat distracted', 
-    3: 'Moderate focus',
-    4: 'Good focus',
-    5: 'Excellent focus'
-  }
-  return labels[rating as keyof typeof labels] || ''
 }
 
 // Watch for input changes to update form data
@@ -282,8 +209,6 @@ watch(() => props.activity, (newActivity) => {
   if (newActivity) {
     // Use the title as-is since it already contains hashtag references
     unifiedInput.value = newActivity.title
-    // Update focus rating
-    currentFocusRating.value = newActivity.focusRating || 0
   }
 }, { deep: true })
 </script>
