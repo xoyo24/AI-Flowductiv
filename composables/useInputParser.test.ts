@@ -69,6 +69,7 @@ describe('useInputParser', () => {
         cleanText: 'Meeting',
         tags: ['team', 'urgent'],
         priority: 1,
+        focusRating: null
       })
     })
   })

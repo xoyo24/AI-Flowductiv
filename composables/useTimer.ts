@@ -96,9 +96,9 @@ export const useTimer = () => {
     return true
   }
 
-  const finishTimer = async (): Promise<boolean> => {
-    if (!isRunning.value && !isPaused.value) return false
-    if (!startTime.value) return false
+  const finishTimer = async (): Promise<{ success: boolean; activity?: any }> => {
+    if (!isRunning.value && !isPaused.value) return { success: false }
+    if (!startTime.value) return { success: false }
 
     // Calculate final duration
     const finalDuration = isRunning.value
@@ -110,7 +110,7 @@ export const useTimer = () => {
     if (finalDuration < MIN_DURATION_MS) {
       // Reset timer without saving
       resetTimer()
-      return true // Return true to indicate successful "finish" (just not saved)
+      return { success: true } // Return true to indicate successful "finish" (just not saved)
     }
 
     const endTime = new Date()
@@ -128,25 +128,29 @@ export const useTimer = () => {
       endTime: endTime,
       tags: extractedTags,
       priority: extractedPriority,
-      focusRating: null, // Will be set post-activity in Phase 2
+      focusRating: null, // Will be set via focus rating modal
     }
 
     try {
       // Save activity to database
       const { saveActivity } = useActivities()
-      await saveActivity(activityData)
+      const savedActivity = await saveActivity(activityData)
 
-      // Emit event to refresh activities list
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('activity-saved'))
+      if (savedActivity) {
+        // Emit event to refresh activities list
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('activity-saved'))
+        }
+
+        // Reset timer state
+        resetTimer()
+        return { success: true, activity: savedActivity }
+      } else {
+        return { success: false }
       }
-
-      // Reset timer state
-      resetTimer()
-      return true
     } catch (error) {
       console.error('Failed to save activity:', error)
-      return false
+      return { success: false }
     }
   }
 

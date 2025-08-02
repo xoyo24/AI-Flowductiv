@@ -38,8 +38,9 @@ describe('useTimer Composable', () => {
     mockLocalStorage.getItem.mockReturnValue(null)
 
     // Mock successful activity save and $fetch response
-    mockSaveActivity.mockResolvedValue({ id: 'test-activity', title: 'Test Activity' })
-    mockFetch.mockResolvedValue({ data: { id: 'test-activity', title: 'Test Activity' } })
+    const mockActivity = { id: 'test-activity', title: 'Test Activity' }
+    mockSaveActivity.mockResolvedValue(mockActivity)
+    mockFetch.mockResolvedValue({ data: mockActivity })
   })
 
   describe('Timer State Management', () => {
@@ -176,10 +177,14 @@ describe('useTimer Composable', () => {
       // Start timer
       timer.startTimer('Work on project #urgent')
 
+      // Mock elapsed time to be more than minimum (60 seconds)
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 70000) // 70 seconds later
+
       // Finish timer
       const result = await timer.finishTimer()
 
-      expect(result).toBe(true)
+      expect(result.success).toBe(true)
+      expect(result.activity).toBeTruthy()
 
       // Timer should be reset after finishing
       expect(timer.isRunning.value).toBe(false)
@@ -191,7 +196,7 @@ describe('useTimer Composable', () => {
 
       const result = await timer.finishTimer()
 
-      expect(result).toBe(false)
+      expect(result.success).toBe(false)
     })
   })
 
@@ -264,6 +269,8 @@ describe('useTimer Composable', () => {
       const timer = useTimer()
 
       timer.startTimer('Test activity')
+      // Mock elapsed time to be more than minimum (60 seconds)
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 70000) // 70 seconds later
       await timer.finishTimer()
 
       expect(mockDispatchEvent).toHaveBeenCalledWith(

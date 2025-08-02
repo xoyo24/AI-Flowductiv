@@ -275,6 +275,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Focus Rating Modal -->
+  <FocusRatingModal
+    :is-open="showFocusRatingModal"
+    :activity="focusRatingActivity"
+    @save="handleFocusRatingSave"
+    @skip="handleFocusRatingSkip"
+    @close="handleFocusRatingClose"
+  />
 </template>
 
 <script setup lang="ts">
@@ -284,6 +293,7 @@ import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
+import FocusRatingModal from '~/components/FocusRatingModal.vue'
 import InputComposer from '~/components/InputComposer.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
@@ -293,6 +303,7 @@ import type { HeatmapDay } from '~/composables/useActivities'
 import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useContextualStatus } from '~/composables/useContextualStatus'
+import { useFocusRating } from '~/composables/useFocusRating'
 import { useInputParser } from '~/composables/useInputParser'
 
 // Timer and activities
@@ -334,6 +345,16 @@ const {
   clearDurationRangeFilter,
   clearAllAdvancedFilters
 } = useAdvancedFilters()
+
+// Focus rating system
+const {
+  showModal: showFocusRatingModal,
+  pendingActivity: focusRatingActivity,
+  promptForRating,
+  saveRating: saveFocusRating,
+  skipRating: skipFocusRating,
+  closeModal: closeFocusRatingModal
+} = useFocusRating()
 
 // Computed properties for tag data
 const tagData = computed(() => {
@@ -476,12 +497,18 @@ const handleResume = () => {
 }
 
 const handleFinish = async () => {
-  const success = await finishTimer()
-  if (success) {
+  const result = await finishTimer()
+  if (result.success) {
     // Clear the activity input to provide clean slate for next timer
     activityInput.value = ''
     quickStartHidden.value = false // Show quick start again
     vibrate([200])
+    
+    // If an activity was saved (not skipped due to short duration), prompt for focus rating
+    if (result.activity) {
+      const { promptForRating } = useFocusRating()
+      promptForRating(result.activity)
+    }
   }
 }
 
@@ -879,6 +906,29 @@ const saveEdit = async () => {
   } catch (error) {
     console.error('Failed to update activity:', error)
   }
+}
+
+// Focus Rating Modal Handlers
+const handleFocusRatingSave = async (rating: number) => {
+  try {
+    const success = await saveFocusRating(rating)
+    if (success) {
+      // Refresh activities to show the updated rating
+      await refreshActivities()
+      vibrate([100, 50, 100]) // Success haptic pattern
+    }
+  } catch (error) {
+    console.error('Failed to save focus rating:', error)
+  }
+}
+
+const handleFocusRatingSkip = () => {
+  skipFocusRating()
+  vibrate([50]) // Light haptic feedback
+}
+
+const handleFocusRatingClose = () => {
+  closeFocusRatingModal()
 }
 
 
