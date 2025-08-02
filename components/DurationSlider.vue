@@ -11,46 +11,44 @@
         :key="duration.key"
         @click="setDurationRange(duration.min, duration.max)"
         :class="[
-          'px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 text-center flex-1',
+          'px-2 py-2 text-xs font-medium rounded-lg transition-all duration-200 text-center whitespace-nowrap',
           isDurationRangeActive(duration.min, duration.max)
             ? 'bg-primary/10 text-primary ring-1 ring-primary/20 shadow-sm'
             : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
         ]"
         :data-testid="`duration-${duration.key}`"
       >
-        <div class="font-medium">{{ duration.label }}</div>
+        {{ duration.label }}
       </button>
       </div>
     </div>
     
     <!-- Custom Duration Range -->
-    <details class="mt-3" :open="showCustomRange">
-      <summary 
+    <div class="mt-3">
+      <button
         @click="showCustomRange = !showCustomRange"
-        class="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none list-none"
+        class="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none flex items-center"
       >
-        <span class="inline-flex items-center">
-          <svg 
-            :class="[
-              'w-3 h-3 mr-1 transition-transform',
-              showCustomRange ? 'rotate-90' : ''
-            ]"
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-          >
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-          Custom Range
-        </span>
-      </summary>
-      <div class="mt-3 space-y-3 pl-0">
+        <svg 
+          :class="[
+            'w-3 h-3 mr-1 transition-transform',
+            showCustomRange ? 'rotate-90' : ''
+          ]"
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+        Custom Range
+      </button>
+      <div v-if="showCustomRange" class="mt-3 space-y-3 pl-0">
         <div class="flex items-center space-x-2">
           <input
             v-model.number="customMinDuration"
             type="number"
             placeholder="Min"
             min="0"
-            class="flex-1 px-2 py-1 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
+            class="w-16 px-2 py-1 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
             data-testid="custom-min-duration"
           />
           <span class="text-xs text-muted-foreground">to</span>
@@ -59,7 +57,7 @@
             type="number"
             placeholder="Max"
             min="0"
-            class="flex-1 px-2 py-1 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
+            class="w-16 px-2 py-1 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
             data-testid="custom-max-duration"
           />
           <span class="text-xs text-muted-foreground">min</span>
@@ -83,7 +81,7 @@
           </button>
         </div>
       </div>
-    </details>
+    </div>
 
     <!-- Active Duration Display -->
     <div v-if="hasActiveDuration" class="text-xs text-muted-foreground">
