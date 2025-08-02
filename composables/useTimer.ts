@@ -118,11 +118,9 @@ export const useTimer = () => {
     // Create activity data
     const extractedTags = InputParserService.extractTags(currentActivity.value)
     const extractedPriority = InputParserService.extractPriority(currentActivity.value)
-    const cleanTitle = InputParserService.parseActivity(currentActivity.value).cleanText
-    
     
     const activityData = {
-      title: cleanTitle || currentActivity.value,
+      title: currentActivity.value, // Preserve original input with tags/priority
       durationMs: finalDuration,
       startTime: startTime.value,
       endTime: endTime,

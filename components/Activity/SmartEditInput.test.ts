@@ -18,6 +18,7 @@ mockNuxtImport('useAutoComplete', () => {
 mockNuxtImport('useInputParser', () => {
   return () => ({
     tags: ref(['test']),
+    priority: ref(null),
     cleanText: ref('Test Activity')
   })
 })
@@ -58,7 +59,7 @@ describe('SmartEditInput Component', () => {
     expect(wrapper.emitted('save')).toBeTruthy()
   })
 
-  it('should include title and tags in update emissions', async () => {
+  it('should include title, tags, and priority in update emissions', async () => {
     const wrapper = await mountSuspended(SmartEditInput, {
       props: {
         activity: mockActivity
@@ -73,5 +74,6 @@ describe('SmartEditInput Component', () => {
     const updateEvent = wrapper.emitted('update')?.[0]?.[0] as any
     expect(updateEvent).toHaveProperty('title')
     expect(updateEvent).toHaveProperty('tags')
+    expect(updateEvent).toHaveProperty('priority')
   })
 })

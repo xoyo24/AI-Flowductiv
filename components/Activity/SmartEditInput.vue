@@ -41,17 +41,26 @@
         </div>
       </div>
 
-      <!-- Parsed Tags Display -->
-      <div v-if="parsedTags.length > 0" class="mt-3">
+      <!-- Parsed Tags and Priority Display -->
+      <div v-if="parsedTags.length > 0 || parsedPriority" class="mt-3">
         <div class="flex items-center space-x-3">
-          <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+          <span class="text-sm text-muted-foreground font-medium">Extracted:</span>
           <div class="flex flex-wrap gap-2">
+            <!-- Tags -->
             <span 
               v-for="tag in parsedTags" 
               :key="tag"
               class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20"
             >
               <span class="text-primary mr-1">#</span>{{ tag }}
+            </span>
+            
+            <!-- Priority -->
+            <span 
+              v-if="parsedPriority"
+              class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200"
+            >
+              <span class="text-orange-700 mr-1">!</span>{{ parsedPriority }}
             </span>
           </div>
         </div>
@@ -76,7 +85,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update', data: { title: string; tags: string[] }): void
+  (e: 'update', data: { title: string; tags: string[]; priority: number | null }): void
   (e: 'save'): void
 }
 
@@ -96,8 +105,8 @@ onMounted(() => {
   unifiedInput.value = props.activity.title
 })
 
-// Use input parser to extract title and tags from unified input
-const { tags: parsedTags, cleanText: parsedTitle } = useInputParser(unifiedInput)
+// Use input parser to extract title, tags, and priority from unified input
+const { tags: parsedTags, priority: parsedPriority, cleanText: parsedTitle } = useInputParser(unifiedInput)
 
 // Use autocomplete for suggestions
 const {
@@ -195,7 +204,8 @@ const updateFormData = () => {
   // This makes it consistent with home screen input behavior
   emit('update', {
     title: unifiedInput.value.trim(),
-    tags: parsedTags.value
+    tags: parsedTags.value,
+    priority: parsedPriority.value
   })
 }
 
