@@ -1,9 +1,11 @@
 <template>
-  <div class="space-y-3">
-    <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Duration</label>
-    
-    <!-- Quick Duration Buttons -->
-    <div class="flex space-x-1">
+  <div class="space-y-2">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <Clock class="w-4 h-4 text-muted-foreground" />
+        <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Duration</label>
+      </div>
+      <div class="flex space-x-1">
       <button
         v-for="duration in quickDurations"
         :key="duration.key"
@@ -11,13 +13,14 @@
         :class="[
           'px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 text-center flex-1',
           isDurationRangeActive(duration.min, duration.max)
-            ? 'bg-purple-100 text-purple-800 ring-1 ring-purple-200 shadow-sm dark:bg-purple-900/20 dark:text-purple-300 dark:ring-purple-800'
+            ? 'bg-primary/10 text-primary ring-1 ring-primary/20 shadow-sm'
             : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
         ]"
         :data-testid="`duration-${duration.key}`"
       >
         <div class="font-medium">{{ duration.label }}</div>
       </button>
+      </div>
     </div>
     
     <!-- Custom Duration Range -->
@@ -91,7 +94,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { Clock } from 'lucide-vue-next'
 import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
+import { useActivities } from '~/composables/useActivities'
 
 interface Emits {
   (e: 'duration-changed', minDuration?: number, maxDuration?: number): void
@@ -100,7 +105,8 @@ interface Emits {
 const emit = defineEmits<Emits>()
 
 // Composables
-const { setDurationRangeFilter, clearDurationRangeFilter, getCurrentFilters } = useAdvancedFilters()
+const { setDurationRangeFilter, clearDurationRangeFilter } = useAdvancedFilters()
+const { activeFilters } = useActivities()
 
 // Reactive state
 const customMinDuration = ref<number | null>(null)
@@ -108,7 +114,7 @@ const customMaxDuration = ref<number | null>(null)
 const showCustomRange = ref(false)
 
 // Current filter state
-const currentFilters = computed(() => getCurrentFilters())
+const currentFilters = computed(() => activeFilters.value)
 
 // Configuration data
 const quickDurations = [
@@ -166,8 +172,17 @@ const isDurationRangeActive = (min?: number, max?: number) => {
 }
 
 const setDurationRange = (min?: number, max?: number) => {
-  setDurationRangeFilter(min, max)
-  emit('duration-changed', min, max)
+  // Check if this range is already active - if so, clear it
+  const isCurrentlyActive = isDurationRangeActive(min, max)
+  
+  if (isCurrentlyActive) {
+    // Clear the filter
+    setDurationRangeFilter(undefined, undefined)
+  } else {
+    // Set the new filter
+    setDurationRangeFilter(min, max)
+  }
+  // Note: No need to emit since we handle it directly
 }
 
 const applyCustomDuration = () => {

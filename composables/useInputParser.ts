@@ -12,6 +12,7 @@ export const useInputParser = (inputRef: Ref<string>) => {
   // Individual computed properties for convenience
   const tags = computed(() => parsedActivity.value.tags)
   const priority = computed(() => parsedActivity.value.priority)
+  const focusRating = computed(() => parsedActivity.value.focusRating)
   const cleanText = computed(() => parsedActivity.value.cleanText)
 
   // Utility to create ActivityInput from parsed data
@@ -30,7 +31,7 @@ export const useInputParser = (inputRef: Ref<string>) => {
       endTime: timing.endTime,
       tags: parsed.tags,
       priority: parsed.priority,
-      focusRating: null,
+      focusRating: parsed.focusRating,
       energyLevel: null,
     }
   }
@@ -40,6 +41,7 @@ export const useInputParser = (inputRef: Ref<string>) => {
     parsedActivity: readonly(parsedActivity),
     tags: readonly(tags),
     priority: readonly(priority),
+    focusRating: readonly(focusRating),
     cleanText: readonly(cleanText),
 
     // Utilities

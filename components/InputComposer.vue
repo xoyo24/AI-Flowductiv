@@ -34,12 +34,23 @@
       <div class="hidden lg:flex lg:items-start lg:justify-between lg:space-x-4">
         <!-- Left: Quick Start Tags or Extracted Tags -->
         <div class="flex-1">
-          <!-- Show extracted tags if user has typed something -->
-          <div v-if="extractedTags.length > 0" class="flex items-center space-x-3">
-            <span class="text-sm text-muted-foreground font-medium">Tags:</span>
-            <div class="flex flex-wrap gap-2">
-              <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20">
-                <span class="text-primary mr-1">#</span>{{ tag }}
+          <!-- Show extracted tags and priority if user has typed something -->
+          <div v-if="extractedTags.length > 0 || extractedPriority !== null" class="flex items-center space-x-4">
+            <!-- Tags -->
+            <div v-if="extractedTags.length > 0" class="flex items-center space-x-2">
+              <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+              <div class="flex flex-wrap gap-2">
+                <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+                  <span class="text-primary mr-1">#</span>{{ tag }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Priority -->
+            <div v-if="extractedPriority !== null" class="flex items-center space-x-2">
+              <span class="text-sm text-muted-foreground font-medium">Priority:</span>
+              <span class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                <span class="text-orange-500 mr-1">!</span>{{ extractedPriority }}
               </span>
             </div>
           </div>
@@ -72,8 +83,8 @@
             </div>
           </div>
           
-          <!-- Show quick start toggle if hidden and no extracted tags -->
-          <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0" class="flex justify-start">
+          <!-- Show quick start toggle if hidden and no extracted content -->
+          <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0 && extractedPriority === null" class="flex justify-start">
             <button 
               @click="$emit('show-quick-start')"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -138,12 +149,23 @@
 
       <!-- Mobile: Stacked Layout (Preserved) -->
       <div class="flex flex-col space-y-3 lg:hidden">
-        <!-- Extracted Tags Section (Mobile) -->
-        <div v-if="extractedTags.length > 0" class="flex flex-col space-y-2">
-          <span class="text-sm text-muted-foreground font-medium">Tags:</span>
-          <div class="flex flex-wrap gap-2">
-            <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-              <span class="text-blue-500 mr-1">#</span>{{ tag }}
+        <!-- Extracted Content Section (Mobile) -->
+        <div v-if="extractedTags.length > 0 || extractedPriority !== null" class="flex flex-col space-y-3">
+          <!-- Tags -->
+          <div v-if="extractedTags.length > 0" class="flex flex-col space-y-2">
+            <span class="text-sm text-muted-foreground font-medium">Tags:</span>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="tag in extractedTags" :key="tag" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                <span class="text-blue-500 mr-1">#</span>{{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Priority -->
+          <div v-if="extractedPriority !== null" class="flex flex-col space-y-2">
+            <span class="text-sm text-muted-foreground font-medium">Priority:</span>
+            <span class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200 w-fit">
+              <span class="text-orange-500 mr-1">!</span>{{ extractedPriority }}
             </span>
           </div>
         </div>
@@ -177,7 +199,7 @@
         </div>
 
         <!-- Show Quick Start Toggle (only if no extracted tags) -->
-        <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0" class="flex justify-center">
+        <div v-else-if="quickStartHidden && !isRunning && !isPaused && extractedTags.length === 0 && extractedPriority === null" class="flex justify-center">
           <button 
             @click="$emit('show-quick-start')"
             class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -254,6 +276,7 @@ interface Props {
   suggestionsLoading: boolean
   selectedIndex: number
   extractedTags: string[]
+  extractedPriority: number | null
   modelValue: string // Add prop for parent's activity input
 }
 

@@ -332,9 +332,11 @@
 ## 📅 **Phase 2: Habit Loop (4 weeks)**
 
 ### **Epic 2.1: Post-Session Quality Ratings**
-- Advanced rating system with contextual prompts
-- Correlation analysis between ratings and productivity
-- Automated insights based on rating patterns
+- **Focus Rating Modal**: After timer completion, show quick 1-5 star rating modal for focus quality
+- **Activity Edit Interface**: Allow editing priority, focus rating, and tags after activity creation
+- **Batch Rating Mode**: Daily review mode to rate multiple activities at once
+- **Rating Analytics**: Correlation analysis between ratings and productivity patterns
+- **Contextual Prompts**: Smart rating prompts based on activity type and duration
 
 ### **Epic 2.2: Habit Tracking Foundation**
 - Daily/weekly habit definition and tracking

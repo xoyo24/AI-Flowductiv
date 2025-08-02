@@ -67,14 +67,18 @@
             <button
               v-for="priority in [1, 2, 3, 4, 5]"
               :key="priority"
-              @click="togglePriorityFilter(priority)"
+              @click="isPriorityAvailable(priority) ? togglePriorityFilter(priority) : null"
+              :disabled="!isPriorityAvailable(priority)"
               :class="[
                 'w-8 h-8 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center',
                 currentFilters.priority?.includes(priority)
                   ? 'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-200 shadow-sm'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  : isPriorityAvailable(priority)
+                    ? 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 cursor-pointer'
+                    : 'bg-gray-25 text-gray-300 border border-gray-100 cursor-not-allowed opacity-50'
               ]"
               :data-testid="`priority-${priority}`"
+              :title="!isPriorityAvailable(priority) ? 'No activities with this priority' : undefined"
             >
               {{ priority }}
             </button>
@@ -88,14 +92,18 @@
             <button
               v-for="rating in [1, 2, 3, 4, 5]"
               :key="rating"
-              @click="toggleFocusRatingFilter(rating)"
+              @click="isFocusRatingAvailable(rating) ? toggleFocusRatingFilter(rating) : null"
+              :disabled="!isFocusRatingAvailable(rating)"
               :class="[
                 'w-8 h-8 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center',
                 currentFilters.focusRating?.includes(rating)
                   ? 'bg-green-100 text-green-800 ring-2 ring-green-200 shadow-sm'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  : isFocusRatingAvailable(rating)
+                    ? 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 cursor-pointer'
+                    : 'bg-gray-25 text-gray-300 border border-gray-100 cursor-not-allowed opacity-50'
               ]"
               :data-testid="`focus-${rating}`"
+              :title="!isFocusRatingAvailable(rating) ? 'No activities with this focus rating' : undefined"
             >
               {{ rating }}
             </button>
@@ -114,7 +122,7 @@
             :key="duration.key"
             @click="setDurationRangeFilter(duration.min, duration.max)"
             :class="[
-              'px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 text-center',
+              'flex-1 px-4 py-3 text-xs font-medium rounded-lg transition-all duration-200 text-center min-w-0',
               isDurationRangeActive(duration.min, duration.max)
                 ? 'bg-purple-100 text-purple-800 ring-2 ring-purple-200 shadow-sm'
                 : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
@@ -136,18 +144,21 @@
               <input
                 v-model.number="customMinDuration"
                 type="number"
-                placeholder="Min (minutes)"
-                class="flex-1 px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Min"
+                min="0"
+                class="w-16 px-2 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 data-testid="custom-min-duration"
               />
               <span class="text-xs text-gray-400">to</span>
               <input
                 v-model.number="customMaxDuration"
                 type="number"
-                placeholder="Max (minutes)"
-                class="flex-1 px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Max"
+                min="0"
+                class="w-16 px-2 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 data-testid="custom-max-duration"
               />
+              <span class="text-xs text-gray-500">min</span>
             </div>
             <div class="flex items-center space-x-2">
               <button
@@ -322,7 +333,7 @@ const {
   renameSavedFilterCombination
 } = useAdvancedFilters()
 
-const { activeFilters } = useActivities()
+const { activeFilters, activities } = useActivities()
 
 // Reactive state
 const customMinDuration = ref<number | null>(null)
@@ -390,6 +401,27 @@ const hasAnyActiveFilters = computed(() => {
     activeFilters.value.dateRange !== undefined
 })
 
+// Smart filter availability
+const availablePriorities = computed(() => {
+  const priorities = new Set<number>()
+  activities.value.forEach(activity => {
+    if (activity.priority !== null) {
+      priorities.add(activity.priority)
+    }
+  })
+  return priorities
+})
+
+const availableFocusRatings = computed(() => {
+  const ratings = new Set<number>()
+  activities.value.forEach(activity => {
+    if (activity.focusRating !== null) {
+      ratings.add(activity.focusRating)
+    }
+  })
+  return ratings
+})
+
 // Computed properties
 const isCustomDurationValid = computed(() => {
   if (customMinDuration.value === null && customMaxDuration.value === null) {
@@ -417,6 +449,14 @@ const isDurationRangeActive = (min?: number, max?: number) => {
     currentFilters.value.minDuration === min &&
     currentFilters.value.maxDuration === max
   )
+}
+
+const isPriorityAvailable = (priority: number) => {
+  return availablePriorities.value.has(priority)
+}
+
+const isFocusRatingAvailable = (rating: number) => {
+  return availableFocusRatings.value.has(rating)
 }
 
 const isPresetActive = (presetKey: FilterPreset) => {

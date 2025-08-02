@@ -7,6 +7,7 @@ export class InputParserService {
   static parseActivity(input: string): ParsedActivity {
     const tags = this.extractTags(input)
     const priority = this.extractPriority(input)
+    const focusRating = this.extractFocusRating(input)
     const cleanText = this.cleanText(input)
 
     return {
@@ -14,6 +15,7 @@ export class InputParserService {
       cleanText,
       tags,
       priority,
+      focusRating,
     }
   }
 
@@ -30,20 +32,29 @@ export class InputParserService {
   }
 
   /**
-   * Extract priority from input text (e.g., !1, !2, !3)
+   * Extract priority from input text (e.g., !1, !2, !3, !4, !5)
    */
   static extractPriority(text: string): number | null {
-    const priorityMatch = text.match(/!([1-3])/)
+    const priorityMatch = text.match(/!([1-5])/)
     return priorityMatch ? Number.parseInt(priorityMatch[1]) : null
   }
 
   /**
-   * Remove tags and priority markers from text, returning clean display text
+   * Extract focus rating from input text (e.g., *1, *2, *3, *4, *5)
+   */
+  static extractFocusRating(text: string): number | null {
+    const focusMatch = text.match(/\*([1-5])/)
+    return focusMatch ? Number.parseInt(focusMatch[1]) : null
+  }
+
+  /**
+   * Remove tags, priority markers, and focus rating markers from text, returning clean display text
    */
   static cleanText(text: string): string {
     return text
       .replace(/#[\w.-]+/g, '') // Remove tags (including hyphens, dots, underscores)
       .replace(/!\d+/g, '') // Remove all priority markers (valid and invalid)
+      .replace(/\*\d+/g, '') // Remove all focus rating markers (valid and invalid)
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim() // Remove leading/trailing whitespace
   }

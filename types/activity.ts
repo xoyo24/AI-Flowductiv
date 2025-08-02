@@ -3,6 +3,7 @@ export interface ParsedActivity {
   cleanText: string
   tags: string[]
   priority: number | null
+  focusRating: number | null
 }
 
 export interface ActivitySuggestion {

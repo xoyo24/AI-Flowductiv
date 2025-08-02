@@ -29,15 +29,16 @@ export interface ActivityFilters {
   maxDuration?: number
 }
 
+// Global singleton state - shared across all useActivities() calls
+const activities = ref<Activity[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+// Universal filter state - shared across all useActivities() calls
+const activeFilters = ref<ActivityFilters>({})
+const filterCount = ref(0)
+
 export const useActivities = () => {
-  // Reactive state
-  const activities = ref<Activity[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  
-  // Universal filter state
-  const activeFilters = ref<ActivityFilters>({})
-  const filterCount = ref(0)
 
   // Save new activity
   const saveActivity = async (activityInput: ActivityInput): Promise<Activity | null> => {
@@ -424,19 +425,19 @@ export const useActivities = () => {
 
 
   const setDurationRangeFilter = (minDuration?: number, maxDuration?: number) => {
+    // Always set both values (including undefined to clear them)
     if (minDuration !== undefined) {
       activeFilters.value.minDuration = minDuration
-    }
-    if (maxDuration !== undefined) {
-      activeFilters.value.maxDuration = maxDuration
-    }
-    // Remove undefined values
-    if (activeFilters.value.minDuration === undefined) {
+    } else {
       delete activeFilters.value.minDuration
     }
-    if (activeFilters.value.maxDuration === undefined) {
+    
+    if (maxDuration !== undefined) {
+      activeFilters.value.maxDuration = maxDuration
+    } else {
       delete activeFilters.value.maxDuration
     }
+    
     updateFilterCount()
   }
 

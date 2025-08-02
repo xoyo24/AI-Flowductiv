@@ -14,6 +14,15 @@
       </div>
       
       <div class="flex items-center space-x-2">
+        <!-- Save Filters Button -->
+        <button
+          @click="showSaveDialog = true"
+          class="text-primary hover:text-primary/80 transition-colors text-xs font-medium"
+          data-testid="save-current-filters"
+        >
+          + Save
+        </button>
+        
         <!-- Clear All Button -->
         <button
           @click="clearAllFilters"
@@ -124,11 +133,57 @@
       </div>
     </div>
 
+    <!-- Save Filter Dialog -->
+    <div
+      v-if="showSaveDialog"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+      @click="cancelSave"
+    >
+      <div
+        class="bg-card border border-border rounded-lg p-6 max-w-sm w-full mx-4 shadow-lg"
+        @click.stop
+      >
+        <h3 class="text-lg font-semibold text-foreground mb-4">Save Filter Combination</h3>
+        <div class="mb-4">
+          <input
+            v-model="saveFilterName"
+            type="text"
+            placeholder="Enter filter name..."
+            maxlength="50"
+            class="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
+            data-testid="save-filter-name-input"
+            @keyup.enter="saveCurrentFilters"
+            @keyup.escape="cancelSave"
+          />
+        </div>
+        <div class="text-xs text-muted-foreground mb-4">
+          Current filters: {{ getActiveFiltersDescription() }}
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button
+            @click="cancelSave"
+            class="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted/50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="saveCurrentFilters"
+            :disabled="!saveFilterName.trim()"
+            class="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { ActivityFilters } from '~/composables/useActivities'
+import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
 interface Props {
   activeFilters: ActivityFilters
@@ -154,6 +209,11 @@ const emit = defineEmits<Emits>()
 
 // Composables
 const { formatDuration } = useActivities()
+const { saveCurrentFilterCombination } = useAdvancedFilters()
+
+// Save dialog state
+const showSaveDialog = ref(false)
+const saveFilterName = ref('')
 
 // Methods
 const removeTagFilter = (tag: string) => {
@@ -190,15 +250,67 @@ const formatDateRange = (dateRange: { start: Date; end: Date }) => {
 const formatDurationFilter = () => {
   const { minDuration, maxDuration } = props.activeFilters
   
+  const formatMs = (ms: number) => {
+    const minutes = Math.round(ms / 60000)
+    if (minutes < 60) {
+      return `${minutes}min`
+    } else {
+      const hours = Math.floor(minutes / 60)
+      const remainingMins = minutes % 60
+      return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
+    }
+  }
+  
   if (minDuration !== undefined && maxDuration !== undefined) {
-    return `${formatDuration(minDuration)} - ${formatDuration(maxDuration)}`
+    return `${formatMs(minDuration)} - ${formatMs(maxDuration)}`
   } else if (minDuration !== undefined) {
-    return `≥ ${formatDuration(minDuration)}`
+    return `≥ ${formatMs(minDuration)}`
   } else if (maxDuration !== undefined) {
-    return `≤ ${formatDuration(maxDuration)}`
+    return `≤ ${formatMs(maxDuration)}`
   }
   
   return 'Duration'
+}
+
+// Save filter methods
+const saveCurrentFilters = () => {
+  if (!saveFilterName.value.trim()) return
+  
+  try {
+    saveCurrentFilterCombination(saveFilterName.value.trim())
+    cancelSave()
+  } catch (error) {
+    console.error('Failed to save filter combination:', error)
+  }
+}
+
+const cancelSave = () => {
+  saveFilterName.value = ''
+  showSaveDialog.value = false
+}
+
+const getActiveFiltersDescription = () => {
+  const parts: string[] = []
+  
+  if (props.activeFilters.priority?.length) {
+    parts.push(`Priority: ${props.activeFilters.priority.join(', ')}`)
+  }
+  if (props.activeFilters.focusRating?.length) {
+    parts.push(`Focus: ${props.activeFilters.focusRating.join(', ')}`)
+  }
+  if (props.activeFilters.minDuration || props.activeFilters.maxDuration) {
+    const min = props.activeFilters.minDuration ? `${Math.round(props.activeFilters.minDuration / 60000)}min` : '0'
+    const max = props.activeFilters.maxDuration ? `${Math.round(props.activeFilters.maxDuration / 60000)}min` : '∞'
+    parts.push(`Duration: ${min} - ${max}`)
+  }
+  if (props.activeFilters.tags?.length) {
+    parts.push(`Tags: ${props.activeFilters.tags.join(', ')}`)
+  }
+  if (props.activeFilters.dateRange) {
+    parts.push('Date range selected')
+  }
+  
+  return parts.length > 0 ? parts.join(', ') : 'No filters'
 }
 
 </script>

@@ -158,6 +158,7 @@
               :suggestions-loading="suggestionsLoading"
               :selected-index="selectedIndex"
               :extracted-tags="extractedTags"
+              :extracted-priority="extractedPriority"
               @quick-start="handleQuickStart"
               @show-quick-start="quickStartHidden = false"
               @start-timer="handleStart"
@@ -329,6 +330,7 @@ const {
   togglePriorityFilter,
   toggleFocusRatingFilter,
   toggleEnergyLevelFilter,
+  setDurationRangeFilter,
   clearDurationRangeFilter,
   clearAllAdvancedFilters
 } = useAdvancedFilters()
@@ -760,18 +762,15 @@ const handleApplyFilterCombination = (combinationId: string) => {
 }
 
 const handlePriorityToggle = (priority: number) => {
-  // This is already handled by the PriorityFilter component using togglePriorityFilter
-  console.log('Priority toggled:', priority)
+  togglePriorityFilter(priority)
 }
 
 const handleFocusToggle = (focus: number) => {
-  // This is already handled by the FocusFilter component using toggleFocusRatingFilter
-  console.log('Focus toggled:', focus)
+  toggleFocusRatingFilter(focus)
 }
 
 const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
-  // This is already handled by the DurationSlider component using setDurationRangeFilter
-  console.log('Duration changed:', minDuration, maxDuration)
+  setDurationRangeFilter(minDuration, maxDuration)
 }
 
 // Dropdown management (simplified since moved to InputComposer)

@@ -20,9 +20,22 @@
                 {{ formatTimeRange(activity.startTime, activity.endTime) }}
               </span>
             </div>
-            <div class="flex space-x-2">
-              <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
-                #{{ tag }}
+            <div class="flex items-center space-x-2">
+              <!-- Tags -->
+              <div class="flex space-x-2">
+                <span v-for="tag in activity.tags" :key="tag" class="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
+                  #{{ tag }}
+                </span>
+              </div>
+              
+              <!-- Priority -->
+              <span v-if="activity.priority" class="text-xs px-2 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-md font-medium">
+                !{{ activity.priority }}
+              </span>
+              
+              <!-- Focus Rating -->
+              <span v-if="activity.focusRating" class="text-xs px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md font-medium">
+                *{{ activity.focusRating }}
               </span>
             </div>
           </div>

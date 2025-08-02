@@ -116,14 +116,19 @@ export const useTimer = () => {
     const endTime = new Date()
 
     // Create activity data
+    const extractedTags = InputParserService.extractTags(currentActivity.value)
+    const extractedPriority = InputParserService.extractPriority(currentActivity.value)
+    const cleanTitle = InputParserService.parseActivity(currentActivity.value).cleanText
+    
+    
     const activityData = {
-      title: currentActivity.value,
+      title: cleanTitle || currentActivity.value,
       durationMs: finalDuration,
       startTime: startTime.value,
       endTime: endTime,
-      tags: extractTags(currentActivity.value),
-      priority: extractPriority(currentActivity.value),
-      focusRating: 3, // Default focus rating (1-5 scale) - TODO: collect from user
+      tags: extractedTags,
+      priority: extractedPriority,
+      focusRating: null, // Will be set post-activity in Phase 2
     }
 
     try {
@@ -157,8 +162,7 @@ export const useTimer = () => {
     clearTimerState()
   }
 
-  // Import centralized parsing utilities
-  const { extractTags, extractPriority, parseActivity } = InputParserService
+  // Note: Using InputParserService static methods directly to avoid destructuring issues
 
   // Persistence
   const saveTimerState = () => {

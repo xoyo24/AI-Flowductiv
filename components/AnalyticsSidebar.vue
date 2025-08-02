@@ -26,10 +26,11 @@
     <!-- Analytics Content -->
     <div 
       v-if="!collapsed" 
-      class="flex-1 overflow-y-auto px-4 py-3 space-y-6"
+      class="flex-1 overflow-y-auto px-4 py-3 space-y-4"
     >
-
-      <!-- Productivity Overview -->
+      <!-- 🔍 INSIGHT AREA -->
+      
+      <!-- Productivity Overview (Heatmap) -->
       <ProductivityOverview 
         :collapsed="false"
         :loading="loading"
@@ -37,53 +38,8 @@
         @day-selected="handleDaySelected" 
       />
 
-      <!-- Tag Filters -->
-      <TagFilters
-        v-if="props.tagData.length > 0"
-        :top-tags="props.tagData"
-        :selected-tags="props.selectedTags"
-        title="Tags"
-        :max-display="10"
-        @tag-selected="handleTagSelected"
-        @tag-deselected="handleTagDeselected"
-        @tags-cleared="handleTagsCleared"
-        @selection-changed="handleTagSelectionChanged"
-        @tag-favorite="handleTagFavorite"
-        @tag-edit="handleTagEdit"
-        @tag-remove="handleTagRemove"
-      />
-
-      <!-- AI Insights (Collapsible) -->
-      <div class="space-y-3">
-        <button
-          @click="showInsights = !showInsights"
-          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
-        >
-          <span>AI Insights</span>
-          <ChevronDown 
-            :class="{
-              'w-3 h-3 transition-transform duration-200': true,
-              'rotate-180': showInsights
-            }"
-          />
-        </button>
-        
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-2"
-        >
-          <div v-if="showInsights" class="space-y-2">
-            <DailySummary :compact="true" />
-          </div>
-        </Transition>
-      </div>
-
-      <!-- Quick Patterns (Expandable) -->
-      <div class="space-y-3">
+      <!-- Patterns (Collapsible) -->
+      <div class="space-y-2">
         <button
           @click="showPatterns = !showPatterns"
           class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
@@ -111,57 +67,73 @@
         </Transition>
       </div>
 
-      <!-- Filter Area Separator -->
-      <div class="border-t border-border my-6"></div>
+      <!-- AI Insights (Collapsible) -->
+      <div class="space-y-2">
+        <button
+          @click="showInsights = !showInsights"
+          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
+        >
+          <span>AI Insights</span>
+          <ChevronDown 
+            :class="{
+              'w-3 h-3 transition-transform duration-200': true,
+              'rotate-180': showInsights
+            }"
+          />
+        </button>
+        
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div v-if="showInsights" class="space-y-2">
+            <DailySummary :compact="true" />
+          </div>
+        </Transition>
+      </div>
 
-      <!-- Filter Area -->
-      <div class="space-y-6">
-        <!-- Saved Filter Combinations (Favorites) -->
-        <div class="space-y-3">
-          <button
-            @click="showFilters = !showFilters"
-            class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
-          >
-            <span>Filters</span>
-            <ChevronDown 
-              :class="{
-                'w-3 h-3 transition-transform duration-200': true,
-                'rotate-180': showFilters
-              }"
-            />
-          </button>
-          
-          <Transition
-            enter-active-class="transition-all duration-200 ease-out"
-            enter-from-class="opacity-0 -translate-y-2"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-150 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-2"
-          >
-            <div v-if="showFilters" class="space-y-4">
-              <!-- Saved Filter Combinations -->
-              <SavedFilterCombinations 
-                @apply-combination="handleApplyCombination"
-              />
+      <!-- ⚙️ FILTER AREA -->
+      
+      <!-- Filters (Always visible) -->
+      <div class="space-y-3">
+        <!-- Favorites - Saved Filter Combinations -->
+        <SavedFilterCombinations 
+          @apply-combination="handleApplyCombination"
+        />
 
-              <!-- Priority Filter -->
-              <PriorityFilter 
-                @priority-toggle="handlePriorityToggle"
-              />
+        <!-- Priority Filter -->
+        <PriorityFilter 
+          @priority-toggle="handlePriorityToggle"
+        />
 
-              <!-- Focus Filter -->
-              <FocusFilter 
-                @focus-toggle="handleFocusToggle"
-              />
+        <!-- Focus Filter -->
+        <FocusFilter 
+          @focus-toggle="handleFocusToggle"
+        />
 
-              <!-- Duration Slider -->
-              <DurationSlider 
-                @duration-changed="handleDurationChanged"
-              />
-            </div>
-          </Transition>
-        </div>
+        <!-- Duration Filter -->
+        <DurationSlider 
+          @duration-changed="handleDurationChanged"
+        />
+
+        <!-- Tags Filter -->
+        <TagFilters
+          v-if="props.tagData.length > 0"
+          :top-tags="props.tagData"
+          :selected-tags="props.selectedTags"
+          title="Tags"
+          :max-display="10"
+          @tag-selected="handleTagSelected"
+          @tag-deselected="handleTagDeselected"
+          @tags-cleared="handleTagsCleared"
+          @selection-changed="handleTagSelectionChanged"
+          @tag-edit="handleTagEdit"
+          @tag-remove="handleTagRemove"
+        />
       </div>
     </div>
 
@@ -244,7 +216,6 @@ interface Emits {
   (e: 'tag-deselected', tag: string): void
   (e: 'tags-cleared'): void
   (e: 'selection-changed', selectedTags: Set<string>): void
-  (e: 'tag-favorite', tag: TagData): void
   (e: 'tag-edit', tag: TagData): void
   (e: 'tag-remove', tag: TagData, includeActivities: boolean): void
   (e: 'apply-filter-combination', combinationId: string): void
@@ -265,7 +236,6 @@ const emit = defineEmits<Emits>()
 // Local state
 const showPatterns = ref(false)
 const showInsights = ref(false) // Collapsed by default to save space
-const showFilters = ref(true) // Expanded by default for easy access
 
 // Actions
 const handleDaySelected = (day: any) => {
@@ -293,9 +263,6 @@ const handleTagSelectionChanged = (selectedTags: Set<string>) => {
   emit('selection-changed', selectedTags)
 }
 
-const handleTagFavorite = (tag: TagData) => {
-  emit('tag-favorite', tag)
-}
 
 const handleTagEdit = (tag: TagData) => {
   emit('tag-edit', tag)
