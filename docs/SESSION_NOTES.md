@@ -22,6 +22,9 @@
 - ✅ **Advanced Filter Architecture** - Sidebar reorganization with working Priority/Focus/Duration filters
 
 ### **Recent Critical Fixes**
+- ✅ **Focus Rating System** - Complete post-activity 5-star rating system with inline UI
+- ✅ **Input Behavior Alignment** - Timer and edit inputs now consistently preserve original text
+- ✅ **Priority Edit Save Fix** - Activity edit properly saves extracted priority markers  
 - ✅ **Priority Parsing** - `!1` to `!5` syntax now works in input and saves correctly
 - ✅ **Input Preview** - Shows extracted tags and priority while typing
 - ✅ **Activity Display** - Priority and focus rating badges show in activity cards
@@ -43,7 +46,7 @@
 - ❌ **Filter Combinations**: Save and reuse complex filter combinations
 
 **2. Activity Enhancement System** 
-- ❌ **Focus Rating Integration**: Post-activity rating system (1-5 scale)
+- ✅ **Focus Rating Integration**: Post-activity rating system (1-5 scale) - COMPLETED
 - ❌ **Energy Level Tracking**: Pre/post activity energy assessment
 - ❌ **Time Range Display**: Show start-end times (2:30 PM - 4:45 PM) in cards
 
