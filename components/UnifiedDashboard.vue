@@ -506,7 +506,6 @@ const handleFinish = async () => {
     
     // If an activity was saved (not skipped due to short duration), prompt for focus rating
     if (result.activity) {
-      const { promptForRating } = useFocusRating()
       promptForRating(result.activity)
     }
   }

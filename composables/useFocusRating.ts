@@ -5,10 +5,11 @@ export interface FocusRatingState {
   pendingActivity: any | null
 }
 
+// Global singleton state - shared across all useFocusRating() calls
+const showModal = ref(false)
+const pendingActivity = ref<any | null>(null)
+
 export const useFocusRating = () => {
-  // Reactive state
-  const showModal = ref(false)
-  const pendingActivity = ref<any | null>(null)
 
   // Actions
   const promptForRating = (activity: any) => {
