@@ -87,20 +87,21 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ## `/task:done [what-completed]` - Record Completion + Reflection
 
-**Purpose:** Update SESSION_NOTES.md with completed work + create concise session log in `docs/history/`
+**Purpose:** Update SESSION_NOTES.md with completed work + create individual session log in `docs/history/`
 
 ### What It Does:
 1. **Mark Complete**: Update current priorities in SESSION_NOTES.md as completed (✅/❌ status only)
-2. **Create Session Log**: Add concise session file to `docs/history/session-YYYY-MM-DD-topic.md`
+2. **Create Individual Session Log**: Add focused session file to `docs/history/session-YYYY-MM-DD-[topic].md`
 3. **Update TodoWrite**: Mark relevant tasks as completed
 4. **Plan Next**: Identify immediate next priority
 
-### Session Log Content (Concise):
-- **Issues Resolved** - What problems were fixed
-- **Technical Changes** - Key files/components modified (no implementation details)
+### Individual Session Log Content (Focused):
+- **Session Objectives** - What was planned for this specific session
+- **Technical Implementation** - Key files/components modified with implementation details
+- **Issues Resolved** - What problems were fixed and how
 - **User Experience Impact** - How this improves the user experience
-- **Quality Assurance** - Build status, test results
-- **Session Reflection** - Key technique applied working with AI, What went well, what need improvement in future sessions?
+- **Quality Assurance** - Test coverage, build status, verification results
+- **Key Learnings** - Technical insights, patterns discovered, AI collaboration notes
 
 ### Example Usage:
 ```bash
@@ -109,36 +110,39 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 /task done testing-setup   # After adding comprehensive test coverage
 ```
 
-### Session File Template:
+### Individual Session File Template:
 ```markdown
-# [Session Topic]
+# Session: [Topic]
+**Date**: [Date]  
+**Duration**: [Duration]  
+**Focus**: [Session main objective]
 
-**Date**: [Date]
-**Duration**: [Duration]
-**Type**: [Feature/Bug fix/Refactor]
+## 🎯 **Session Objectives**
+[What was planned for this specific session]
 
-## Issues Resolved
-1. [Problem 1]: [Brief description]
-2. [Problem 2]: [Brief description]
+## ✅ **Completed Tasks**
+[Detailed breakdown of what was implemented]
 
-## Technical Changes
-- `file1.ts`: [Brief change description]
-- `file2.vue`: [Brief change description]
+## 🔧 **Technical Implementation Details**
+[Key files modified, patterns used, architecture decisions]
 
-## User Experience Impact
-- [UX improvement 1]
-- [UX improvement 2]
+## 🐛 **Issues Fixed**
+[Problems resolved and solution approaches]
 
-## Quality Assurance
-- Build status: [Success/Issues]
-- Tests: [N/N passing]
-- Regressions: [None/List]
+## 🎨 **User Experience Improvements**
+[How this enhances the user experience]
+
+## 🧪 **Quality Assurance**
+[Test coverage, verification steps, build status]
+
+## 📝 **Key Learnings**
+[Technical insights, AI collaboration notes, future considerations]
 ```
 
 ### SESSION_NOTES.md Updates:
 - Mark sprint priorities as completed with ✅ checkmarks
 - Add brief one-line summary to "Recent Bug Fixes" or "Completed This Sprint"
-- NO implementation details (those are in session history files)
+- NO implementation details (those are in individual session history files)
 
 ---
 
@@ -209,7 +213,7 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ### Document Integration:
 - **SESSION_NOTES.md**: Pure sprint dashboard (✅/❌ status only, updated by `/task done`)
-- **docs/history/**: Individual session logs (concise, no redundant details, created by `/task done`)
+- **docs/history/session-YYYY-MM-DD-[topic].md**: Individual session logs (focused, detailed, created by `/task done`)
 - **IMPLEMENTATION_PLAN.md**: Technical architecture & patterns (updated when architecture changes)
 - **FEATURE_BACKLOG.md**: Future work ideas (updated by `/task plan`)
 - **TodoWrite**: Current session tasks (managed automatically)

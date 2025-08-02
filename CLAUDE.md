@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `docs/SESSION_NOTES.md` - Pure sprint dashboard (✅/❌ task status only)
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture & implementation patterns
 - `docs/FEATURE_BACKLOG.md` - Future feature planning & detailed breakdowns
-- `docs/history/` - Individual session logs (concise, no redundant details)
+- `docs/history/session-YYYY-MM-DD-[topic].md` - Individual session logs (focused, detailed)
 
 📋 **Additional References**:
 - `docs/PRD.md` - Product requirements and roadmap
@@ -81,7 +81,7 @@ bun run db:studio   # Open Drizzle Studio
 2. **Plan** - Break down tasks, identify dependencies  
 3. **Code** - Implement following established patterns
 4. **Test** - Verify functionality works as expected
-5. **Commit** - Save working changes with concise messages (details in session history files)
+5. **Commit** - Save working changes with concise messages (details in individual session logs)
 
 ## Key Patterns & Examples
 
@@ -234,7 +234,7 @@ Four focused commands covering complete development workflow:
 
 - `/task` - Current TodoWrite + SESSION_NOTES.md status + next priorities
 - `/task work [focus]` - Implementation + testing + git commits (TDD cycles)
-- `/task done [what]` - Record completion + reflection in SESSION_HISTORY.md
+- `/task done [what]` - Record completion + create individual session log in docs/history/
 - `/task plan [idea]` - Add future features to FEATURE_BACKLOG.md
 
 **Daily Workflow:**
