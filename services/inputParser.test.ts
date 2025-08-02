@@ -13,6 +13,7 @@ describe('InputParserService', () => {
         cleanText: 'Work on frontend',
         tags: ['react', 'typescript'],
         priority: 2,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -27,6 +28,7 @@ describe('InputParserService', () => {
         cleanText: 'Meeting with team',
         tags: ['work', 'meeting'],
         priority: null,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -41,6 +43,7 @@ describe('InputParserService', () => {
         cleanText: 'Urgent task',
         tags: [],
         priority: 1,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -55,6 +58,7 @@ describe('InputParserService', () => {
         cleanText: 'Simple task',
         tags: [],
         priority: null,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -69,6 +73,7 @@ describe('InputParserService', () => {
         cleanText: '',
         tags: [],
         priority: null,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -83,6 +88,7 @@ describe('InputParserService', () => {
         cleanText: 'Task with multiple priorities',
         tags: [],
         priority: 2,
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -96,7 +102,8 @@ describe('InputParserService', () => {
         originalText: input,
         cleanText: 'Invalid priority',
         tags: [],
-        priority: null,
+        priority: 4, // Should extract !4 as the first valid priority
+        focusRating: null,
       }
 
       expect(result).toEqual(expected)
@@ -144,8 +151,12 @@ describe('InputParserService', () => {
       expect(InputParserService.extractPriority('No priority')).toBe(null)
     })
 
-    it('should return null for invalid priority', () => {
-      expect(InputParserService.extractPriority('Invalid !0 !4 !9')).toBe(null)
+    it('should return first valid priority from mixed invalid/valid', () => {
+      expect(InputParserService.extractPriority('Invalid !0 !4 !9')).toBe(4)
+    })
+
+    it('should return null for all invalid priorities', () => {
+      expect(InputParserService.extractPriority('Invalid !0 !9 !6')).toBe(null)
     })
 
     it('should return first valid priority when multiple exist', () => {

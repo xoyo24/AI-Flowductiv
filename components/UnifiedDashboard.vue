@@ -837,14 +837,16 @@ const isDeleteDialogOpen = ref(false)
 
 const editData = ref({
   title: '',
-  tags: []
+  tags: [],
+  focusRating: null as number | null
 })
 
 const handleActivityEdit = (activity) => {
   selectedActivity.value = activity
   editData.value = {
     title: activity.title,
-    tags: [...(activity.tags || [])]
+    tags: [...(activity.tags || [])],
+    focusRating: activity.focusRating || null
   }
   isEditDialogOpen.value = true
 }
@@ -891,7 +893,8 @@ const saveEdit = async () => {
   try {
     const updateData = {
       title: editData.value.title,
-      tags: editData.value.tags
+      tags: editData.value.tags,
+      focusRating: editData.value.focusRating
     }
     
     await $fetch(`/api/activities/${selectedActivity.value.id}`, {
