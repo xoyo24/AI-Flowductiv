@@ -156,7 +156,7 @@
           leave-to-class="opacity-0 -translate-y-2"
         >
           <div v-if="showInsights" class="space-y-2">
-            <DailySummary :compact="true" />
+            <AIInsights :compact="true" :auto-refresh="true" />
           </div>
         </Transition>
       </div>
@@ -266,7 +266,7 @@ import {
   Settings,
   Target,
 } from 'lucide-vue-next'
-import DailySummary from '~/components/DailySummary.vue'
+import AIInsights from '~/components/AIInsights.vue'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
 import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
@@ -330,7 +330,7 @@ const emit = defineEmits<Emits>()
 // Local state
 const showPatterns = ref(false)
 const showGoals = ref(true) // Show goals by default
-const showInsights = ref(false) // Collapsed by default to save space
+const showInsights = ref(true) // Show insights by default - new AI feature
 const showGoalForm = ref(false)
 const editingGoal = ref<Goal | null>(null)
 
