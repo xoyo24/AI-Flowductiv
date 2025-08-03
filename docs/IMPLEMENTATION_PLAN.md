@@ -84,28 +84,20 @@ graph TB
 - Mobile-optimized components and responsive design patterns
 - Production-ready mobile experience with integrated desktop navigation
 
-### **🎯 Phase 1C: Filter-Focused Sidebar Redesign (Current Focus)**
-**Technical Focus:** Reorganize sidebar from mixed analytics/navigation to logical Insight Area + Filter Area structure, moving AdvancedFilterPanel from main content to sidebar
+### **🎯 Phase 1C: Core Architecture Complete**
+**Technical Achievement:** Two-section sidebar architecture with comprehensive filtering system
 
-**Problem Identified:** Current AdvancedFilterPanel in main content area creates cramped UX and distracts from primary timer/activities workflow. Sidebar has mixed analytics + navigation without clear hierarchy.
+**Delivered Components:**
+- **AnalyticsSidebar.vue** - Two-section layout (Insight Area + Filter Area)
+- **DurationSlider.vue** - Range slider component for duration filtering
+- **SavedFilterCombinations.vue** - Filter preset management
+- **Filter Components** - PriorityFilter, FocusFilter, TagFilters integrated in sidebar
 
-**Solution:** Transform sidebar into two-section design following logical frequency-based hierarchy:
-- **High-frequency actions** (timer, input, activities) stay in main area
-- **Medium-frequency controls** (filters, analytics) consolidated in sidebar  
-- **Low-frequency settings** (configuration, export) remain in collapsed menus
-
-**Key Components:** 
-- **AnalyticsSidebar.vue** - Enhanced with two-section layout (Insight Area + Filter Area)
-- **DurationSlider.vue** - New slider component replacing duration buttons  
-- **SavedFilterCombinations.vue** - Moved from AdvancedFilterPanel to sidebar
-- **PriorityFilter.vue** - Extracted from AdvancedFilterPanel for sidebar integration
-- **FocusFilter.vue** - Extracted from AdvancedFilterPanel for sidebar integration
-
-**Two-Section Sidebar Architecture:**
+**Architecture Pattern:**
 ```typescript
 // Insight Area (Analytics - View Only)  
 interface InsightArea {
-  heatmap: 'ProductivityOverview'     // 12-week visualization
+  heatmap: 'ProductivityOverview'     // Productivity visualization
   patterns: 'PatternInsights'         // Trend analysis  
   aiInsights: 'DailySummary'          // AI-generated insights
 }
@@ -113,32 +105,18 @@ interface InsightArea {
 // Filter Area (Interactive Controls)
 interface FilterArea {
   favorites: 'SavedFilterCombinations'  // Saved filter presets
-  priority: 'PriorityFilter'           // 1-5 rating buttons
-  focus: 'FocusFilter'                 // 1-5 rating buttons  
+  priority: 'PriorityFilter'           // 1-5 rating controls
+  focus: 'FocusFilter'                 // 1-5 rating controls  
   duration: 'DurationSlider'           // Min/max range slider
-  tags: 'TagFilters'                   // Existing tag controls
-}
-
-// Removed from Main Area
-interface RemovedFromMain {
-  advancedFilterPanel: 'moved-to-sidebar'  // Entire panel relocated
-  quickPresets: 'integrated-with-favorites' // Combined with saved filters
-  durationButtons: 'replaced-with-slider'   // Better UX with slider
+  tags: 'TagFilters'                   // Tag filtering controls
 }
 ```
 
-**Mobile-First Analytics Access:**
-- **Desktop**: Right sidebar (320px) with analytics always visible
-- **Mobile**: Collapsible analytics sheet from bottom, swipe-up to expand
-- **Integration**: Analytics complement main actions, don't compete for attention
-
-### **🔄 Phase 2: Advanced Analytics & Habits**
+### **🔄 Phase 2: Advanced Analytics & Habits (Future)**
 **Technical Focus:** Advanced pattern analysis and habit tracking systems  
-**Key Components:** Calendar integration, habit tracking algorithms, advanced AI insights
 
-### **🤖 Phase 3: AI Intelligence & Automation**
+### **🤖 Phase 3: AI Intelligence & Automation (Future)**
 **Technical Focus:** Predictive analytics and automated productivity coaching
-**Key Components:** Pattern recognition ML, recommendation engines, automated categorization
 
 ---
 
@@ -350,4 +328,67 @@ const { isMobile } = useViewport()
 
 ---
 
-**Architecture Status**: Mobile-first UX complete (Phase 1B), Flomo-inspired content-first redesign (Phase 1C) in progress with gray background + white content cards, simplified tag-only input system, and personalized status messaging replacing analytics dashboard approach.
+## 🎯 **Success Metrics by Phase**
+
+### **Phase 0**: 
+- Daily Active Users: 10-20 (beta testers)
+- Session Duration: 20+ minutes average
+- Return Rate: 70% next-day return
+
+### **Phase 1A Private Beta**: 
+- Daily Active Users: 5-10 (colleagues/close contacts)
+- Activities per User: 5+ daily average
+- AI Engagement: 80% view daily summary (higher with small group)
+- Retention Rate: 60% use for 5+ consecutive days
+- Feedback Quality: 100% provide detailed feedback
+
+### **Phase 1B Public Beta**: 
+- Daily Active Users: 50-100
+- Activities per User: 5+ daily average
+- AI Engagement: 60% view daily summary
+
+### **Phase 1B**: 
+- Mobile Adoption: 60%+ sessions on mobile devices
+- Progressive Unlock: 80% retention at 7+ days
+- Security: Zero API key incidents, 40% use provider selection
+
+### **Phase 1C**: 
+- Analytics Engagement: 70% interact with heatmap, 80% click day details
+- Dashboard Experience: Unified experience, 85% reduction in page navigation
+- Goal Setting: 60% adoption rate, 40% achieve streak goals
+- Mobile Analytics: 90% mobile users access analytics panel
+- User Satisfaction: NPS > 40 (improved through visual engagement)
+
+### **Phase 2**: 
+- Habit Formation: 70% of users track 3+ habits
+- Session Quality: 80% of sessions include ratings
+- Calendar Integration: 60% adoption rate
+
+### **Phase 3**: 
+- Pattern Discovery: 70% receive meaningful insights
+- Recommendation Action: 40% act on AI suggestions
+- Advanced Features: 50% use auto-categorization
+
+## 🛡️ **Application-Level Rate Limiting Strategy**
+
+**Decision**: Focus Time Gates instead of technical rate limiting
+- **Rationale**: Converts rate limiting from a restriction into a productivity feature
+- **Implementation**: Require 1+ hour of new tracked time since last AI summary
+- **Benefits**:
+  - Encourages actual focus work over frequent AI requests
+  - Prevents AI abuse naturally through app engagement
+  - Aligns perfectly with app's core purpose (productivity tracking)
+  - Provides cost control while improving user experience
+  - Creates positive feedback loop: more focus work → better AI insights
+- **User Experience**: Progressive unlock system where focus time "earns" AI features
+- **Fallback**: Technical rate limiting (5 req/hour) for abuse prevention only
+
+## ⚠️ **Risk Mitigation per Phase**
+- **Technical Risks**: Feature flags for gradual rollout
+- **User Adoption**: Onboarding optimization based on drop-off analysis  
+- **AI Quality**: A/B testing of different prompt strategies
+- **Performance**: Progressive enhancement and offline-first design
+
+---
+
+**Architecture Status**: Phase 1C complete - Mobile-first UX with comprehensive filtering system and two-section sidebar architecture. Foundation ready for advanced analytics and habit tracking features.

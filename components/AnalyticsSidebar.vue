@@ -67,6 +67,73 @@
         </Transition>
       </div>
 
+      <!-- Goals (Collapsible) -->
+      <div class="space-y-2">
+        <button
+          @click="showGoals = !showGoals"
+          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
+        >
+          <span>Goals</span>
+          <div class="flex items-center space-x-1">
+            <button
+              @click.stop="showGoalForm = true"
+              class="p-0.5 rounded hover:bg-muted/50 transition-colors"
+              title="Add new goal"
+            >
+              <Plus class="w-3 h-3" />
+            </button>
+            <ChevronDown 
+              :class="{
+                'w-3 h-3 transition-transform duration-200': true,
+                'rotate-180': showGoals
+              }"
+            />
+          </div>
+        </button>
+        
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div v-if="showGoals" class="space-y-3">
+            <!-- Active Goals -->
+            <div v-if="activeGoals.length > 0" class="space-y-2">
+              <GoalProgressCard
+                v-for="goal in activeGoals"
+                :key="goal.id"
+                :goal="goal"
+                :progress="goalProgresses[goal.id]"
+                :loading="loadingProgresses[goal.id]"
+                @edit-goal="handleEditGoal"
+                @delete-goal="handleDeleteGoal"
+                @toggle-status="handleToggleGoalStatus"
+                @mark-complete="handleMarkComplete"
+                @view-details="handleViewGoalDetails"
+              />
+            </div>
+            
+            <!-- Empty State -->
+            <div v-else class="text-center py-4">
+              <Target class="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p class="text-sm text-muted-foreground mb-2">No active goals</p>
+              <Button
+                size="sm"
+                variant="outline"
+                @click="showGoalForm = true"
+                class="text-xs"
+              >
+                <Plus class="w-3 h-3 mr-1" />
+                Create Goal
+              </Button>
+            </div>
+          </div>
+        </Transition>
+      </div>
+
       <!-- AI Insights (Collapsible) -->
       <div class="space-y-2">
         <button
@@ -165,6 +232,17 @@
       </button>
     </div>
 
+    <!-- Goal Definition Form Modal -->
+    <Dialog v-model:open="showGoalForm">
+      <DialogContent class="max-w-md max-h-[90vh] overflow-y-auto">
+        <GoalDefinitionForm
+          :editing-goal="editingGoal"
+          @goal-saved="handleGoalSaved"
+          @close="handleCloseGoalForm"
+        />
+      </DialogContent>
+    </Dialog>
+
   </div>
 </template>
 
@@ -176,18 +254,24 @@ import {
   ChevronDown,
   ChevronLeft,
   Clock,
+  Plus,
   RotateCw,
   Settings,
+  Target,
 } from 'lucide-vue-next'
 import DailySummary from '~/components/DailySummary.vue'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
+import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
+import GoalProgressCard from '~/components/GoalProgressCard.vue'
 import PatternInsights from '~/components/PatternInsights.vue'
 import PriorityFilter from '~/components/PriorityFilter.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
 import SavedFilterCombinations from '~/components/SavedFilterCombinations.vue'
 import TagFilters from '~/components/TagFilters.vue'
 import UserDropdown from '~/components/UserDropdown.vue'
+import type { Goal } from '~/server/database/schema'
+import type { GoalProgress } from '~/types/goal'
 
 interface TagData {
   name: string
@@ -238,7 +322,16 @@ const emit = defineEmits<Emits>()
 
 // Local state
 const showPatterns = ref(false)
+const showGoals = ref(true) // Show goals by default
 const showInsights = ref(false) // Collapsed by default to save space
+const showGoalForm = ref(false)
+const editingGoal = ref<Goal | null>(null)
+
+// Goal management
+const { getGoals, updateGoal, deleteGoal, calculateGoalProgress } = useGoals()
+const activeGoals = ref<Goal[]>([])
+const goalProgresses = ref<Record<string, GoalProgress>>({})
+const loadingProgresses = ref<Record<string, boolean>>({})
 
 // Actions
 const handleDaySelected = (day: any) => {
@@ -292,5 +385,132 @@ const handleFocusToggle = (focus: number) => {
 
 const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   emit('duration-changed', minDuration, maxDuration)
+}
+
+// Goal management methods
+const loadActiveGoals = async () => {
+  try {
+    const goals = await getGoals({ status: 'active' })
+    activeGoals.value = goals
+    
+    // Load progress for each goal
+    for (const goal of goals) {
+      loadGoalProgress(goal)
+    }
+  } catch (error) {
+    console.error('Failed to load active goals:', error)
+  }
+}
+
+const loadGoalProgress = async (goal: Goal) => {
+  try {
+    loadingProgresses.value[goal.id] = true
+    const progress = await calculateGoalProgress(goal)
+    goalProgresses.value[goal.id] = progress
+  } catch (error) {
+    console.error(`Failed to load progress for goal ${goal.id}:`, error)
+  } finally {
+    loadingProgresses.value[goal.id] = false
+  }
+}
+
+const handleEditGoal = (goal: Goal) => {
+  editingGoal.value = goal
+  showGoalForm.value = true
+}
+
+const handleDeleteGoal = async (goalId: string) => {
+  try {
+    const success = await deleteGoal(goalId)
+    if (success) {
+      activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+      delete goalProgresses.value[goalId]
+      delete loadingProgresses.value[goalId]
+    }
+  } catch (error) {
+    console.error('Failed to delete goal:', error)
+  }
+}
+
+const handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
+  try {
+    const goal = activeGoals.value.find(g => g.id === goalId)
+    if (!goal) return
+    
+    const updated = await updateGoal(goalId, { status: newStatus as any })
+    if (updated) {
+      if (newStatus !== 'active') {
+        // Remove from active goals if no longer active
+        activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+        delete goalProgresses.value[goalId]
+        delete loadingProgresses.value[goalId]
+      }
+    }
+  } catch (error) {
+    console.error('Failed to toggle goal status:', error)
+  }
+}
+
+const handleMarkComplete = async (goalId: string) => {
+  try {
+    const updated = await updateGoal(goalId, { status: 'completed' })
+    if (updated) {
+      activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+      delete goalProgresses.value[goalId]
+      delete loadingProgresses.value[goalId]
+    }
+  } catch (error) {
+    console.error('Failed to mark goal complete:', error)
+  }
+}
+
+const handleViewGoalDetails = (goal: Goal) => {
+  // TODO: Implement goal details modal
+  console.log('View goal details:', goal)
+}
+
+const handleGoalSaved = (goal: Goal) => {
+  if (editingGoal.value) {
+    // Update existing goal
+    const index = activeGoals.value.findIndex(g => g.id === goal.id)
+    if (index !== -1) {
+      activeGoals.value[index] = goal
+      loadGoalProgress(goal)
+    }
+    editingGoal.value = null
+  } else {
+    // Add new goal
+    activeGoals.value.unshift(goal)
+    loadGoalProgress(goal)
+  }
+  showGoalForm.value = false
+}
+
+const handleCloseGoalForm = () => {
+  showGoalForm.value = false
+  editingGoal.value = null
+}
+
+// Load goals on mount
+onMounted(() => {
+  loadActiveGoals()
+})
+
+// Listen for goal events from other components
+if (typeof window !== 'undefined') {
+  window.addEventListener('goal-created', () => {
+    loadActiveGoals()
+  })
+  
+  window.addEventListener('goal-updated', () => {
+    loadActiveGoals()
+  })
+  
+  window.addEventListener('activity-saved', () => {
+    // Refresh goal progress when activities change
+    for (const goal of activeGoals.value) {
+      loadGoalProgress(goal)
+    }
+  })
 }
 </script>

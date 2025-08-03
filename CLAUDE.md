@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Flowductiv** is a privacy-first, AI-enhanced productivity tool built with Nuxt 3. Focus: Manual time tracking enhanced by multi-modal AI insights.
 
-**Current Phase**: Phase 1B Mobile-First UX + Security implementation
+**Current Focus**: Analytics & Insights Enhancement (Post-Phase 1C)
 
-📚 **Documentation Structure**: Simplified task-focused system:
-- `docs/SESSION_NOTES.md` - Pure sprint dashboard (✅/❌ task status only)
+📚 **Documentation Structure**: Simplified session-focused system:
+- `docs/SESSION_NOTES.md` - Current focus dashboard (daily priorities & progress)
 - `docs/IMPLEMENTATION_PLAN.md` - Technical architecture & implementation patterns
 - `docs/FEATURE_BACKLOG.md` - Future feature planning & detailed breakdowns
 - `docs/history/session-YYYY-MM-DD-[topic].md` - Individual session logs (focused, detailed)
@@ -228,18 +228,8 @@ Generate code following established project patterns for Vue 3 components, Nuxt 
 - Use existing Drizzle schema, integrate with `useAuth`, follow shadcn-vue patterns
 ```
 
-### `/task` - Simplified Task Management
-```markdown
-Four focused commands covering complete development workflow:
-
-- `/task` - Current TodoWrite + SESSION_NOTES.md status + next priorities
-- `/task work [focus]` - Implementation + testing + git commits (TDD cycles)
-- `/task done [what]` - Record completion + create individual session log in docs/history/
-- `/task plan [idea]` - Add future features to FEATURE_BACKLOG.md
-
-**Daily Workflow:**
-Status Check (`/task`) → Implementation (`/task work`) → Record + Reflect (`/task done`)
-```
+### `/task` - Task Management
+Complete development workflow management - see `.claude/commands/task.md` for full details.
 
 ## Quick Reference
 

@@ -19,11 +19,10 @@
 ## 🤝 **Core Principles**
 
 ### **Documentation Strategy**
-- **SESSION_NOTES.md** - current sprint focus only (50-100 lines)
-- **FEATURE_BACKLOG.md** - detailed planning for Phase 1C+ features
-- **docs/history/session-YYYY-MM-DD-[topic].md** - individual session logs with full details
+- **SESSION_NOTES.md** - single source of current truth with detailed current work
+- **FEATURE_BACKLOG.md** - future phases only (Phase 2+)
+- **docs/history/session-YYYY-MM-DD-[topic].md** - individual session logs with implementation details
 - **COLLABORATION_PLAN.md** - stable workflow reference
-- **`/task` command** - real-time session management and orchestration
 
 ### **Quality Standards**
 - Verify environment setup before task planning
@@ -79,35 +78,35 @@ git status                 # Check current state
   - User feedback integration
   - Major refactoring
 
-## 📋 **Sprint Management Framework**
+## 📋 **Session Management Framework**
 
-> **For current sprint status, see [SESSION_NOTES.md](./SESSION_NOTES.md)**  
+> **For current focus status, see [SESSION_NOTES.md](./SESSION_NOTES.md)**  
 > **For detailed feature planning, see [FEATURE_BACKLOG.md](./FEATURE_BACKLOG.md)**  
 > **For development history, see [docs/history/](./history/) folder**
 
-### **Sprint Planning Approach**
-- **Sprint Duration**: 1 week (4-7 sessions)
-- **Current Sprint**: SESSION_NOTES.md (focus, priorities, immediate actions)
-- **Future Planning**: FEATURE_BACKLOG.md (detailed task breakdowns)
-- **Session Archive**: docs/history/session-YYYY-MM-DD-[topic].md (individual session logs)
-- **Phase Transitions**: Documented in SESSION_NOTES.md and archived in history folder
-- **Retrospectives**: Weekly reviews captured in dedicated session history files
+### **Session-Based Approach**
+- **Session Duration**: 30-60 minutes (daily focused work)
+- **Current Work**: SESSION_NOTES.md (detailed current work, single source of truth)
+- **Future Planning**: FEATURE_BACKLOG.md (Phase 2+ future ideas)
+- **Session Archive**: docs/history/session-YYYY-MM-DD-[topic].md (completed work details)
+- **Phase Transitions**: Documented in session history files  
+- **Retrospectives**: As needed, captured in dedicated session history files
 
 ## 🔄 **Workflow Pattern**
 
 ### **Standard Session Flow:**
-1. **Review** (5 min) - `/task status` for current state
-2. **Plan** (5 min) - `/task create` or `/task optimize` priorities  
-3. **Implement** (20-45 min) - Code with TDD cycles
+1. **Review** (5 min) - Check current state and priorities
+2. **Plan** (5 min) - Identify session objectives and scope
+3. **Implement** (20-45 min) - Code with TDD cycles  
 4. **Test & Commit** (10 min) - Validate and save progress
-5. **Update** (5 min) - `/task execute` to sync documentation
+5. **Update** (5 min) - Record completion and plan next
 
-## 🎯 **Sprint Management**
+## 🎯 **Session Management**
 
-### **Weekly Rhythm:**
-- **Monday:** `/task analytics` review + `/task create` for week priorities
-- **Daily:** `/task status` → implement → `/task execute` 
-- **Friday:** `/task validate` week's work + plan next sprint
+### **Daily Rhythm:**
+- **Start Session:** Check current focus + priorities (`/task`)
+- **Work Session:** Implement + test (`/task:work [focus]`)
+- **End Session:** Record progress + plan next (`/task:done [what]`)
 
 ### **Phase Transitions:**
 - All must-have features implemented and tested
@@ -133,6 +132,20 @@ bun run test:services:run    # Service tests (31 tests)
 bun run lint                 # Code quality checks
 git status                   # Check current state
 ```
+
+## 🔄 **User Feedback & Validation**
+
+### **Session-Based Validation**
+- **Daily**: Session-focused implementation with immediate user feedback
+- **Weekly**: User testing with 5-10 beta users for feature validation
+- **As-needed**: Retrospectives when significant features complete
+- **Phase-based**: Data analysis and next phase planning
+
+### **User Feedback Integration**
+- **Continuous**: In-app feedback widget for feature requests
+- **Weekly**: Video calls with 2-3 power users
+- **Monthly**: Broader survey to all active users
+- **Quarterly**: Comprehensive user journey analysis
 
 ---
 

@@ -15,12 +15,12 @@ Simplified task management command for your development workflow. Four focused c
 
 ## `/task` (default) - Current Status
 
-**Purpose:** Show current TodoWrite items + SESSION_NOTES.md progress + immediate next actions
+**Purpose:** Show current TodoWrite items + SESSION_NOTES.md detailed current work + immediate next actions
 
 ### What It Shows:
 - **Active Session Tasks** (TodoWrite) - current in_progress items
-- **Current Sprint Progress** (SESSION_NOTES.md) - Phase status & weekly priorities
-- **This Week's Focus** - immediate actions ready to start
+- **Current Focus Progress** (SESSION_NOTES.md) - Phase status & immediate priorities
+- **Today's Focus** - immediate actions ready to start
 - **Blockers** - anything preventing progress
 - **Recommended Next** - specific task with time estimate
 
@@ -32,15 +32,15 @@ Simplified task management command for your development workflow. Four focused c
 - [in_progress] [high] Mobile timer component implementation
 - [pending] [medium] Haptic feedback integration
 
-### 🎯 Current Phase: Phase 1B Mobile-First UX (Week 1)
-**This Week's Priorities:**
-- [ ] Priority 2: Mobile Timer Interface (Day 3-4) - Ready to start
-- [ ] Priority 3: Responsive Foundation (Day 5) - Blocked on Priority 2
+### 🎯 Current Focus: Analytics & Insights Enhancement
+**Today's Priorities:**
+- [ ] Productivity Heatmap Implementation - Ready to start
+- [ ] Goal Setting & Progress Tracking - Next after heatmap
 
 ### 🚧 Blockers: None
 
-### 💡 Recommended Next: Mobile Timer Interface (45 min)
-Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
+### 💡 Recommended Next: Productivity Heatmap Implementation (90 min)
+Create GitHub-style 365-day activity heatmap with click-to-filter
 ```
 
 ---
@@ -90,8 +90,8 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 **Purpose:** Update SESSION_NOTES.md with completed work + create individual session log in `docs/history/`
 
 ### What It Does:
-1. **Mark Complete**: Update current priorities in SESSION_NOTES.md as completed (✅/❌ status only)
-2. **Create Individual Session Log**: Add focused session file to `docs/history/session-YYYY-MM-DD-[topic].md`
+1. **Remove Completed Work**: Remove completed tasks/details from SESSION_NOTES.md to keep it focused on current work
+2. **Create Individual Session Log**: Add detailed session file to `docs/history/session-YYYY-MM-DD-[topic].md` with implementation details
 3. **Update TodoWrite**: Mark relevant tasks as completed
 4. **Plan Next**: Identify immediate next priority
 
@@ -105,9 +105,9 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ### Example Usage:
 ```bash
-/task done mobile-timer    # After implementing TimerSectionMobile.vue
-/task done tag-bugs        # After fixing user-reported tag issues
-/task done testing-setup   # After adding comprehensive test coverage
+/task:done mobile-timer    # After implementing TimerSectionMobile.vue
+/task:done tag-bugs        # After fixing user-reported tag issues
+/task:done testing-setup   # After adding comprehensive test coverage
 ```
 
 ### Individual Session File Template:
@@ -122,15 +122,14 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 
 ## ✅ **Completed Tasks**
 [Detailed breakdown of what was implemented]
+Example:
+- 🐛 **Issues Fixed**
+[Problems resolved and solution approaches]
+- 🎨 **User Experience Improvements**
+[How this enhances the user experience]
 
 ## 🔧 **Technical Implementation Details**
 [Key files modified, patterns used, architecture decisions]
-
-## 🐛 **Issues Fixed**
-[Problems resolved and solution approaches]
-
-## 🎨 **User Experience Improvements**
-[How this enhances the user experience]
 
 ## 🧪 **Quality Assurance**
 [Test coverage, verification steps, build status]
@@ -140,9 +139,10 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 ```
 
 ### SESSION_NOTES.md Updates:
-- Mark sprint priorities as completed with ✅ checkmarks
-- Add brief one-line summary to "Recent Bug Fixes" or "Completed This Sprint"
-- NO implementation details (those are in individual session history files)
+- **Remove completed work** from current priorities (don't just mark as complete)
+- Add brief one-line summary to "Completed This Sprint" section
+- Keep SESSION_NOTES.md focused only on current/next work
+- All implementation details go to individual session history files
 
 ---
 
@@ -212,10 +212,10 @@ Create TimerSectionMobile.vue with 44px touch targets + haptic feedback
 - **`/task:plan [idea]`** → Capture future features as they come up
 
 ### Document Integration:
-- **SESSION_NOTES.md**: Pure sprint dashboard (✅/❌ status only, updated by `/task done`)
+- **SESSION_NOTES.md**: Single source of current truth with detailed current work (updated by `/task done` - removes completed)
 - **docs/history/session-YYYY-MM-DD-[topic].md**: Individual session logs (focused, detailed, created by `/task done`)
-- **IMPLEMENTATION_PLAN.md**: Technical architecture & patterns (updated when architecture changes)
-- **FEATURE_BACKLOG.md**: Future work ideas (updated by `/task plan`)
+- **IMPLEMENTATION_PLAN.md**: High-level technical architecture only (stable reference)
+- **FEATURE_BACKLOG.md**: Future phases only (Phase 2+, updated by `/task plan`)
 - **TodoWrite**: Current session tasks (managed automatically)
 
 ### Command Integration:

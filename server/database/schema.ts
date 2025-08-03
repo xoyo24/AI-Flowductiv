@@ -65,6 +65,31 @@ export const users = sqliteTable('users', {
     .$defaultFn(() => new Date()),
 })
 
+// Goals table - user productivity goals and targets
+export const goals = sqliteTable('goals', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  title: text('title').notNull(),
+  description: text('description'),
+  type: text('type').notNull(), // 'time', 'activity_count', 'streak', 'focus_rating'
+  period: text('period').notNull(), // 'daily', 'weekly', 'monthly'
+  target: real('target').notNull(), // Target value (hours, count, etc.)
+  targetUnit: text('target_unit'), // 'hours', 'activities', 'days', 'rating'
+  status: text('status').notNull().default('active'), // 'active', 'completed', 'paused', 'archived'
+  startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
+  endDate: integer('end_date', { mode: 'timestamp' }),
+  tags: text('tags', { mode: 'json' }).$type<string[]>().default('[]'), // Filter by tags
+  priority: integer('priority'), // Filter by priority level
+  userId: text('user_id'), // Optional for demo mode
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
 // Export types for use in application
 export type Activity = typeof activities.$inferSelect
 export type NewActivity = typeof activities.$inferInsert
@@ -72,3 +97,5 @@ export type AISummary = typeof aiSummaries.$inferSelect
 export type NewAISummary = typeof aiSummaries.$inferInsert
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
+export type Goal = typeof goals.$inferSelect
+export type NewGoal = typeof goals.$inferInsert

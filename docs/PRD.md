@@ -141,18 +141,6 @@
 - **As a** developer, **I want to** rate-limited API access **so that** the service remains stable and cost-effective
 - **As a** productive user, **I want to** earn AI summaries through focus work **so that** insights are meaningful and I stay motivated
 
-#### **Application-Level Rate Limiting Strategy**
-**Decision**: Focus Time Gates instead of technical rate limiting
-- **Rationale**: Converts rate limiting from a restriction into a productivity feature
-- **Implementation**: Require 1+ hour of new tracked time since last AI summary
-- **Benefits**:
-  - Encourages actual focus work over frequent AI requests
-  - Prevents AI abuse naturally through app engagement
-  - Aligns perfectly with app's core purpose (productivity tracking)
-  - Provides cost control while improving user experience
-  - Creates positive feedback loop: more focus work → better AI insights
-- **User Experience**: Progressive unlock system where focus time "earns" AI features
-- **Fallback**: Technical rate limiting (5 req/hour) for abuse prevention only
 
 **Success Criteria**:
 - [ ] Mobile usage accounts for 60%+ of sessions
@@ -256,62 +244,7 @@
 - [ ] Auto-categorization achieves 85%+ accuracy
 - [ ] Users act on 40%+ of AI recommendations
 
-## 🔄 **Iterative Development Approach**
+---
 
-### **Weekly Validation Cycles**
-- **Monday**: Sprint planning with user story prioritization
-- **Wednesday**: Mid-sprint user testing with 5-10 beta users  
-- **Friday**: Sprint review + retrospective with user feedback integration
-- **Weekend**: Data analysis and next sprint planning
-
-### **User Feedback Integration**
-- **Continuous**: In-app feedback widget for feature requests
-- **Weekly**: Video calls with 2-3 power users
-- **Monthly**: Broader survey to all active users
-- **Quarterly**: Comprehensive user journey analysis
-
-### **Success Metrics by Phase**
-#### **Phase 0**: 
-- Daily Active Users: 10-20 (beta testers)
-- Session Duration: 20+ minutes average
-- Return Rate: 70% next-day return
-
-#### **Phase 1A Private Beta**: 
-- Daily Active Users: 5-10 (colleagues/close contacts)
-- Activities per User: 5+ daily average
-- AI Engagement: 80% view daily summary (higher with small group)
-- Retention Rate: 60% use for 5+ consecutive days
-- Feedback Quality: 100% provide detailed feedback
-
-#### **Phase 1B Public Beta**: 
-- Daily Active Users: 50-100
-- Activities per User: 5+ daily average
-- AI Engagement: 60% view daily summary
-
-#### **Phase 1B**: 
-- Mobile Adoption: 60%+ sessions on mobile devices
-- Progressive Unlock: 80% retention at 7+ days
-- Security: Zero API key incidents, 40% use provider selection
-
-#### **Phase 1C**: 
-- Analytics Engagement: 70% interact with heatmap, 80% click day details
-- Dashboard Experience: Unified experience, 85% reduction in page navigation
-- Goal Setting: 60% adoption rate, 40% achieve streak goals
-- Mobile Analytics: 90% mobile users access analytics panel
-- User Satisfaction: NPS > 40 (improved through visual engagement)
-
-#### **Phase 2**: 
-- Habit Formation: 70% of users track 3+ habits
-- Session Quality: 80% of sessions include ratings
-- Calendar Integration: 60% adoption rate
-
-#### **Phase 3**: 
-- Pattern Discovery: 70% receive meaningful insights
-- Recommendation Action: 40% act on AI suggestions
-- Advanced Features: 50% use auto-categorization
-
-### **Risk Mitigation per Phase**
-- **Technical Risks**: Feature flags for gradual rollout
-- **User Adoption**: Onboarding optimization based on drop-off analysis  
-- **AI Quality**: A/B testing of different prompt strategies
-- **Performance**: Progressive enhancement and offline-first design
+*For implementation details, see `docs/IMPLEMENTATION_PLAN.md`*  
+*For development workflow, see `docs/COLLABORATION_PLAN.md`*
