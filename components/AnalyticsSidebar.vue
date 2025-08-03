@@ -38,17 +38,17 @@
         @day-selected="handleDaySelected" 
       />
 
-      <!-- Patterns (Collapsible) -->
+      <!-- Insights (Collapsible) -->
       <div class="space-y-2">
         <button
-          @click="showPatterns = !showPatterns"
+          @click="showInsights = !showInsights"
           class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
         >
-          <span>Patterns</span>
+          <span>Insights</span>
           <ChevronDown 
             :class="{
               'w-3 h-3 transition-transform duration-200': true,
-              'rotate-180': showPatterns
+              'rotate-180': showInsights
             }"
           />
         </button>
@@ -61,8 +61,8 @@
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 -translate-y-2"
         >
-          <div v-if="showPatterns" class="space-y-2">
-            <PatternInsights :compact="true" />
+          <div v-if="showInsights" class="space-y-2">
+            <InsightsPanel :compact="true" />
           </div>
         </Transition>
       </div>
@@ -132,34 +132,6 @@
         </Transition>
       </div>
 
-      <!-- AI Insights (Collapsible) -->
-      <div class="space-y-2">
-        <button
-          @click="showInsights = !showInsights"
-          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
-        >
-          <span>AI Insights</span>
-          <ChevronDown 
-            :class="{
-              'w-3 h-3 transition-transform duration-200': true,
-              'rotate-180': showInsights
-            }"
-          />
-        </button>
-        
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-2"
-        >
-          <div v-if="showInsights" class="space-y-2">
-            <AIInsights :compact="true" :auto-refresh="true" />
-          </div>
-        </Transition>
-      </div>
 
       <!-- ⚙️ FILTER AREA -->
       
@@ -266,12 +238,11 @@ import {
   Settings,
   Target,
 } from 'lucide-vue-next'
-import AIInsights from '~/components/AIInsights.vue'
+import InsightsPanel from '~/components/InsightsPanel.vue'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
 import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
 import GoalProgressCard from '~/components/GoalProgressCard.vue'
-import PatternInsights from '~/components/PatternInsights.vue'
 import PriorityFilter from '~/components/PriorityFilter.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
 import SavedFilterCombinations from '~/components/SavedFilterCombinations.vue'
@@ -328,9 +299,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 // Local state
-const showPatterns = ref(false)
 const showGoals = ref(true) // Show goals by default
-const showInsights = ref(true) // Show insights by default - new AI feature
+const showInsights = ref(true) // Show insights by default
 const showGoalForm = ref(false)
 const editingGoal = ref<Goal | null>(null)
 
