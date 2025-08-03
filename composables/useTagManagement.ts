@@ -20,6 +20,7 @@ export interface TagOperationResult {
 export const useTagManagement = () => {
   // Reactive state
   const favoriteTags = ref<string[]>([])
+  const allTags = ref<string[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -157,6 +158,23 @@ export const useTagManagement = () => {
     }
   }
 
+  // Get All Unique Tags
+  const getAllTags = async (): Promise<string[]> => {
+    loading.value = true
+    clearError()
+
+    try {
+      const response = await $fetch<{ data: string[] }>('/api/tags')
+      allTags.value = response.data
+      return response.data
+    } catch (err) {
+      handleError(err)
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
   const formatTagStats = (stat: TagStatistic): TagStatistic => {
     // Calculate productivity score based on average session length and frequency
     // Longer average sessions and higher frequency = higher productivity
@@ -240,6 +258,7 @@ export const useTagManagement = () => {
   return {
     // State (readonly)
     favoriteTags: readonly(favoriteTags),
+    allTags: readonly(allTags),
     loading: readonly(loading),
     error: readonly(error),
 
@@ -260,6 +279,9 @@ export const useTagManagement = () => {
     // Statistics actions
     getTagStatistics,
     formatTagStats,
+
+    // Tag fetching actions
+    getAllTags,
 
     // Tag removal actions
     removeTag,

@@ -122,9 +122,10 @@
 
         <!-- Tags Filter -->
         <TagFilters
-          v-if="props.tagData.length > 0"
+          v-if="props.tagData.length > 0 || props.tagsLoading"
           :top-tags="props.tagData"
           :selected-tags="props.selectedTags"
+          :loading="props.tagsLoading"
           title="Tags"
           :max-display="10"
           @tag-selected="handleTagSelected"
@@ -198,6 +199,7 @@ interface TagData {
 interface Props {
   collapsed?: boolean
   loading?: boolean
+  tagsLoading?: boolean
   tagData?: TagData[]
   selectedTags?: Set<string>
   activeDateFilter?: string | null
@@ -227,6 +229,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
+  tagsLoading: false,
   tagData: () => [],
   selectedTags: () => new Set<string>()
 })

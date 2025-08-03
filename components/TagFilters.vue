@@ -1,5 +1,5 @@
 <template>
-  <div v-if="topTags.length > 0" class="space-y-1">
+  <div v-if="topTags.length > 0 || loading" class="space-y-1">
 
     <!-- Section Title -->
     <div class="flex items-center justify-between px-3 py-2">
@@ -7,7 +7,7 @@
         {{ title }}
       </h3>
       <button
-        v-if="selectedTags.size > 0"
+        v-if="selectedTags.size > 0 && !loading"
         @click="clearAll"
         class="text-xs text-muted-foreground hover:text-foreground"
         data-testid="clear-all-tags"
@@ -16,8 +16,16 @@
       </button>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading && topTags.length === 0" class="px-3 py-4">
+      <div class="flex items-center space-x-2 text-muted-foreground">
+        <div class="w-4 h-4 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin"></div>
+        <span class="text-sm">Loading tags...</span>
+      </div>
+    </div>
+
     <!-- Vertical Tag List -->
-    <div class="space-y-0.5">
+    <div v-if="!loading || topTags.length > 0" class="space-y-0.5">
       <div
         v-for="tag in displayTags"
         :key="tag.name"
@@ -183,6 +191,7 @@ interface Props {
   title?: string
   maxDisplay?: number
   selectedTags?: Set<string>
+  loading?: boolean
 }
 
 interface Emits {
@@ -197,7 +206,8 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   title: 'Top Tags',
   maxDisplay: 10,
-  selectedTags: () => new Set<string>()
+  selectedTags: () => new Set<string>(),
+  loading: false
 })
 
 const emit = defineEmits<Emits>()

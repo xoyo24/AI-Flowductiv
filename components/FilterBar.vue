@@ -9,7 +9,7 @@
       <div class="flex items-center space-x-1">
         <span>Showing {{ filterMetadata.filteredCount }} of {{ filterMetadata.totalActivities }}</span>
         <span v-if="filterMetadata.hiddenCount > 0" class="text-muted-foreground/70">
-          ({{ filterMetadata.hiddenCount }} hidden)
+          ({{ filterMetadata.hiddenCount }} filtered out)
         </span>
       </div>
       

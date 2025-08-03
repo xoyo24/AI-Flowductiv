@@ -13,6 +13,7 @@
       <AnalyticsSidebar
         :collapsed="sidebarCollapsed"
         :loading="analyticsLoading"
+        :tags-loading="tagsLoading"
         :tag-data="tagData"
         :selected-tags="selectedTags"
         :active-date-filter="activeDateFilter"
@@ -73,6 +74,7 @@
             <AnalyticsSidebar
               :collapsed="false"
               :loading="analyticsLoading"
+              :tags-loading="tagsLoading"
               :tag-data="tagData"
               :selected-tags="selectedTags"
               :active-date-filter="activeDateFilter"
@@ -306,6 +308,7 @@ import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useContextualStatus } from '~/composables/useContextualStatus'
 import { useFocusRating } from '~/composables/useFocusRating'
 import { useInputParser } from '~/composables/useInputParser'
+import { useTagManagement } from '~/composables/useTagManagement'
 
 // Timer and activities
 const {
@@ -357,15 +360,25 @@ const {
   closeModal: closeFocusRatingModal
 } = useFocusRating()
 
-// Computed properties for tag data
+// Tag management
+const {
+  allTags,
+  getAllTags,
+  loading: tagsLoading
+} = useTagManagement()
+
+// Computed properties for tag data - transformed to match existing interface
 const tagData = computed(() => {
   const stats = getActivityStats.value
-  return Object.entries(stats.tagStats).map(([name, data]) => ({
-    name,
-    count: data.count,
-    totalTime: data.totalTime,
-    isFavorite: false // TODO: implement favorites
-  })).sort((a, b) => b.count - a.count) // Sort by usage
+  return allTags.value.map(tagName => {
+    const tagStats = stats.tagStats[tagName]
+    return {
+      name: tagName,
+      count: tagStats?.count || 0,
+      totalTime: tagStats?.totalTime || 0,
+      isFavorite: false // TODO: implement favorites
+    }
+  }).sort((a, b) => b.count - a.count) // Sort by usage
 })
 
 const selectedTags = computed(() => new Set(activeFilters.value.tags || []))
@@ -394,7 +407,37 @@ const activeDateFilter = computed(() => {
 })
 
 // Contextual status service - but we'll override contextualMessage to use local data
-const { recentActivitiesMessage, motivationalInsight } = useContextualStatus()
+const { motivationalInsight } = useContextualStatus()
+
+// Context-aware empty message for activities
+const recentActivitiesMessage = computed((): string => {
+  const hasAnyActivities = activities.value.length > 0
+  const hasFiltersActive = filterMetadata.value.hasActiveFilters
+  const hasSearchQuery = searchQuery.value.trim().length > 0
+  
+  // No activities at all in database
+  if (!hasAnyActivities) {
+    return 'Your activities will appear here. Start your first timer above!'
+  }
+  
+  // Has activities but search query returns no results
+  if (hasSearchQuery && recentActivities.value.length === 0) {
+    return `No activities match "${searchQuery.value}". Try a different search term.`
+  }
+  
+  // Has activities but filters hide them all
+  if (hasFiltersActive && recentActivities.value.length === 0) {
+    return 'No activities match your current filters. Try adjusting or clearing filters above.'
+  }
+  
+  // Has activities but none shown (shouldn't happen in current logic)
+  if (recentActivities.value.length === 0) {
+    return 'No recent activities to display.'
+  }
+  
+  // This shouldn't be reached since this message is only shown when list is empty
+  return 'Start tracking to see your activities here.'
+})
 
 
 // Pagination state
@@ -970,8 +1013,11 @@ onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleKeyboardShortcuts)
   
-  // Load first page of activities on component mount
-  await refreshActivities()
+  // Load first page of activities and all tags concurrently
+  await Promise.all([
+    refreshActivities(),
+    getAllTags()
+  ])
 
   // Listen for activity saved events to refresh the list
   window.addEventListener('activity-saved', refreshActivities)
