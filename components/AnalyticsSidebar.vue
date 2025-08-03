@@ -233,15 +233,24 @@
     </div>
 
     <!-- Goal Definition Form Modal -->
-    <Dialog v-model:open="showGoalForm">
-      <DialogContent class="max-w-md max-h-[90vh] overflow-y-auto">
-        <GoalDefinitionForm
-          :editing-goal="editingGoal"
-          @goal-saved="handleGoalSaved"
-          @close="handleCloseGoalForm"
-        />
-      </DialogContent>
-    </Dialog>
+    <div v-if="showGoalForm" class="fixed inset-0 z-50 flex items-center justify-center">
+      <!-- Backdrop -->
+      <div 
+        class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        @click="handleCloseGoalForm"
+      />
+      
+      <!-- Dialog -->
+      <div class="relative bg-card border border-border rounded-lg shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <GoalDefinitionForm
+            :editing-goal="editingGoal"
+            @goal-saved="handleGoalSaved"
+            @close="handleCloseGoalForm"
+          />
+        </div>
+      </div>
+    </div>
 
   </div>
 </template>
