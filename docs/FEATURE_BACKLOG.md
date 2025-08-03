@@ -22,6 +22,40 @@
 - **Performance & Caching**: Response caching, request debouncing, offline capability  
 - **Analytics & Monitoring**: Usage tracking, performance metrics, error tracking
 
+## **Enhanced AI Insights Dialog** - [Complexity: Medium]
+
+**Phase Suggestion**: 1D - Natural evolution of current AI insights sidebar feature  
+**User Need**: Detailed analysis and interaction with AI insights beyond sidebar constraints
+
+**Core Functionality**: 
+- **Detailed Insights Modal**: Full-screen dialog with comprehensive AI analysis and historical trends
+- **Interactive Charts**: Visualizations for productivity patterns, focus trends, and tag correlations  
+- **Conversation Interface**: Chat-style interaction for asking specific productivity questions
+- **Historical Analysis**: Week/month/quarter views with deep pattern recognition
+- **Actionable Workflows**: Guided productivity improvement plans with progress tracking
+- **Export Capabilities**: PDF reports, data export, sharing insights with mentors/coaches
+
+**Technical Approach**:
+- **Modal Component**: Full-screen overlay with tabbed interface (Overview, Trends, Recommendations, Chat)
+- **Chart Integration**: Chart.js or D3.js for interactive productivity visualizations
+- **AI Chat Interface**: Streaming responses for natural conversation about productivity patterns
+- **Historical Data**: Extended timeframe analysis (3-6 months) with caching for performance
+- **Report Generation**: PDF export using jsPDF with branded insight reports
+
+**Dependencies**: 
+- Current `useInsights` composable (already implemented)
+- Chart library selection and integration
+- Extended AI context for conversational interface
+- Report template design system
+
+**Success Metrics**:
+- Time spent in detailed insights view (engagement indicator)  
+- User questions asked in chat interface (curiosity/value indicator)
+- Report exports and sharing (value demonstration)
+- Productivity improvements correlated with insight usage
+
+**Rough Estimate**: 2-3 weeks, 5-6 components, chat AI integration
+
 ---
 
 ## 📅 **Phase 2: Habit Loop (4 weeks)**
