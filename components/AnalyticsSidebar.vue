@@ -120,15 +120,13 @@
             <div v-else class="text-center py-4">
               <Target class="w-8 h-8 text-muted-foreground mx-auto mb-2" />
               <p class="text-sm text-muted-foreground mb-2">No active goals</p>
-              <Button
-                size="sm"
-                variant="outline"
+              <button
                 @click="showGoalForm = true"
-                class="text-xs"
+                class="inline-flex items-center px-3 py-1.5 text-xs border border-border rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
               >
                 <Plus class="w-3 h-3 mr-1" />
                 Create Goal
-              </Button>
+              </button>
             </div>
           </div>
         </Transition>

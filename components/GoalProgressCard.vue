@@ -12,13 +12,13 @@
       </div>
       
       <!-- Goal Status Badge -->
-      <Badge 
-        :variant="statusVariant" 
-        class="ml-2"
+      <span 
+        :class="statusBadgeClass" 
+        class="ml-2 px-2 py-1 text-xs font-medium rounded-md"
         data-testid="goal-status-badge"
       >
         {{ goal.status }}
-      </Badge>
+      </span>
     </div>
 
     <!-- Goal Details -->
@@ -91,63 +91,80 @@
     <div class="flex items-center justify-between pt-2 border-t border-border">
       <div class="flex items-center space-x-2">
         <!-- Quick Status Toggle -->
-        <Button
+        <button
           v-if="goal.status === 'active'"
-          variant="ghost"
-          size="sm"
           @click="$emit('toggle-status', goal.id, 'paused')"
           data-testid="pause-goal-button"
+          class="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          title="Pause goal"
         >
           <Pause class="h-3 w-3" />
-        </Button>
-        <Button
+        </button>
+        <button
           v-else-if="goal.status === 'paused'"
-          variant="ghost"
-          size="sm"
           @click="$emit('toggle-status', goal.id, 'active')"
           data-testid="resume-goal-button"
+          class="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          title="Resume goal"
         >
           <Play class="h-3 w-3" />
-        </Button>
+        </button>
         
         <!-- Mark Complete -->
-        <Button
+        <button
           v-if="!progress?.isCompleted && goal.status === 'active'"
-          variant="ghost"
-          size="sm"
           @click="$emit('mark-complete', goal.id)"
           data-testid="complete-goal-button"
+          class="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          title="Mark as complete"
         >
           <CheckCircle class="h-3 w-3" />
-        </Button>
+        </button>
       </div>
 
       <!-- More Actions -->
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" data-testid="goal-actions-menu">
-            <MoreHorizontal class="h-3 w-3" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem @click="$emit('edit-goal', goal)">
-            <Edit class="mr-2 h-3 w-3" />
-            Edit Goal
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="$emit('view-details', goal)">
-            <Eye class="mr-2 h-3 w-3" />
-            View Details
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            @click="$emit('delete-goal', goal.id)"
-            class="text-destructive focus:text-destructive"
-          >
-            <Trash2 class="mr-2 h-3 w-3" />
-            Delete Goal
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div class="relative">
+        <button
+          @click="showDropdown = !showDropdown"
+          data-testid="goal-actions-menu"
+          class="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          title="More actions"
+        >
+          <MoreHorizontal class="h-3 w-3" />
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div
+          v-if="showDropdown"
+          class="absolute right-0 top-8 w-40 bg-popover border border-border rounded-md shadow-lg z-50"
+          @click="showDropdown = false"
+        >
+          <div class="py-1">
+            <button
+              @click="$emit('edit-goal', goal)"
+              class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground transition-colors flex items-center"
+            >
+              <Edit class="mr-2 h-3 w-3" />
+              Edit Goal
+            </button>
+            <button
+              @click="$emit('view-details', goal)"
+              class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground transition-colors flex items-center"
+            >
+              <Eye class="mr-2 h-3 w-3" />
+              View Details
+            </button>
+            <hr class="my-1 border-border" />
+            <button
+              @click="$emit('delete-goal', goal.id)"
+              class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground transition-colors flex items-center text-red-600 hover:text-red-700"
+            >
+              <Trash2 class="mr-2 h-3 w-3" />
+              Delete Goal
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Celebration Animation -->
@@ -194,14 +211,31 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
+// Local state
+const showDropdown = ref(false)
+
+// Close dropdown when clicking outside
+onMounted(() => {
+  const handleClickOutside = (event: Event) => {
+    if (showDropdown.value) {
+      showDropdown.value = false
+    }
+  }
+  document.addEventListener('click', handleClickOutside)
+  
+  onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside)
+  })
+})
+
 // Computed properties
-const statusVariant = computed(() => {
+const statusBadgeClass = computed(() => {
   switch (props.goal.status) {
-    case 'active': return 'default'
-    case 'completed': return 'success'
-    case 'paused': return 'secondary'
-    case 'archived': return 'outline'
-    default: return 'default'
+    case 'active': return 'bg-primary text-primary-foreground'
+    case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+    case 'paused': return 'bg-secondary text-secondary-foreground'
+    case 'archived': return 'bg-muted text-muted-foreground border border-border'
+    default: return 'bg-primary text-primary-foreground'
   }
 })
 
