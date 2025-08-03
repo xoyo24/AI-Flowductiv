@@ -241,6 +241,23 @@ const form = ref<NewGoal & { priority?: number | null, status: string }>({
   priority: null
 })
 
+// Methods
+const resetForm = () => {
+  form.value = {
+    title: '',
+    description: '',
+    type: 'time',
+    period: 'daily',
+    target: 1,
+    targetUnit: '',
+    status: 'active',
+    tags: [],
+    priority: null
+  }
+  errors.value = {}
+  showAdvanced.value = false
+}
+
 // Initialize form with editing data
 watch(() => props.editingGoal, (goal) => {
   if (goal) {
@@ -277,23 +294,6 @@ const isFormValid = computed(() => {
          form.value.period &&
          form.value.target > 0
 })
-
-// Methods
-const resetForm = () => {
-  form.value = {
-    title: '',
-    description: '',
-    type: 'time',
-    period: 'daily',
-    target: 1,
-    targetUnit: '',
-    status: 'active',
-    tags: [],
-    priority: null
-  }
-  errors.value = {}
-  showAdvanced.value = false
-}
 
 const addTag = () => {
   const tag = tagInput.value.trim()
