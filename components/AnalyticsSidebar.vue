@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <!-- Sidebar Header -->
-    <div class="flex items-center justify-between p-4">
+    <div class="flex items-center justify-between p-4" v-if="!mobileMode">
       <div class="flex-1">
         <UserDropdown 
           :collapsed="collapsed"
@@ -22,18 +22,38 @@
         />
       </button>
     </div>
-
+    
     <!-- Analytics Content -->
     <div 
       v-if="!collapsed" 
-      class="flex-1 overflow-y-auto px-4 py-3 space-y-4"
+      :class="{
+        'flex-1 overflow-y-auto space-y-4': true,
+        'px-4 py-3': !mobileMode,
+        'px-0 py-0 space-y-6': mobileMode
+      }"
     >
+      <!-- Mobile header integrated into content -->
+      <div v-if="mobileMode" class="flex items-center justify-between mb-6">
+        <UserDropdown 
+          :collapsed="false"
+          @navigate-to-settings="$emit('navigate-to-settings')"
+          @navigate-to-history="$emit('navigate-to-history')"
+        />
+        <button
+          @click="$emit('toggle-collapse')"
+          class="p-3 rounded-lg hover:bg-muted/50 transition-colors touch-target"
+          aria-label="Close menu"
+        >
+          <X class="w-5 h-5" />
+        </button>
+      </div>
       <!-- 🔍 INSIGHT AREA -->
       
       <!-- Productivity Overview (Heatmap) -->
       <ProductivityOverview 
         :collapsed="false"
         :loading="loading"
+        :mobile-mode="mobileMode"
         :selected-date-filter="activeDateFilter"
         @day-selected="handleDaySelected" 
       />
@@ -62,7 +82,7 @@
           leave-to-class="opacity-0 -translate-y-2"
         >
           <div v-if="showInsights" class="space-y-2">
-            <InsightsPanel :compact="true" />
+            <InsightsPanel :compact="!mobileMode" :mobile-mode="mobileMode" />
           </div>
         </Transition>
       </div>
@@ -237,6 +257,7 @@ import {
   RotateCw,
   Settings,
   Target,
+  X,
 } from 'lucide-vue-next'
 import InsightsPanel from '~/components/InsightsPanel.vue'
 import DurationSlider from '~/components/DurationSlider.vue'
@@ -265,6 +286,7 @@ interface Props {
   tagData?: TagData[]
   selectedTags?: Set<string>
   activeDateFilter?: string | null
+  mobileMode?: boolean
 }
 
 interface Emits {
@@ -293,7 +315,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   tagsLoading: false,
   tagData: () => [],
-  selectedTags: () => new Set<string>()
+  selectedTags: () => new Set<string>(),
+  mobileMode: false
 })
 
 const emit = defineEmits<Emits>()

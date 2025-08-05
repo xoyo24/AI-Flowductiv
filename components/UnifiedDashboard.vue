@@ -75,22 +75,11 @@
         @click="showMobileMenu = false"
       >
         <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border pt-safe overflow-y-auto" @click.stop>
-          <div class="p-4 border-b border-border flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-foreground">Menu</h2>
-            <button
-              @click="showMobileMenu = false"
-              class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-              data-testid="close-mobile-menu"
-              aria-label="Close menu"
-            >
-              <X class="w-5 h-5" />
-            </button>
-          </div>
-          
           <!-- Analytics Section in Mobile Menu -->
-          <div class="p-4 space-y-6">
+          <div class="p-4 space-y-8">
             <AnalyticsSidebar
               :collapsed="false"
+              :mobile-mode="true"
               :loading="analyticsLoading"
               :tags-loading="tagsLoading"
               :tag-data="tagData"
@@ -100,7 +89,7 @@
               @refresh-data="refreshAnalytics"
               @navigate-to-settings="navigateToSettings"
               @navigate-to-history="navigateToHistory"
-              @toggle-collapse="() => {}"
+              @toggle-collapse="showMobileMenu = false"
               @show-analytics-modal="() => {}"
               @show-heatmap-modal="() => {}"
               @show-insights-modal="() => {}"
@@ -325,7 +314,7 @@
 </template>
 
 <script setup lang="ts">
-import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users, X } from 'lucide-vue-next'
+import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
@@ -847,6 +836,9 @@ const handleDaySelected = (day: HeatmapDay) => {
   // Apply date filter using the universal filter system
   setDateRangeFilter(startOfDay, endOfDay)
   
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
+  
   // Haptic feedback for mobile
   vibrate([100])
 }
@@ -867,10 +859,14 @@ const refreshAnalytics = async () => {
 // Tag filtering handlers - now using universal filter system
 const handleTagSelected = (tag: string) => {
   addTagFilter(tag)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handleTagDeselected = (tag: string) => {
   removeTagFilter(tag)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handleTagsCleared = () => {
@@ -878,6 +874,8 @@ const handleTagsCleared = () => {
   if (activeFilters.value.tags) {
     activeFilters.value.tags.forEach(tag => removeTagFilter(tag))
   }
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
@@ -927,18 +925,26 @@ const handleTagRemove = async (tag: any, includeActivities: boolean) => {
 const handleApplyFilterCombination = (combinationId: string) => {
   // This will be handled by the useAdvancedFilters composable through applySavedFilterCombination
   console.log('Apply filter combination:', combinationId)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handlePriorityToggle = (priority: number) => {
   togglePriorityFilter(priority)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handleFocusToggle = (focus: number) => {
   toggleFocusRatingFilter(focus)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   setDurationRangeFilter(minDuration, maxDuration)
+  // Close mobile menu after filter action so user can see results
+  showMobileMenu.value = false
 }
 
 // Dropdown management (simplified since moved to InputComposer)
@@ -1092,14 +1098,14 @@ const handleFocusRatingClose = () => {
 
 // Mobile Analytics Panel Handlers
 const handleMobileDaySelected = (day: any) => {
-  // Reuse existing day selection logic
+  // Reuse existing day selection logic (already closes mobile menu)
   handleDaySelected(day)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([100])
 }
 
 const handleMobileTagSelected = (tag: string) => {
-  // Reuse existing tag selection logic
+  // Reuse existing tag selection logic (already closes mobile menu)
   handleTagSelected(tag)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([50])

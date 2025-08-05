@@ -167,32 +167,6 @@
         </div>
       </div>
 
-      <!-- Weekly Comparison -->
-      <div v-if="!compact" class="bg-secondary/20 rounded-lg p-3">
-        <div class="flex items-center space-x-2 mb-2">
-          <Calendar class="w-3 h-3 text-muted-foreground" />
-          <span class="text-xs font-medium text-foreground">This Week</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1">
-          <div 
-            v-for="(day, index) in weeklyData" 
-            :key="index"
-            class="text-center"
-          >
-            <div class="text-xs text-muted-foreground mb-1">{{ day.label }}</div>
-            <div 
-              :class="{
-                'w-4 h-4 rounded-sm mx-auto': true,
-                'bg-primary/80': day.hours >= 4,
-                'bg-primary/60': day.hours >= 2 && day.hours < 4,
-                'bg-primary/30': day.hours >= 1 && day.hours < 2,
-                'bg-secondary': day.hours < 1
-              }"
-              :title="`${day.hours.toFixed(1)}h tracked`"
-            />
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -203,7 +177,6 @@ import {
   AlertCircle, 
   BarChart3, 
   Brain, 
-  Calendar, 
   Clock, 
   Info, 
   Lightbulb, 
@@ -217,6 +190,7 @@ import { useActivities } from '~/composables/useActivities'
 
 interface Props {
   compact?: boolean
+  mobileMode?: boolean
 }
 
 interface CategoryData {
@@ -225,14 +199,10 @@ interface CategoryData {
   totalTime: number
 }
 
-interface DayData {
-  label: string
-  hours: number
-  date: Date
-}
 
 const props = withDefaults(defineProps<Props>(), {
   compact: false,
+  mobileMode: false,
 })
 
 // AI Insights (Premium)
@@ -253,7 +223,6 @@ const showAIInsights = ref(false)
 const peakHours = ref<string[]>([])
 const focusPattern = ref<string>('')
 const topCategories = ref<CategoryData[]>([])
-const weeklyData = ref<DayData[]>([])
 
 // AI Insights Toggle
 const toggleAIInsights = async () => {
@@ -365,32 +334,6 @@ const calculateTopCategories = async () => {
   }
 }
 
-const calculateWeeklyData = async () => {
-  try {
-    const today = new Date()
-    const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-    const data: DayData[] = []
-
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today)
-      date.setDate(today.getDate() - i)
-
-      const activities = await getActivitiesForDate(date)
-      const totalMs = activities.reduce((sum, a) => sum + a.durationMs, 0)
-      const hours = totalMs / (1000 * 60 * 60)
-
-      data.push({
-        label: dayLabels[date.getDay()],
-        hours,
-        date,
-      })
-    }
-
-    weeklyData.value = data
-  } catch (error) {
-    console.error('Failed to calculate weekly data:', error)
-  }
-}
 
 // Load static analysis data
 const loadStaticAnalysis = async () => {
@@ -398,7 +341,6 @@ const loadStaticAnalysis = async () => {
     calculatePeakHours(),
     calculateFocusPattern(),
     calculateTopCategories(),
-    calculateWeeklyData(),
   ])
 }
 

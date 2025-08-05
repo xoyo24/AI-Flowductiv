@@ -11,24 +11,52 @@
     <!-- Content -->
     <div v-else class="space-y-3">
       <!-- Key Metrics Row -->
-      <div v-if="!collapsed" class="grid grid-cols-3 gap-2 text-center text-xs">
+      <div v-if="!collapsed" :class="{
+        'grid grid-cols-3 gap-2 text-center': true,
+        'text-xs': !mobileMode,
+        'text-base': mobileMode
+      }">
         <div>
-          <div class="font-bold text-foreground">{{ metrics.activityCount }}</div>
-          <div class="text-muted-foreground">Activities</div>
+          <div :class="{
+            'font-bold text-foreground': true,
+            'text-sm': !mobileMode,
+            'text-2xl': mobileMode
+          }">{{ metrics.activityCount }}</div>
+          <div :class="{
+            'text-muted-foreground': true,
+            'text-xs': !mobileMode,
+            'text-sm': mobileMode
+          }">Activities</div>
         </div>
         <div>
-          <div class="font-bold text-foreground">{{ formatDuration(metrics.totalTime) }}</div>
-          <div class="text-muted-foreground">Total Time</div>
+          <div :class="{
+            'font-bold text-foreground': true,
+            'text-sm': !mobileMode,
+            'text-2xl': mobileMode
+          }">{{ formatDuration(metrics.totalTime) }}</div>
+          <div :class="{
+            'text-muted-foreground': true,
+            'text-xs': !mobileMode,
+            'text-sm': mobileMode
+          }">Total Time</div>
         </div>
         <div>
-          <div class="font-bold text-foreground">{{ metrics.averageFocus.toFixed(1) }}</div>
-          <div class="text-muted-foreground">Avg Focus</div>
+          <div :class="{
+            'font-bold text-foreground': true,
+            'text-sm': !mobileMode,
+            'text-2xl': mobileMode
+          }">{{ metrics.averageFocus.toFixed(1) }}</div>
+          <div :class="{
+            'text-muted-foreground': true,
+            'text-xs': !mobileMode,
+            'text-sm': mobileMode
+          }">Avg Focus</div>
         </div>
       </div>
 
       <!-- Heatmap Grid -->
       <div class="space-y-2">
-        <!-- Main Grid: Full width, larger squares for mobile -->
+        <!-- Main Grid: Consistent layout -->
         <div 
           class="grid grid-cols-12 gap-1"
           data-testid="productivity-heatmap-grid"
@@ -39,10 +67,11 @@
             :data-testid="`heatmap-day-${day.date}`"
             :data-date="day.date"
             :class="[
-              'w-5 h-5 cursor-pointer transition-all duration-200 rounded-sm',
+              'cursor-pointer transition-all duration-200',
               'hover:scale-110 hover:shadow-sm',
+              mobileMode ? 'w-5 h-5 rounded' : 'w-5 h-5 rounded-sm',
               // Selected state - keep square but add subtle highlight
-              selectedDate === day.date ? 'ring-2 ring-primary/60 ring-offset-1 scale-105 shadow-md' : '',
+              selectedDate === day.date ? 'ring-1 ring-primary/60 ring-offset-1 scale-105 shadow-md' : '',
               getColorClass(day.productivityScore)
             ]"
             :title="day.date ? `${formatDate(day.date)}: ${day.count} activities, ${formatDuration(day.totalTime)}` : ''"
@@ -95,6 +124,7 @@ interface Props {
   collapsed?: boolean
   loading?: boolean
   selectedDateFilter?: string | null
+  mobileMode?: boolean
 }
 
 interface ActivityMetrics {
@@ -107,7 +137,8 @@ interface ActivityMetrics {
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
-  selectedDateFilter: null
+  selectedDateFilter: null,
+  mobileMode: false
 })
 
 // Define emits
