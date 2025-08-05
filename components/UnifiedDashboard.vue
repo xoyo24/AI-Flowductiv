@@ -55,7 +55,17 @@
         
         <h1 class="text-lg font-semibold text-foreground">Flowductiv</h1>
         
-        <ThemeToggle />
+        <div class="flex items-center space-x-2">
+          <button
+            @click="showMobileAnalyticsPanel = true"
+            class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            data-testid="mobile-analytics-button"
+            aria-label="Open analytics"
+          >
+            <BarChart class="w-5 h-5" />
+          </button>
+          <ThemeToggle />
+        </div>
       </header>
 
       <!-- Mobile Menu Overlay (only on mobile) -->
@@ -287,10 +297,27 @@
     @skip="handleFocusRatingSkip"
     @close="handleFocusRatingClose"
   />
+
+  <!-- Mobile Analytics Panel -->
+  <MobileAnalyticsPanel
+    :is-open="showMobileAnalyticsPanel"
+    :heatmap-data="mobileHeatmapData"
+    :tag-data="tagData"
+    :selected-date="activeDateFilter"
+    :today-stats="mobileTodayStats"
+    :active-goals="mobileActiveGoals"
+    @close="showMobileAnalyticsPanel = false"
+    @day-selected="handleMobileDaySelected"
+    @tag-selected="handleMobileTagSelected"
+    @show-heatmap-modal="showHeatmapModal = true; showMobileAnalyticsPanel = false"
+    @show-goals-modal="showGoalsModal = true; showMobileAnalyticsPanel = false"
+    @show-insights-modal="showInsightsModal = true; showMobileAnalyticsPanel = false"
+    @refresh-data="handleMobileRefreshData"
+  />
 </template>
 
 <script setup lang="ts">
-import { BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
+import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
@@ -298,6 +325,7 @@ import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import FocusRatingModal from '~/components/FocusRatingModal.vue'
 import InputComposer from '~/components/InputComposer.vue'
+import MobileAnalyticsPanel from '~/components/MobileAnalyticsPanel.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
@@ -465,16 +493,78 @@ const recentActivities = computed(() => {
   return activities
 })
 
+// Mobile analytics computed properties
+const mobileHeatmapData = computed(() => {
+  // Transform activities data into heatmap format for last 28 days
+  const days = []
+  const today = new Date()
+  
+  for (let i = 27; i >= 0; i--) {
+    const date = new Date(today)
+    date.setDate(today.getDate() - i)
+    const dateStr = date.toISOString().split('T')[0]
+    
+    // Get activities for this date
+    const dayActivities = activities.value.filter(activity => {
+      const activityDate = new Date(activity.startTime).toISOString().split('T')[0]
+      return activityDate === dateStr
+    })
+    
+    const totalTime = dayActivities.reduce((sum, activity) => sum + (activity.durationMs || 0), 0)
+    const activityCount = dayActivities.length
+    const avgFocus = dayActivities.length > 0 
+      ? dayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) / dayActivities.length
+      : 0
+    
+    days.push({
+      date: dateStr,
+      totalTime,
+      activityCount,
+      avgFocus
+    })
+  }
+  
+  return days
+})
+
+const mobileTodayStats = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  const todayActivities = activities.value.filter(activity => {
+    const activityDate = new Date(activity.startTime).toISOString().split('T')[0]
+    return activityDate === today
+  })
+  
+  const totalTime = todayActivities.reduce((sum, activity) => sum + (activity.durationMs || 0), 0)
+  const activityCount = todayActivities.length
+  const avgFocus = todayActivities.length > 0 
+    ? todayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) / todayActivities.length
+    : 0
+  
+  return {
+    totalTime: formatDuration(totalTime),
+    activityCount,
+    avgFocus: avgFocus.toFixed(1)
+  }
+})
+
+const mobileActiveGoals = computed(() => {
+  // TODO: Implement goals system
+  // For now, return empty array
+  return []
+})
+
 
 // Local reactive state
 const activityInput = ref('')
 const searchQuery = ref('')
 const showMobileMenu = ref(false)
+const showMobileAnalyticsPanel = ref(false)
 const sidebarCollapsed = ref(false)
 const analyticsLoading = ref(false)
 const showAnalyticsModal = ref(false)
 const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
+const showGoalsModal = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -990,6 +1080,27 @@ const handleFocusRatingSkip = () => {
 
 const handleFocusRatingClose = () => {
   closeFocusRatingModal()
+}
+
+// Mobile Analytics Panel Handlers
+const handleMobileDaySelected = (day: any) => {
+  // Reuse existing day selection logic
+  handleDaySelected(day)
+  showMobileAnalyticsPanel.value = false // Close panel after selection
+  vibrate([100])
+}
+
+const handleMobileTagSelected = (tag: string) => {
+  // Reuse existing tag selection logic
+  handleTagSelected(tag)
+  showMobileAnalyticsPanel.value = false // Close panel after selection
+  vibrate([50])
+}
+
+const handleMobileRefreshData = () => {
+  // Reuse existing refresh logic
+  refreshAnalytics()
+  vibrate([100])
 }
 
 

@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // supabase: {
+  // supabase: {/
   //   redirectOptions: {
   //     login: '/auth/login',
   //     callback: '/auth/callback',
