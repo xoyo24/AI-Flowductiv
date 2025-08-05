@@ -74,9 +74,17 @@
         class="lg:hidden fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
         @click="showMobileMenu = false"
       >
-        <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border pt-safe overflow-y-auto">
-          <div class="p-4 border-b border-border">
+        <div class="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border pt-safe overflow-y-auto" @click.stop>
+          <div class="p-4 border-b border-border flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground">Menu</h2>
+            <button
+              @click="showMobileMenu = false"
+              class="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+              data-testid="close-mobile-menu"
+              aria-label="Close menu"
+            >
+              <X class="w-5 h-5" />
+            </button>
           </div>
           
           <!-- Analytics Section in Mobile Menu -->
@@ -317,7 +325,7 @@
 </template>
 
 <script setup lang="ts">
-import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
+import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users, X } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
