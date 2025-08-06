@@ -113,7 +113,7 @@ const showCustomRange = ref(false)
 const currentFilters = computed(() => activeFilters.value)
 
 // Configuration data
-const _quickDurations = [
+const quickDurations = [
   {
     key: 'short',
     label: '≤15m',
@@ -155,7 +155,7 @@ const isCustomDurationValid = computed(() => {
   return true
 })
 
-const _hasActiveDuration = computed(() => {
+const hasActiveDuration = computed(() => {
   return (
     currentFilters.value.minDuration !== undefined || currentFilters.value.maxDuration !== undefined
   )
@@ -166,7 +166,7 @@ const isDurationRangeActive = (min?: number, max?: number) => {
   return currentFilters.value.minDuration === min && currentFilters.value.maxDuration === max
 }
 
-const _setDurationRange = (min?: number, max?: number) => {
+const setDurationRange = (min?: number, max?: number) => {
   // Check if this range is already active - if so, clear it
   const isCurrentlyActive = isDurationRangeActive(min, max)
 
@@ -180,7 +180,7 @@ const _setDurationRange = (min?: number, max?: number) => {
   // Note: No need to emit since we handle it directly
 }
 
-const _applyCustomDuration = () => {
+const applyCustomDuration = () => {
   if (!isCustomDurationValid.value) return
 
   const minMs = customMinDuration.value !== null ? customMinDuration.value * 60 * 1000 : undefined
@@ -195,12 +195,12 @@ const _applyCustomDuration = () => {
   showCustomRange.value = false
 }
 
-const _clearDuration = () => {
+const clearDuration = () => {
   clearDurationRangeFilter()
   emit('duration-changed', undefined, undefined)
 }
 
-const _formatActiveDuration = () => {
+const formatActiveDuration = () => {
   const { minDuration, maxDuration } = currentFilters.value
 
   const formatMs = (ms: number) => {

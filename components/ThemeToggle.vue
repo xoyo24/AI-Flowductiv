@@ -18,9 +18,9 @@ const colorMode = useColorMode({
   fallback: 'dark',
 })
 
-const _isDark = computed(() => colorMode.value === 'dark')
+const isDark = computed(() => colorMode.value === 'dark')
 
-const _toggleTheme = () => {
+const toggleTheme = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 </script>

@@ -322,8 +322,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 // Local state
-const _showGoals = ref(true) // Show goals by default
-const _showInsights = ref(true) // Show insights by default
+const showGoals = ref(true) // Show goals by default
+const showInsights = ref(true) // Show insights by default
 const showGoalForm = ref(false)
 const editingGoal = ref<Goal | null>(null)
 
@@ -334,7 +334,7 @@ const goalProgresses = ref<Record<string, GoalProgress>>({})
 const loadingProgresses = ref<Record<string, boolean>>({})
 
 // Actions
-const _handleDaySelected = (day: any) => {
+const handleDaySelected = (day: any) => {
   emit('day-selected', day)
 }
 
@@ -343,46 +343,46 @@ const _refreshData = () => {
 }
 
 // Tag filter event handlers - forward to parent
-const _handleTagSelected = (tag: string) => {
+const handleTagSelected = (tag: string) => {
   emit('tag-selected', tag)
 }
 
-const _handleTagDeselected = (tag: string) => {
+const handleTagDeselected = (tag: string) => {
   emit('tag-deselected', tag)
 }
 
-const _handleTagsCleared = () => {
+const handleTagsCleared = () => {
   emit('tags-cleared')
 }
 
-const _handleTagSelectionChanged = (selectedTags: Set<string>) => {
+const handleTagSelectionChanged = (selectedTags: Set<string>) => {
   emit('selection-changed', selectedTags)
 }
 
-const _handleTagEdit = (tag: TagData) => {
+const handleTagEdit = (tag: TagData) => {
   emit('tag-edit', tag)
 }
 
-const _handleTagRemove = (tag: TagData, includeActivities: boolean) => {
+const handleTagRemove = (tag: TagData, includeActivities: boolean) => {
   emit('tag-remove', tag, includeActivities)
 }
 
 // Filter event handlers
-const _handleApplyCombination = (combinationId: string) => {
+const handleApplyCombination = (combinationId: string) => {
   // This will be handled by the useAdvancedFilters composable
   // We'll emit an event that the parent can handle
   emit('apply-filter-combination', combinationId)
 }
 
-const _handlePriorityToggle = (priority: number) => {
+const handlePriorityToggle = (priority: number) => {
   emit('priority-toggle', priority)
 }
 
-const _handleFocusToggle = (focus: number) => {
+const handleFocusToggle = (focus: number) => {
   emit('focus-toggle', focus)
 }
 
-const _handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   emit('duration-changed', minDuration, maxDuration)
 }
 
@@ -413,12 +413,12 @@ const loadGoalProgress = async (goal: Goal) => {
   }
 }
 
-const _handleEditGoal = (goal: Goal) => {
+const handleEditGoal = (goal: Goal) => {
   editingGoal.value = goal
   showGoalForm.value = true
 }
 
-const _handleDeleteGoal = async (goalId: string) => {
+const handleDeleteGoal = async (goalId: string) => {
   try {
     const success = await deleteGoal(goalId)
     if (success) {
@@ -431,7 +431,7 @@ const _handleDeleteGoal = async (goalId: string) => {
   }
 }
 
-const _handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
+const handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
   try {
     const goal = activeGoals.value.find((g) => g.id === goalId)
     if (!goal) return
@@ -450,7 +450,7 @@ const _handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
   }
 }
 
-const _handleMarkComplete = async (goalId: string) => {
+const handleMarkComplete = async (goalId: string) => {
   try {
     const updated = await updateGoal(goalId, { status: 'completed' })
     if (updated) {
@@ -463,12 +463,12 @@ const _handleMarkComplete = async (goalId: string) => {
   }
 }
 
-const _handleViewGoalDetails = (goal: Goal) => {
+const handleViewGoalDetails = (goal: Goal) => {
   // TODO: Implement goal details modal
   console.log('View goal details:', goal)
 }
 
-const _handleGoalSaved = (goal: Goal) => {
+const handleGoalSaved = (goal: Goal) => {
   if (editingGoal.value) {
     // Update existing goal
     const index = activeGoals.value.findIndex((g) => g.id === goal.id)
@@ -485,7 +485,7 @@ const _handleGoalSaved = (goal: Goal) => {
   showGoalForm.value = false
 }
 
-const _handleCloseGoalForm = () => {
+const handleCloseGoalForm = () => {
   showGoalForm.value = false
   editingGoal.value = null
 }
