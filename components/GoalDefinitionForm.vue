@@ -308,7 +308,7 @@ const targetUnitDisplay = computed(() => {
   }
 })
 
-const _isFormValid = computed(() => {
+const isFormValid = computed(() => {
   return (
     form.value.title.trim().length > 0 &&
     form.value.type &&
@@ -317,7 +317,7 @@ const _isFormValid = computed(() => {
   )
 })
 
-const _addTag = () => {
+const addTag = () => {
   const tag = tagInput.value.trim()
   if (tag && !form.value.tags.includes(tag) && form.value.tags.length < 10) {
     form.value.tags.push(tag)
@@ -325,7 +325,7 @@ const _addTag = () => {
   }
 }
 
-const _removeTag = (tag: string) => {
+const removeTag = (tag: string) => {
   const index = form.value.tags.indexOf(tag)
   if (index > -1) {
     form.value.tags.splice(index, 1)
@@ -356,7 +356,7 @@ const validateForm = (): boolean => {
   return Object.keys(errors.value).length === 0
 }
 
-const _handleSubmit = async () => {
+const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {

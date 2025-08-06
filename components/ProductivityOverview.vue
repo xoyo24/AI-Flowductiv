@@ -177,7 +177,7 @@ watch(
 )
 
 // Computed properties
-const _gridDays = computed(() => {
+const gridDays = computed(() => {
   // Return exactly 84 days (12 weeks)
   if (!heatmapData.value || heatmapData.value.length === 0) {
     // Return empty days for initial state
@@ -209,7 +209,7 @@ const _gridDays = computed(() => {
 // Get current color mode for theme-aware colors
 const colorMode = useColorMode()
 
-const _legendColors = computed(() => {
+const legendColors = computed(() => {
   if (colorMode.value === 'dark') {
     return ['bg-gray-700', 'bg-green-800', 'bg-green-600', 'bg-green-500', 'bg-green-400']
   }
@@ -217,7 +217,7 @@ const _legendColors = computed(() => {
 })
 
 // Methods
-const _getColorClass = (score: number): string => {
+const getColorClass = (score: number): string => {
   if (colorMode.value === 'dark') {
     // Dark theme colors
     if (score === 0) return 'bg-gray-700' // Dark gray for empty days
@@ -234,7 +234,7 @@ const _getColorClass = (score: number): string => {
   return 'bg-green-500' // Darkest green for high productivity
 }
 
-const _formatDate = (dateStr: string): string => {
+const formatDate = (dateStr: string): string => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   return date.toLocaleDateString('en-US', {
@@ -244,14 +244,14 @@ const _formatDate = (dateStr: string): string => {
   })
 }
 
-const _handleDayClick = (day: HeatmapDay) => {
+const handleDayClick = (day: HeatmapDay) => {
   if (day.date) {
     selectedDate.value = day.date
     emit('day-selected', day)
   }
 }
 
-const _showTooltip = (event: MouseEvent, day: HeatmapDay) => {
+const showTooltip = (event: MouseEvent, day: HeatmapDay) => {
   if (!day.date) return
 
   tooltip.value = {
@@ -262,7 +262,7 @@ const _showTooltip = (event: MouseEvent, day: HeatmapDay) => {
   }
 }
 
-const _hideTooltip = () => {
+const hideTooltip = () => {
   tooltip.value.visible = false
 }
 

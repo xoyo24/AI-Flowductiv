@@ -238,7 +238,7 @@ const contextMenu = ref({
 
 // Dialog states
 const showEditDialog = ref(false)
-const _showStatistics = ref(false)
+const showStatistics = ref(false)
 const showDeleteConfirm = ref(false)
 const tagToEdit = ref<TagData | null>(null)
 const tagToDelete = ref<TagData | null>(null)
@@ -246,11 +246,11 @@ const deleteIncludeActivities = ref(false)
 const confirmDialogRef = ref<any>(null)
 
 // Delete confirmation computed properties
-const _deleteConfirmTitle = computed(() => {
+const deleteConfirmTitle = computed(() => {
   return deleteIncludeActivities.value ? 'Delete Tag and Activities' : 'Remove Tag Only'
 })
 
-const _deleteConfirmMessage = computed(() => {
+const deleteConfirmMessage = computed(() => {
   const tag = tagToDelete.value
   if (!tag) return ''
 
@@ -259,7 +259,7 @@ const _deleteConfirmMessage = computed(() => {
     : `This will remove the tag "#${tag.name}" from all ${tag.count || 0} activities, but keep the activities.`
 })
 
-const _deleteConfirmDetails = computed(() => {
+const deleteConfirmDetails = computed(() => {
   const tag = tagToDelete.value
   if (!tag) return undefined
 
@@ -272,7 +272,7 @@ const _deleteConfirmDetails = computed(() => {
 })
 
 // Computed properties
-const _displayTags = computed(() => {
+const displayTags = computed(() => {
   if (showAll.value) {
     return props.topTags
   }
@@ -297,14 +297,14 @@ const toggleTag = (tagName: string) => {
   emit('selection-changed', new Set(selectedTags.value))
 }
 
-const _clearAll = () => {
+const clearAll = () => {
   selectedTags.value.clear()
   emit('tags-cleared')
   emit('selection-changed', new Set(selectedTags.value))
 }
 
 // Tooltip methods
-const _handleTagHover = (tag: TagData, event: MouseEvent) => {
+const handleTagHover = (tag: TagData, event: MouseEvent) => {
   usageTooltip.value = {
     visible: true,
     x: event.clientX + 10,
@@ -313,12 +313,12 @@ const _handleTagHover = (tag: TagData, event: MouseEvent) => {
   }
 }
 
-const _hideUsageTooltip = () => {
+const hideUsageTooltip = () => {
   usageTooltip.value.visible = false
 }
 
 // Context menu methods
-const _showContextMenu = (tag: TagData, event: MouseEvent) => {
+const showContextMenu = (tag: TagData, event: MouseEvent) => {
   contextMenu.value = {
     visible: true,
     x: event.clientX,
@@ -336,13 +336,13 @@ const hideContextMenu = () => {
   contextMenu.value.visible = false
 }
 
-const _editTag = (tag: TagData) => {
+const editTag = (tag: TagData) => {
   tagToEdit.value = tag
   showEditDialog.value = true
   hideContextMenu()
 }
 
-const _removeTagHandler = (tag: TagData, includeActivities: boolean) => {
+const removeTagHandler = (tag: TagData, includeActivities: boolean) => {
   tagToDelete.value = tag
   deleteIncludeActivities.value = includeActivities
   showDeleteConfirm.value = true
@@ -350,7 +350,7 @@ const _removeTagHandler = (tag: TagData, includeActivities: boolean) => {
 }
 
 // Handle tag rename completion
-const _handleTagRenamed = (oldName: string, newName: string) => {
+const handleTagRenamed = (oldName: string, newName: string) => {
   // Update local tag data
   const tagIndex = props.topTags.findIndex((t) => t.name === oldName)
   if (tagIndex !== -1) {
@@ -368,7 +368,7 @@ const _handleTagRenamed = (oldName: string, newName: string) => {
 }
 
 // Handle confirmed tag deletion
-const _handleConfirmDelete = async () => {
+const handleConfirmDelete = async () => {
   if (!tagToDelete.value || !confirmDialogRef.value) return
 
   const tag = tagToDelete.value

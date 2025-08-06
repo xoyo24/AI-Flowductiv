@@ -307,7 +307,7 @@ const dropdownVisible = ref(false)
 const justSelectedSuggestion = ref(false)
 const dropdownContainer = ref(null)
 
-const _showSuggestions = computed(
+const showSuggestions = computed(
   () =>
     inputFocused.value &&
     dropdownVisible.value &&
@@ -342,7 +342,7 @@ const hideDropdown = () => {
 }
 
 // Event handlers
-const _handleSuggestionSelect = (suggestion) => {
+const handleSuggestionSelect = (suggestion) => {
   if (suggestion.type === 'activity') {
     activityInput.value = suggestion.text
   } else {
@@ -373,16 +373,16 @@ const _handleSuggestionSelect = (suggestion) => {
   emit('suggestion-select', suggestion)
 }
 
-const _handleKeydown = (event) => {
+const handleKeydown = (event) => {
   emit('keydown', event)
 }
 
-const _handleInputFocus = () => {
+const handleInputFocus = () => {
   inputFocused.value = true
   emit('input-focus')
 }
 
-const _handleInputBlur = () => {
+const handleInputBlur = () => {
   setTimeout(() => {
     if (!justSelectedSuggestion.value) {
       inputFocused.value = false
@@ -392,14 +392,14 @@ const _handleInputBlur = () => {
   emit('input-blur')
 }
 
-const _handleEnterKey = (event: KeyboardEvent) => {
+const handleEnterKey = (event: KeyboardEvent) => {
   if (justSelectedSuggestion.value) {
     return
   }
   emit('enter-key', event)
 }
 
-const _selectIndex = (index: number) => {
+const selectIndex = (index: number) => {
   emit('select-index', index)
 }
 

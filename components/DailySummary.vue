@@ -210,7 +210,7 @@ interface AISummary {
   generatedAt: string
 }
 
-const _props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   compact: false,
 })
 
@@ -227,7 +227,7 @@ const error = ref<string | null>(null)
 const rateLimitData = ref<any>(null)
 
 // Computed values
-const _formattedSummary = computed(() => {
+const formattedSummary = computed(() => {
   if (!summary.value) return ''
 
   // Convert markdown-like content to HTML
@@ -237,7 +237,7 @@ const _formattedSummary = computed(() => {
     .replace(/\n/g, '<br>')
 })
 
-const _summaryPlainText = computed(() => {
+const summaryPlainText = computed(() => {
   if (!summary.value?.content) return 'No insights available yet'
 
   // Strip markdown and HTML for compact display
@@ -248,7 +248,7 @@ const _summaryPlainText = computed(() => {
     .trim()
 })
 
-const _focusScore = computed(() => {
+const focusScore = computed(() => {
   if (activities.value.length === 0) return 0
 
   const activitiesWithRating = activities.value.filter((a) => a.focusRating !== null)
@@ -260,7 +260,7 @@ const _focusScore = computed(() => {
   return Math.round(average * 10) / 10
 })
 
-const _productivityLevel = computed(() => {
+const productivityLevel = computed(() => {
   const totalTime = activities.value.reduce((sum, a) => sum + a.durationMs, 0)
   const hours = totalTime / (1000 * 60 * 60)
 
@@ -270,7 +270,7 @@ const _productivityLevel = computed(() => {
   return 'Starting'
 })
 
-const _timeAgo = computed(() => {
+const timeAgo = computed(() => {
   if (!summary.value) return ''
 
   const now = new Date()
@@ -287,15 +287,15 @@ const _timeAgo = computed(() => {
 })
 
 // Rate limit handling
-const _isRateLimited = computed(() => {
+const isRateLimited = computed(() => {
   return rateLimitData.value !== null
 })
 
-const _rateLimitReasons = computed(() => {
+const rateLimitReasons = computed(() => {
   return rateLimitData.value?.reasons || []
 })
 
-const _rateLimitProgress = computed(() => {
+const rateLimitProgress = computed(() => {
   return rateLimitData.value?.progress || null
 })
 

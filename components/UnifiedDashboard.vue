@@ -389,7 +389,7 @@ const {
 const { allTags, getAllTags, loading: tagsLoading } = useTagManagement()
 
 // Computed properties for tag data - transformed to match existing interface
-const _tagData = computed(() => {
+const tagData = computed(() => {
   const stats = getActivityStats.value
   return allTags.value
     .map((tagName) => {
@@ -404,10 +404,10 @@ const _tagData = computed(() => {
     .sort((a, b) => b.count - a.count) // Sort by usage
 })
 
-const _selectedTags = computed(() => new Set(activeFilters.value.tags || []))
+const selectedTags = computed(() => new Set(activeFilters.value.tags || []))
 
 // Extract selected date from active date range filter
-const _activeDateFilter = computed(() => {
+const activeDateFilter = computed(() => {
   const dateRange = activeFilters.value.dateRange
   if (!dateRange) return null
 
@@ -433,7 +433,7 @@ const _activeDateFilter = computed(() => {
 const { motivationalInsight } = useContextualStatus()
 
 // Context-aware empty message for activities
-const _recentActivitiesMessage = computed((): string => {
+const recentActivitiesMessage = computed((): string => {
   const hasAnyActivities = activities.value.length > 0
   const hasFiltersActive = filterMetadata.value.hasActiveFilters
   const hasSearchQuery = searchQuery.value.trim().length > 0
@@ -488,7 +488,7 @@ const recentActivities = computed(() => {
 })
 
 // Mobile analytics computed properties
-const _mobileHeatmapData = computed(() => {
+const mobileHeatmapData = computed(() => {
   // Transform activities data into heatmap format for last 28 days
   const days = []
   const today = new Date()
@@ -523,7 +523,7 @@ const _mobileHeatmapData = computed(() => {
   return days
 })
 
-const _mobileTodayStats = computed(() => {
+const mobileTodayStats = computed(() => {
   const today = new Date().toISOString().split('T')[0]
   const todayActivities = activities.value.filter((activity) => {
     const activityDate = new Date(activity.startTime).toISOString().split('T')[0]
@@ -545,7 +545,7 @@ const _mobileTodayStats = computed(() => {
   }
 })
 
-const _mobileActiveGoals = computed(() => {
+const mobileActiveGoals = computed(() => {
   // TODO: Implement goals system
   // For now, return empty array
   return []
@@ -556,12 +556,12 @@ const activityInput = ref('')
 const searchQuery = ref('')
 const showMobileMenu = ref(false)
 const showMobileAnalyticsPanel = ref(false)
-const _sidebarCollapsed = ref(false)
+const sidebarCollapsed = ref(false)
 const analyticsLoading = ref(false)
-const _showAnalyticsModal = ref(false)
-const _showHeatmapModal = ref(false)
-const _showInsightsModal = ref(false)
-const _showGoalsModal = ref(false)
+const showAnalyticsModal = ref(false)
+const showHeatmapModal = ref(false)
+const showInsightsModal = ref(false)
+const showGoalsModal = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -617,17 +617,17 @@ const handleStart = () => {
   }
 }
 
-const _handlePause = () => {
+const handlePause = () => {
   pauseTimer()
   vibrate([50, 50])
 }
 
-const _handleResume = () => {
+const handleResume = () => {
   resumeTimer()
   vibrate([100])
 }
 
-const _handleFinish = async () => {
+const handleFinish = async () => {
   const result = await finishTimer()
   if (result.success) {
     // Clear the activity input to provide clean slate for next timer
@@ -642,7 +642,7 @@ const _handleFinish = async () => {
   }
 }
 
-const _handleReset = () => {
+const handleReset = () => {
   if (confirm('Reset timer? This will discard the current session.')) {
     resetTimer()
     activityInput.value = ''
@@ -652,7 +652,7 @@ const _handleReset = () => {
 }
 
 // Quick start handler - set activity and start timer immediately
-const _handleQuickStart = (activity: string) => {
+const handleQuickStart = (activity: string) => {
   activityInput.value = activity
   if (startTimer(activity)) {
     quickStartHidden.value = true // Hide quick start section
@@ -666,15 +666,15 @@ const handleSearchInput = () => {
   // when searchQuery changes due to Vue's reactivity
 }
 
-const _handleSearchFocus = () => {
+const handleSearchFocus = () => {
   // Optional: Could implement search suggestions
 }
 
-const _handleSearchBlur = () => {
+const handleSearchBlur = () => {
   // Optional: Could hide search suggestions
 }
 
-const _clearSearch = () => {
+const clearSearch = () => {
   searchQuery.value = ''
   handleSearchInput()
 }
@@ -730,7 +730,7 @@ const handleSuggestionSelect = (suggestion) => {
   })
 }
 
-const _handleKeydown = (event) => {
+const handleKeydown = (event) => {
   if (showSuggestions.value) {
     switch (event.key) {
       case 'ArrowDown':
@@ -773,7 +773,7 @@ const _handleKeydown = (event) => {
   }
 }
 
-const _handleInputFocus = () => {
+const handleInputFocus = () => {
   inputFocused.value = true
 
   nextTick(() => {
@@ -789,7 +789,7 @@ const _handleInputFocus = () => {
   }
 }
 
-const _handleInputBlur = () => {
+const handleInputBlur = () => {
   setTimeout(() => {
     if (!justSelectedSuggestion.value) {
       inputFocused.value = false
@@ -798,7 +798,7 @@ const _handleInputBlur = () => {
   }, 150)
 }
 
-const _handleEnterKey = (event: KeyboardEvent) => {
+const handleEnterKey = (event: KeyboardEvent) => {
   if (justSelectedSuggestion.value) {
     return
   }
@@ -817,8 +817,8 @@ const navigateAndCloseMenu = (path: string) => {
   navigateTo(path)
 }
 
-const _navigateToSettings = () => navigateAndCloseMenu('/settings')
-const _navigateToHistory = () => navigateAndCloseMenu('/history')
+const navigateToSettings = () => navigateAndCloseMenu('/settings')
+const navigateToHistory = () => navigateAndCloseMenu('/history')
 
 // Handle heatmap day selection
 const handleDaySelected = (day: HeatmapDay) => {
@@ -862,13 +862,13 @@ const handleTagSelected = (tag: string) => {
   showMobileMenu.value = false
 }
 
-const _handleTagDeselected = (tag: string) => {
+const handleTagDeselected = (tag: string) => {
   removeTagFilter(tag)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const _handleTagsCleared = () => {
+const handleTagsCleared = () => {
   // Clear only tag filters, keep other filters intact
   if (activeFilters.value.tags) {
     activeFilters.value.tags.forEach((tag) => removeTagFilter(tag))
@@ -877,7 +877,7 @@ const _handleTagsCleared = () => {
   showMobileMenu.value = false
 }
 
-const _handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
+const handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
   // Clear existing tag filters first
   if (activeFilters.value.tags) {
     ;[...activeFilters.value.tags].forEach((tag) => removeTagFilter(tag))
@@ -888,32 +888,32 @@ const _handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
 }
 
 // FilterBar event handlers
-const _handleRemoveTagFilter = (tag: string) => {
+const handleRemoveTagFilter = (tag: string) => {
   removeTagFilter(tag)
 }
 
-const _handleClearAllFilters = () => {
+const handleClearAllFilters = () => {
   clearAllFilters()
 }
 
-const _handleClearDateRangeFilter = () => {
+const handleClearDateRangeFilter = () => {
   clearDateRangeFilter()
 }
 
-const _handleTagFavorite = async (tag: any) => {
+const handleTagFavorite = async (tag: any) => {
   console.log('Toggle favorite for tag:', tag.name)
   // Tag favorite operation is handled within TagFilters component
   // No need for additional refresh as it's just UI state
 }
 
-const _handleTagEdit = async (tag: any) => {
+const handleTagEdit = async (tag: any) => {
   console.log('Tag edited:', tag.name)
   // After tag rename, refresh activities and analytics
   await refreshActivities()
   await refreshAnalytics()
 }
 
-const _handleTagRemove = async (tag: any, includeActivities: boolean) => {
+const handleTagRemove = async (tag: any, includeActivities: boolean) => {
   console.log('Tag removed:', tag.name, 'Include activities:', includeActivities)
   // After tag removal, refresh activities and analytics
   await refreshActivities()
@@ -921,26 +921,26 @@ const _handleTagRemove = async (tag: any, includeActivities: boolean) => {
 }
 
 // Filter event handlers for sidebar components
-const _handleApplyFilterCombination = (combinationId: string) => {
+const handleApplyFilterCombination = (combinationId: string) => {
   // This will be handled by the useAdvancedFilters composable through applySavedFilterCombination
   console.log('Apply filter combination:', combinationId)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const _handlePriorityToggle = (priority: number) => {
+const handlePriorityToggle = (priority: number) => {
   togglePriorityFilter(priority)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const _handleFocusToggle = (focus: number) => {
+const handleFocusToggle = (focus: number) => {
   toggleFocusRatingFilter(focus)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const _handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   setDurationRangeFilter(minDuration, maxDuration)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
@@ -952,7 +952,7 @@ const handleClickOutside = (_event) => {
 }
 
 // Load more activities
-const _loadMoreActivities = async () => {
+const loadMoreActivities = async () => {
   if (activitiesLoading.value || !hasMoreActivities.value) return
 
   currentPage.value++
@@ -972,12 +972,12 @@ const refreshActivities = async () => {
 }
 
 // Activity interaction handlers
-const _handleActivityClick = (activity) => {
+const handleActivityClick = (activity) => {
   // For future: implement activity detail view or inline editing
   console.log('Activity clicked:', activity)
 }
 
-const _handleActivityFocusRating = async (activity, rating: number) => {
+const handleActivityFocusRating = async (activity, rating: number) => {
   try {
     const { updateActivity } = useActivities()
     await updateActivity(activity.id, { focusRating: rating })
@@ -1002,7 +1002,7 @@ const editData = ref({
   priority: null,
 })
 
-const _handleActivityEdit = (activity) => {
+const handleActivityEdit = (activity) => {
   selectedActivity.value = activity
   editData.value = {
     title: activity.title,
@@ -1012,21 +1012,21 @@ const _handleActivityEdit = (activity) => {
   isEditDialogOpen.value = true
 }
 
-const _handleEditUpdate = (data) => {
+const handleEditUpdate = (data) => {
   editData.value = data
 }
 
-const _handleEditSave = () => {
+const handleEditSave = () => {
   // Save when Enter is pressed in the smart input
   saveEdit()
 }
 
-const _handleActivityDelete = (activity) => {
+const handleActivityDelete = (activity) => {
   selectedActivity.value = activity
   isDeleteDialogOpen.value = true
 }
 
-const _confirmDelete = async () => {
+const confirmDelete = async () => {
   if (!selectedActivity.value) return
 
   try {
@@ -1043,7 +1043,7 @@ const _confirmDelete = async () => {
   }
 }
 
-const _cancelDelete = () => {
+const cancelDelete = () => {
   isDeleteDialogOpen.value = false
   selectedActivity.value = null
 }
@@ -1073,7 +1073,7 @@ const saveEdit = async () => {
 }
 
 // Focus Rating Modal Handlers
-const _handleFocusRatingSave = async (rating: number) => {
+const handleFocusRatingSave = async (rating: number) => {
   try {
     const success = await saveFocusRating(rating)
     if (success) {
@@ -1086,31 +1086,31 @@ const _handleFocusRatingSave = async (rating: number) => {
   }
 }
 
-const _handleFocusRatingSkip = () => {
+const handleFocusRatingSkip = () => {
   skipFocusRating()
   vibrate([50]) // Light haptic feedback
 }
 
-const _handleFocusRatingClose = () => {
+const handleFocusRatingClose = () => {
   closeFocusRatingModal()
 }
 
 // Mobile Analytics Panel Handlers
-const _handleMobileDaySelected = (day: any) => {
+const handleMobileDaySelected = (day: any) => {
   // Reuse existing day selection logic (already closes mobile menu)
   handleDaySelected(day)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([100])
 }
 
-const _handleMobileTagSelected = (tag: string) => {
+const handleMobileTagSelected = (tag: string) => {
   // Reuse existing tag selection logic (already closes mobile menu)
   handleTagSelected(tag)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([50])
 }
 
-const _handleMobileRefreshData = () => {
+const handleMobileRefreshData = () => {
   // Reuse existing refresh logic
   refreshAnalytics()
   vibrate([100])

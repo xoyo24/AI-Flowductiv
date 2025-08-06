@@ -216,37 +216,37 @@ const showSaveDialog = ref(false)
 const saveFilterName = ref('')
 
 // Methods
-const _removeTagFilter = (tag: string) => {
+const removeTagFilter = (tag: string) => {
   emit('remove-tag-filter', tag)
 }
 
-const _removePriorityFilter = (priority: number) => {
+const removePriorityFilter = (priority: number) => {
   emit('remove-priority-filter', priority)
 }
 
-const _removeFocusFilter = (focus: number) => {
+const removeFocusFilter = (focus: number) => {
   emit('remove-focus-filter', focus)
 }
 
-const _clearDateRangeFilter = () => {
+const clearDateRangeFilter = () => {
   emit('clear-date-range-filter')
 }
 
-const _clearDurationFilters = () => {
+const clearDurationFilters = () => {
   emit('clear-duration-filters')
 }
 
-const _clearAllFilters = () => {
+const clearAllFilters = () => {
   emit('clear-all-filters')
 }
 
-const _formatDateRange = (dateRange: { start: Date; end: Date }) => {
+const formatDateRange = (dateRange: { start: Date; end: Date }) => {
   const start = dateRange.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const end = dateRange.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   return `${start} - ${end}`
 }
 
-const _formatDurationFilter = () => {
+const formatDurationFilter = () => {
   const { minDuration, maxDuration } = props.activeFilters
 
   const formatMs = (ms: number) => {
@@ -273,7 +273,7 @@ const _formatDurationFilter = () => {
 }
 
 // Save filter methods
-const _saveCurrentFilters = () => {
+const saveCurrentFilters = () => {
   if (!saveFilterName.value.trim()) return
 
   try {
@@ -289,7 +289,7 @@ const cancelSave = () => {
   showSaveDialog.value = false
 }
 
-const _getActiveFiltersDescription = () => {
+const getActiveFiltersDescription = () => {
   const parts: string[] = []
 
   if (props.activeFilters.priority?.length) {

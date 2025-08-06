@@ -135,7 +135,7 @@ defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // Focus rating handler
-const _handleFocusRating = (activity: Activity, rating: number) => {
+const handleFocusRating = (activity: Activity, rating: number) => {
   emit('activity-focus-rating', activity, rating)
 }
 </script>

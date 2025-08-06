@@ -100,7 +100,7 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 // Computed properties
-const _iconComponent = computed(() => {
+const iconComponent = computed(() => {
   switch (props.type) {
     case 'danger':
       return Trash2
@@ -113,7 +113,7 @@ const _iconComponent = computed(() => {
   }
 })
 
-const _iconClass = computed(() => {
+const iconClass = computed(() => {
   switch (props.type) {
     case 'danger':
       return 'text-red-600'
@@ -126,7 +126,7 @@ const _iconClass = computed(() => {
   }
 })
 
-const _iconBgClass = computed(() => {
+const iconBgClass = computed(() => {
   switch (props.type) {
     case 'danger':
       return 'bg-red-50'
@@ -139,7 +139,7 @@ const _iconBgClass = computed(() => {
   }
 })
 
-const _confirmButtonClass = computed(() => {
+const confirmButtonClass = computed(() => {
   switch (props.type) {
     case 'danger':
       return 'bg-red-600 text-white hover:bg-red-700'
@@ -160,7 +160,7 @@ const closeDialog = () => {
   }
 }
 
-const _handleConfirm = () => {
+const handleConfirm = () => {
   error.value = null
   emit('confirm')
 }

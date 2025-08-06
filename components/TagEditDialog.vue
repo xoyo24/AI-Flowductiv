@@ -145,7 +145,7 @@ const closeDialog = () => {
   }
 }
 
-const _handleRename = async () => {
+const handleRename = async () => {
   if (!props.tag || !newTagName.value.trim() || loading.value) return
 
   const trimmedName = newTagName.value.trim()

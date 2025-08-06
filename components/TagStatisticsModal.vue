@@ -168,15 +168,15 @@ const totalTime = computed(() => {
   return statistics.value.reduce((sum, stat) => sum + stat.totalTime, 0)
 })
 
-const _avgSessionTime = computed(() => {
+const avgSessionTime = computed(() => {
   return totalActivities.value > 0 ? totalTime.value / totalActivities.value : 0
 })
 
-const _sortedStatistics = computed(() => {
+const sortedStatistics = computed(() => {
   return [...statistics.value].sort((a, b) => b.totalTime - a.totalTime)
 })
 
-const _maxTime = computed(() => {
+const maxTime = computed(() => {
   return Math.max(...statistics.value.map((s) => s.totalTime), 1)
 })
 
@@ -199,7 +199,7 @@ const loadStatistics = async () => {
   }
 }
 
-const _getProductivityColorClass = (score: number, prefix = '') => {
+const getProductivityColorClass = (score: number, prefix = '') => {
   const basePrefix = prefix ? `${prefix}-` : ''
 
   if (score >= 0.8) return `${basePrefix}green-500`

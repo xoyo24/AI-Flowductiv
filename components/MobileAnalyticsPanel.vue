@@ -261,7 +261,7 @@ const formatDuration = (ms: number): string => {
 }
 
 // Condensed heatmap for mobile (4 weeks instead of 12)
-const _condensedHeatmapWeeks = computed(() => {
+const condensedHeatmapWeeks = computed(() => {
   if (!props.heatmapData.length) return []
 
   // Get last 28 days (4 weeks)
@@ -308,12 +308,12 @@ const _condensedHeatmapWeeks = computed(() => {
 })
 
 // Top 5 tags by usage
-const _topTags = computed(() => {
+const topTags = computed(() => {
   return [...props.tagData].sort((a, b) => b.totalTime - a.totalTime).slice(0, 5)
 })
 
 // Heatmap styling
-const _getHeatmapDayClass = (day: any): string => {
+const getHeatmapDayClass = (day: any): string => {
   if (!day.totalTime) return 'bg-muted/30'
 
   // Calculate intensity based on total time (in minutes)
@@ -328,7 +328,7 @@ const _getHeatmapDayClass = (day: any): string => {
   return 'bg-muted/30'
 }
 
-const _getHeatmapDayTooltip = (day: any): string => {
+const getHeatmapDayTooltip = (day: any): string => {
   const date = new Date(day.date).toLocaleDateString()
   const duration = formatDuration(day.totalTime)
   const focus = day.avgFocus ? ` • ${day.avgFocus.toFixed(1)}/5 focus` : ''
@@ -337,19 +337,19 @@ const _getHeatmapDayTooltip = (day: any): string => {
 }
 
 // Event handlers with enhanced haptic feedback
-const _handleDayClick = (day: any) => {
+const handleDayClick = (day: any) => {
   // Stronger haptic for day selection (more important action)
   vibrate([100, 50, 100])
   emit('day-selected', day)
 }
 
-const _handleTagSelect = (tagName: string) => {
+const handleTagSelect = (tagName: string) => {
   // Light haptic for tag selection
   vibrate([50])
   emit('tag-selected', tagName)
 }
 
-const _handleModalAction = (modalType: string) => {
+const handleModalAction = (modalType: string) => {
   // Medium haptic for modal opens
   vibrate([75])
   switch (modalType) {
@@ -365,13 +365,13 @@ const _handleModalAction = (modalType: string) => {
   }
 }
 
-const _handleRefresh = () => {
+const handleRefresh = () => {
   // Success pattern for refresh
   vibrate([100, 50, 50])
   emit('refresh-data')
 }
 
-const _handleClose = () => {
+const handleClose = () => {
   // Light haptic for close
   vibrate([30])
   emit('close')

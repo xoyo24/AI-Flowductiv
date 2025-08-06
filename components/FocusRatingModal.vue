@@ -118,7 +118,7 @@ watch(
 )
 
 // Rating labels for user feedback
-const _getRatingLabel = (rating: number): string => {
+const getRatingLabel = (rating: number): string => {
   const labels = {
     1: "Very distracted - couldn't stay focused",
     2: 'Somewhat distracted - frequent interruptions',
@@ -130,26 +130,26 @@ const _getRatingLabel = (rating: number): string => {
 }
 
 // Actions
-const _setRating = (rating: number) => {
+const setRating = (rating: number) => {
   currentRating.value = rating
   emit('rating-changed', rating)
 }
 
-const _handleSave = () => {
+const handleSave = () => {
   if (currentRating.value > 0) {
     emit('save', currentRating.value)
   }
 }
 
-const _handleSkip = () => {
+const handleSkip = () => {
   emit('skip')
 }
 
-const _handleCancel = () => {
+const handleCancel = () => {
   emit('close')
 }
 
-const _handleBackdropClick = () => {
+const handleBackdropClick = () => {
   emit('close')
 }
 </script>

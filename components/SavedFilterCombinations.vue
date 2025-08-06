@@ -135,7 +135,7 @@ import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
 type Emits = (e: 'apply-combination', combinationId: string) => void
 
-const _emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 // Composables
 const {
@@ -156,7 +156,7 @@ const editingCombination = ref<string | null>(null)
 const editFormName = ref('')
 
 // Filter combination computed properties
-const _hasAnyActiveFilters = computed(() => {
+const hasAnyActiveFilters = computed(() => {
   const current = getCurrentFilters()
   return (
     (current.priority && current.priority.length > 0) ||
@@ -169,7 +169,7 @@ const _hasAnyActiveFilters = computed(() => {
 })
 
 // Methods
-const _getActiveFiltersDescription = () => {
+const getActiveFiltersDescription = () => {
   const current = getCurrentFilters()
   const parts: string[] = []
 
@@ -194,7 +194,7 @@ const _getActiveFiltersDescription = () => {
   return parts.length > 0 ? parts.join(', ') : 'No filters'
 }
 
-const _saveCombination = () => {
+const saveCombination = () => {
   if (!saveFormName.value.trim()) return
 
   try {
@@ -206,17 +206,17 @@ const _saveCombination = () => {
   }
 }
 
-const _cancelSave = () => {
+const cancelSave = () => {
   saveFormName.value = ''
   showSaveForm.value = false
 }
 
-const _startEditingCombination = (id: string, currentName: string) => {
+const startEditingCombination = (id: string, currentName: string) => {
   editingCombination.value = id
   editFormName.value = currentName
 }
 
-const _saveEditedCombination = () => {
+const saveEditedCombination = () => {
   if (!editFormName.value.trim() || !editingCombination.value) return
 
   try {
@@ -232,7 +232,7 @@ const cancelEdit = () => {
   editFormName.value = ''
 }
 
-const _deleteCombination = (id: string) => {
+const deleteCombination = (id: string) => {
   if (confirm('Are you sure you want to delete this filter combination?')) {
     try {
       deleteSavedFilterCombination(id)
@@ -242,7 +242,7 @@ const _deleteCombination = (id: string) => {
   }
 }
 
-const _formatCombinationDate = (dateString: string) => {
+const formatCombinationDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()

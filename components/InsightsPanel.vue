@@ -199,7 +199,7 @@ interface CategoryData {
   totalTime: number
 }
 
-const _props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   compact: false,
   mobileMode: false,
 })
@@ -224,7 +224,7 @@ const focusPattern = ref<string>('')
 const topCategories = ref<CategoryData[]>([])
 
 // AI Insights Toggle
-const _toggleAIInsights = async () => {
+const toggleAIInsights = async () => {
   if (!showAIInsights.value) {
     showAIInsights.value = true
     if (!hasAIInsights.value && !aiLoading.value) {

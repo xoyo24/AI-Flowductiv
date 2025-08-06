@@ -216,7 +216,7 @@ const props = withDefaults(defineProps<Props>(), {
   showCelebration: false,
 })
 
-const _emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 // Local state
 const showDropdown = ref(false)
@@ -236,7 +236,7 @@ onMounted(() => {
 })
 
 // Computed properties
-const _statusBadgeClass = computed(() => {
+const statusBadgeClass = computed(() => {
   switch (props.goal.status) {
     case 'active':
       return 'bg-primary text-primary-foreground'
@@ -251,12 +251,12 @@ const _statusBadgeClass = computed(() => {
   }
 })
 
-const _periodDisplay = computed(() => {
+const periodDisplay = computed(() => {
   const period = props.goal.period.charAt(0).toUpperCase() + props.goal.period.slice(1)
   return period
 })
 
-const _typeDisplay = computed(() => {
+const typeDisplay = computed(() => {
   switch (props.goal.type) {
     case 'time':
       return 'Time-based'
@@ -271,7 +271,7 @@ const _typeDisplay = computed(() => {
   }
 })
 
-const _progressBarColor = computed(() => {
+const progressBarColor = computed(() => {
   if (!props.progress) return 'bg-primary'
 
   if (props.progress.isCompleted) {
@@ -286,7 +286,7 @@ const _progressBarColor = computed(() => {
   return 'bg-primary'
 })
 
-const _timeRemaining = computed(() => {
+const timeRemaining = computed(() => {
   if (!props.progress) return null
 
   const now = new Date()
@@ -308,7 +308,7 @@ const _timeRemaining = computed(() => {
 })
 
 // Methods
-const _formatValue = (value: number): string => {
+const formatValue = (value: number): string => {
   if (props.goal.type === 'time') {
     return value.toFixed(1)
   }
