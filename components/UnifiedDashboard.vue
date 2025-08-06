@@ -1117,7 +1117,7 @@ const _handleMobileRefreshData = () => {
 }
 
 // Format time range helper
-const _formatTimeRange = (startTime, endTime) => {
+const formatTimeRange = (startTime, endTime) => {
   const start = new Date(startTime)
   const end = new Date(endTime)
 

@@ -310,7 +310,7 @@ interface Emits {
   (e: 'duration-changed', minDuration?: number, maxDuration?: number): void
 }
 
-const _props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
   tagsLoading: false,
