@@ -130,14 +130,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 import { useActivities } from '~/composables/useActivities'
+import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
-interface Emits {
-  (e: 'apply-combination', combinationId: string): void
-}
+type Emits = (e: 'apply-combination', combinationId: string) => void
 
-const emit = defineEmits<Emits>()
+const _emit = defineEmits<Emits>()
 
 // Composables
 const {
@@ -146,7 +144,7 @@ const {
   applySavedFilterCombination,
   deleteSavedFilterCombination,
   renameSavedFilterCombination,
-  getCurrentFilters
+  getCurrentFilters,
 } = useAdvancedFilters()
 
 const { activeFilters } = useActivities()
@@ -158,7 +156,7 @@ const editingCombination = ref<string | null>(null)
 const editFormName = ref('')
 
 // Filter combination computed properties
-const hasAnyActiveFilters = computed(() => {
+const _hasAnyActiveFilters = computed(() => {
   const current = getCurrentFilters()
   return (
     (current.priority && current.priority.length > 0) ||
@@ -171,10 +169,10 @@ const hasAnyActiveFilters = computed(() => {
 })
 
 // Methods
-const getActiveFiltersDescription = () => {
+const _getActiveFiltersDescription = () => {
   const current = getCurrentFilters()
   const parts: string[] = []
-  
+
   if (current.priority?.length) {
     parts.push(`Priority: ${current.priority.join(', ')}`)
   }
@@ -192,13 +190,13 @@ const getActiveFiltersDescription = () => {
   if (activeFilters.value.dateRange) {
     parts.push('Date range selected')
   }
-  
+
   return parts.length > 0 ? parts.join(', ') : 'No filters'
 }
 
-const saveCombination = () => {
+const _saveCombination = () => {
   if (!saveFormName.value.trim()) return
-  
+
   try {
     saveCurrentFilterCombination(saveFormName.value.trim())
     saveFormName.value = ''
@@ -208,19 +206,19 @@ const saveCombination = () => {
   }
 }
 
-const cancelSave = () => {
+const _cancelSave = () => {
   saveFormName.value = ''
   showSaveForm.value = false
 }
 
-const startEditingCombination = (id: string, currentName: string) => {
+const _startEditingCombination = (id: string, currentName: string) => {
   editingCombination.value = id
   editFormName.value = currentName
 }
 
-const saveEditedCombination = () => {
+const _saveEditedCombination = () => {
   if (!editFormName.value.trim() || !editingCombination.value) return
-  
+
   try {
     renameSavedFilterCombination(editingCombination.value, editFormName.value.trim())
     cancelEdit()
@@ -234,7 +232,7 @@ const cancelEdit = () => {
   editFormName.value = ''
 }
 
-const deleteCombination = (id: string) => {
+const _deleteCombination = (id: string) => {
   if (confirm('Are you sure you want to delete this filter combination?')) {
     try {
       deleteSavedFilterCombination(id)
@@ -244,20 +242,21 @@ const deleteCombination = (id: string) => {
   }
 }
 
-const formatCombinationDate = (dateString: string) => {
+const _formatCombinationDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  
+
   if (diffDays === 0) {
     return 'Today'
-  } else if (diffDays === 1) {
-    return 'Yesterday'
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`
-  } else {
-    return date.toLocaleDateString()
   }
+  if (diffDays === 1) {
+    return 'Yesterday'
+  }
+  if (diffDays < 7) {
+    return `${diffDays} days ago`
+  }
+  return date.toLocaleDateString()
 }
 </script>

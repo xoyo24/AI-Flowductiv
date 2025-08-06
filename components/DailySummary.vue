@@ -210,7 +210,7 @@ interface AISummary {
   generatedAt: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   compact: false,
 })
 
@@ -227,7 +227,7 @@ const error = ref<string | null>(null)
 const rateLimitData = ref<any>(null)
 
 // Computed values
-const formattedSummary = computed(() => {
+const _formattedSummary = computed(() => {
   if (!summary.value) return ''
 
   // Convert markdown-like content to HTML
@@ -237,9 +237,9 @@ const formattedSummary = computed(() => {
     .replace(/\n/g, '<br>')
 })
 
-const summaryPlainText = computed(() => {
+const _summaryPlainText = computed(() => {
   if (!summary.value?.content) return 'No insights available yet'
-  
+
   // Strip markdown and HTML for compact display
   return summary.value.content
     .replace(/\*\*(.*?)\*\*/g, '$1')
@@ -248,7 +248,7 @@ const summaryPlainText = computed(() => {
     .trim()
 })
 
-const focusScore = computed(() => {
+const _focusScore = computed(() => {
   if (activities.value.length === 0) return 0
 
   const activitiesWithRating = activities.value.filter((a) => a.focusRating !== null)
@@ -260,7 +260,7 @@ const focusScore = computed(() => {
   return Math.round(average * 10) / 10
 })
 
-const productivityLevel = computed(() => {
+const _productivityLevel = computed(() => {
   const totalTime = activities.value.reduce((sum, a) => sum + a.durationMs, 0)
   const hours = totalTime / (1000 * 60 * 60)
 
@@ -270,7 +270,7 @@ const productivityLevel = computed(() => {
   return 'Starting'
 })
 
-const timeAgo = computed(() => {
+const _timeAgo = computed(() => {
   if (!summary.value) return ''
 
   const now = new Date()
@@ -287,15 +287,15 @@ const timeAgo = computed(() => {
 })
 
 // Rate limit handling
-const isRateLimited = computed(() => {
+const _isRateLimited = computed(() => {
   return rateLimitData.value !== null
 })
 
-const rateLimitReasons = computed(() => {
+const _rateLimitReasons = computed(() => {
   return rateLimitData.value?.reasons || []
 })
 
-const rateLimitProgress = computed(() => {
+const _rateLimitProgress = computed(() => {
   return rateLimitData.value?.progress || null
 })
 
@@ -391,7 +391,7 @@ onMounted(async () => {
       if (response.data) {
         summary.value = response.data
       }
-    } catch (err) {
+    } catch (_err) {
       // No cached summary, that's okay
     }
   }

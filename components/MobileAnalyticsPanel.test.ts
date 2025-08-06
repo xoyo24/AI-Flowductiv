@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MobileAnalyticsPanel from './MobileAnalyticsPanel.vue'
 
 // Mock Lucide icons
@@ -15,30 +15,30 @@ describe('MobileAnalyticsPanel', () => {
       date: '2024-01-01',
       totalTime: 3600000, // 1 hour in ms
       activityCount: 3,
-      avgFocus: 4.5
+      avgFocus: 4.5,
     },
     {
       date: '2024-01-02',
       totalTime: 7200000, // 2 hours in ms
       activityCount: 5,
-      avgFocus: 3.8
-    }
+      avgFocus: 3.8,
+    },
   ]
 
   const mockTagData = [
     { name: 'work', count: 10, totalTime: 7200000 },
-    { name: 'study', count: 5, totalTime: 3600000 }
+    { name: 'study', count: 5, totalTime: 3600000 },
   ]
 
   const mockTodayStats = {
     totalTime: '2h 30m',
     activityCount: 4,
-    avgFocus: '4.2'
+    avgFocus: '4.2',
   }
 
   const mockActiveGoals = [
     { id: '1', title: 'Daily Focus Goal', progress: 75 },
-    { id: '2', title: 'Weekly Learning', progress: 60 }
+    { id: '2', title: 'Weekly Learning', progress: 60 },
   ]
 
   const defaultProps = {
@@ -47,20 +47,20 @@ describe('MobileAnalyticsPanel', () => {
     tagData: mockTagData,
     selectedDate: null,
     todayStats: mockTodayStats,
-    activeGoals: mockActiveGoals
+    activeGoals: mockActiveGoals,
   }
 
   beforeEach(() => {
     // Mock navigator.vibrate for haptic feedback tests
     global.navigator = {
       ...global.navigator,
-      vibrate: vi.fn()
+      vibrate: vi.fn(),
     }
   })
 
   it('renders when isOpen is true', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     expect(wrapper.find('[data-testid="close-analytics-panel"]').exists()).toBe(true)
@@ -69,15 +69,15 @@ describe('MobileAnalyticsPanel', () => {
 
   it('does not render when isOpen is false', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: { ...defaultProps, isOpen: false }
+      props: { ...defaultProps, isOpen: false },
     })
 
     expect(wrapper.find('[data-testid="close-analytics-panel"]').exists()).toBe(false)
   })
 
-  it('displays today\'s stats correctly', async () => {
+  it("displays today's stats correctly", async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     expect(wrapper.text()).toContain('2h 30m')
@@ -87,7 +87,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('displays top tags with usage data', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     expect(wrapper.text()).toContain('#work')
@@ -98,7 +98,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('renders condensed heatmap grid', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Should have heatmap grid elements
@@ -108,7 +108,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('shows goals when available', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     expect(wrapper.text()).toContain('Daily Focus Goal')
@@ -119,7 +119,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('shows no goals message when goals array is empty', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: { ...defaultProps, activeGoals: [] }
+      props: { ...defaultProps, activeGoals: [] },
     })
 
     expect(wrapper.text()).toContain('No active goals')
@@ -128,7 +128,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits close event when close button is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const closeButton = wrapper.find('[data-testid="close-analytics-panel"]')
@@ -139,7 +139,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits close event when backdrop is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const backdrop = wrapper.find('.fixed.inset-0')
@@ -150,7 +150,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('does not emit close when panel content is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const panelContent = wrapper.find('.absolute.right-0')
@@ -161,12 +161,12 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits tag-selected when tag is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const tagElements = wrapper.findAll('.touch-target')
-    const workTag = tagElements.find(el => el.text().includes('#work'))
-    
+    const workTag = tagElements.find((el) => el.text().includes('#work'))
+
     if (workTag) {
       await workTag.trigger('click')
       expect(wrapper.emitted('tag-selected')).toBeTruthy()
@@ -176,7 +176,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits show-heatmap-modal when expand button is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const expandButton = wrapper.find('[data-testid="expand-heatmap-button"]')
@@ -187,7 +187,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits show-goals-modal when manage goals button is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const manageButton = wrapper.find('[data-testid="manage-goals-button"]')
@@ -198,7 +198,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits show-insights-modal when AI insights button is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const insightsButton = wrapper.find('[data-testid="ai-insights-button"]')
@@ -209,7 +209,7 @@ describe('MobileAnalyticsPanel', () => {
 
   it('emits refresh-data when refresh button is clicked', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const refreshButton = wrapper.find('[data-testid="refresh-analytics-button"]')
@@ -220,14 +220,14 @@ describe('MobileAnalyticsPanel', () => {
 
   it('has proper touch targets (minimum 44px)', async () => {
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const touchTargets = wrapper.findAll('.touch-target')
     expect(touchTargets.length).toBeGreaterThan(0)
-    
+
     // Verify CSS classes are applied (actual size verification would require DOM rendering)
-    touchTargets.forEach(target => {
+    touchTargets.forEach((target) => {
       expect(target.classes()).toContain('touch-target')
     })
   })
@@ -237,13 +237,13 @@ describe('MobileAnalyticsPanel', () => {
     global.navigator.vibrate = vibrateMock
 
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Simulate tag click which should trigger haptic feedback
     const tagElements = wrapper.findAll('.touch-target')
-    const workTag = tagElements.find(el => el.text().includes('#work'))
-    
+    const workTag = tagElements.find((el) => el.text().includes('#work'))
+
     if (workTag) {
       await workTag.trigger('click')
       expect(vibrateMock).toHaveBeenCalledWith([50])
@@ -252,16 +252,16 @@ describe('MobileAnalyticsPanel', () => {
 
   it('handles missing vibrate API gracefully', async () => {
     // Remove vibrate from navigator
-    delete global.navigator.vibrate
+    global.navigator.vibrate = undefined
 
     const wrapper = await mountSuspended(MobileAnalyticsPanel, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Should not throw error when trying to vibrate
     const tagElements = wrapper.findAll('.touch-target')
-    const workTag = tagElements.find(el => el.text().includes('#work'))
-    
+    const workTag = tagElements.find((el) => el.text().includes('#work'))
+
     if (workTag) {
       expect(async () => {
         await workTag.trigger('click')
@@ -275,9 +275,9 @@ describe('MobileAnalyticsPanel', () => {
         ...defaultProps,
         tagData: [
           { name: 'long-task', count: 1, totalTime: 4500000 }, // 1h 15m
-          { name: 'short-task', count: 1, totalTime: 1800000 }  // 30m
-        ]
-      }
+          { name: 'short-task', count: 1, totalTime: 1800000 }, // 30m
+        ],
+      },
     })
 
     expect(wrapper.text()).toContain('1h 15m')

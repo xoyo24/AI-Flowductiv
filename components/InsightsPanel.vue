@@ -172,21 +172,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { 
-  AlertCircle, 
-  BarChart3, 
-  Brain, 
-  Clock, 
-  Info, 
-  Lightbulb, 
-  Minus, 
-  Sparkles, 
-  TrendingDown, 
-  TrendingUp 
+import {
+  AlertCircle,
+  BarChart3,
+  Brain,
+  Clock,
+  Info,
+  Lightbulb,
+  Minus,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-vue-next'
-import { useInsights } from '~/composables/useInsights'
+import { onMounted, ref } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { useInsights } from '~/composables/useInsights'
 
 interface Props {
   compact?: boolean
@@ -199,8 +199,7 @@ interface CategoryData {
   totalTime: number
 }
 
-
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   compact: false,
   mobileMode: false,
 })
@@ -211,7 +210,7 @@ const {
   loading: aiLoading,
   error: aiError,
   hasInsights: hasAIInsights,
-  generateInsights
+  generateInsights,
 } = useInsights()
 
 const { getActivities, getActivitiesForDate } = useActivities()
@@ -225,7 +224,7 @@ const focusPattern = ref<string>('')
 const topCategories = ref<CategoryData[]>([])
 
 // AI Insights Toggle
-const toggleAIInsights = async () => {
+const _toggleAIInsights = async () => {
   if (!showAIInsights.value) {
     showAIInsights.value = true
     if (!hasAIInsights.value && !aiLoading.value) {
@@ -334,14 +333,9 @@ const calculateTopCategories = async () => {
   }
 }
 
-
 // Load static analysis data
 const loadStaticAnalysis = async () => {
-  await Promise.all([
-    calculatePeakHours(),
-    calculateFocusPattern(),
-    calculateTopCategories(),
-  ])
+  await Promise.all([calculatePeakHours(), calculateFocusPattern(), calculateTopCategories()])
 }
 
 // Initialize on mount

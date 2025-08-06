@@ -194,7 +194,7 @@ describe('SuggestionDropdown Component', () => {
       await firstSuggestion.trigger('click')
 
       expect(wrapper.emitted('select')).toBeTruthy()
-      expect(wrapper.emitted('select')![0]).toEqual([mockSuggestions[0]])
+      expect(wrapper.emitted('select')?.[0]).toEqual([mockSuggestions[0]])
     })
 
     it('should emit hover event when suggestion is hovered', async () => {
@@ -210,7 +210,7 @@ describe('SuggestionDropdown Component', () => {
       await secondSuggestion.trigger('mouseenter')
 
       expect(wrapper.emitted('hover')).toBeTruthy()
-      expect(wrapper.emitted('hover')![0]).toEqual([1])
+      expect(wrapper.emitted('hover')?.[0]).toEqual([1])
     })
 
     it('should prevent event propagation on click', async () => {
@@ -224,7 +224,7 @@ describe('SuggestionDropdown Component', () => {
 
       const firstSuggestion = wrapper.findAll('[data-testid="suggestion-item"]')[0]
       const clickEvent = new Event('click')
-      const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation')
+      const _stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation')
 
       await firstSuggestion.element.dispatchEvent(clickEvent)
 
@@ -248,7 +248,7 @@ describe('SuggestionDropdown Component', () => {
       component.handleEnterKey()
 
       expect(wrapper.emitted('select')).toBeTruthy()
-      expect(wrapper.emitted('select')![0]).toEqual([mockSuggestions[1]])
+      expect(wrapper.emitted('select')?.[0]).toEqual([mockSuggestions[1]])
     })
 
     it('should not emit select when no suggestion is selected on enter', async () => {

@@ -5,7 +5,7 @@ import { activities, users } from '~/server/database/schema'
 
 const RenameTagSchema = z.object({
   oldName: z.string().min(1, 'Old tag name is required').trim(),
-  newName: z.string().min(1, 'New tag name is required').trim()
+  newName: z.string().min(1, 'New tag name is required').trim(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     if (oldName === newName) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'New tag name must be different from old name'
+        statusMessage: 'New tag name must be different from old name',
       })
     }
 
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     if (existingActivities.length > 0) {
       throw createError({
         statusCode: 409,
-        statusMessage: 'Tag already exists'
+        statusMessage: 'Tag already exists',
       })
     }
 
@@ -46,24 +46,21 @@ export default defineEventHandler(async (event) => {
     for (const activity of activitiesToUpdate) {
       const currentTags = activity.tags || []
       const tagIndex = currentTags.indexOf(oldName)
-      
+
       if (tagIndex !== -1) {
         const updatedTags = [...currentTags]
         updatedTags[tagIndex] = newName
 
         // Also update the title to replace hashtag references
         const currentTitle = activity.title || ''
-        const updatedTitle = currentTitle.replace(
-          new RegExp(`#${oldName}\\b`, 'g'), 
-          `#${newName}`
-        )
+        const updatedTitle = currentTitle.replace(new RegExp(`#${oldName}\\b`, 'g'), `#${newName}`)
 
         await db
           .update(activities)
           .set({
             tags: updatedTags,
             title: updatedTitle,
-            updatedAt: new Date()
+            updatedAt: new Date(),
           })
           .where(eq(activities.id, activity.id))
 
@@ -73,16 +70,12 @@ export default defineEventHandler(async (event) => {
 
     // Update favorite tags if old tag was a favorite
     const userId = 'demo-user'
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
+    const user = await db.select().from(users).where(eq(users.id, userId)).limit(1)
 
     if (user.length > 0) {
       const currentFavorites = user[0].preferences?.favoriteTags || []
       const favoriteIndex = currentFavorites.indexOf(oldName)
-      
+
       if (favoriteIndex !== -1) {
         const updatedFavorites = [...currentFavorites]
         updatedFavorites[favoriteIndex] = newName
@@ -91,33 +84,33 @@ export default defineEventHandler(async (event) => {
           .update(users)
           .set({
             preferences: {
-              ...user[0].preferences || {},
-              favoriteTags: updatedFavorites
+              ...(user[0].preferences || {}),
+              favoriteTags: updatedFavorites,
             },
-            updatedAt: new Date()
+            updatedAt: new Date(),
           })
           .where(eq(users.id, userId))
       }
     }
 
-    return { 
-      data: { 
-        success: true, 
-        updatedActivities: updatedCount 
-      } 
+    return {
+      data: {
+        success: true,
+        updatedActivities: updatedCount,
+      },
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        statusMessage: error.errors[0].message
+        statusMessage: error.errors[0].message,
       })
     }
 
     console.error('Failed to rename tag:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to rename tag'
+      statusMessage: 'Failed to rename tag',
     })
   }
 })

@@ -110,28 +110,34 @@ const error = ref<string | null>(null)
 const success = ref<string | null>(null)
 
 // Watch for tag changes to reset form
-watch(() => props.tag, (newTag) => {
-  if (newTag) {
-    newTagName.value = newTag.name
-    error.value = null
-    success.value = null
+watch(
+  () => props.tag,
+  (newTag) => {
+    if (newTag) {
+      newTagName.value = newTag.name
+      error.value = null
+      success.value = null
+    }
   }
-})
+)
 
 // Watch for dialog open to focus input
-watch(() => props.isOpen, (isOpen) => {
-  if (isOpen && props.tag) {
-    newTagName.value = props.tag.name
-    error.value = null
-    success.value = null
-    // Focus input after next tick
-    nextTick(() => {
-      const input = document.getElementById('new-tag-name') as HTMLInputElement
-      input?.focus()
-      input?.select()
-    })
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (isOpen && props.tag) {
+      newTagName.value = props.tag.name
+      error.value = null
+      success.value = null
+      // Focus input after next tick
+      nextTick(() => {
+        const input = document.getElementById('new-tag-name') as HTMLInputElement
+        input?.focus()
+        input?.select()
+      })
+    }
   }
-})
+)
 
 const closeDialog = () => {
   if (!loading.value) {
@@ -139,7 +145,7 @@ const closeDialog = () => {
   }
 }
 
-const handleRename = async () => {
+const _handleRename = async () => {
   if (!props.tag || !newTagName.value.trim() || loading.value) return
 
   const trimmedName = newTagName.value.trim()
@@ -154,11 +160,11 @@ const handleRename = async () => {
 
   try {
     const result = await renameTag(props.tag.name, trimmedName)
-    
+
     if (result.success) {
       success.value = `Renamed tag to "${trimmedName}" across ${result.updatedActivities} activities`
       emit('renamed', props.tag.name, trimmedName)
-      
+
       // Close dialog after showing success message briefly
       setTimeout(() => {
         closeDialog()
@@ -181,7 +187,7 @@ onMounted(() => {
     }
   }
   document.addEventListener('keydown', handleEscape)
-  
+
   onUnmounted(() => {
     document.removeEventListener('keydown', handleEscape)
   })

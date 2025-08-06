@@ -91,14 +91,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { Clock } from 'lucide-vue-next'
-import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
+import { computed, ref } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
-interface Emits {
-  (e: 'duration-changed', minDuration?: number, maxDuration?: number): void
-}
+type Emits = (e: 'duration-changed', minDuration?: number, maxDuration?: number) => void
 
 const emit = defineEmits<Emits>()
 
@@ -115,25 +113,25 @@ const showCustomRange = ref(false)
 const currentFilters = computed(() => activeFilters.value)
 
 // Configuration data
-const quickDurations = [
+const _quickDurations = [
   {
     key: 'short',
     label: '≤15m',
     min: undefined,
-    max: 900000 // 15 minutes
+    max: 900000, // 15 minutes
   },
   {
     key: 'medium',
     label: '15m-1h',
     min: 900000, // 15 minutes
-    max: 3600000 // 60 minutes
+    max: 3600000, // 60 minutes
   },
   {
     key: 'long',
     label: '≥1h',
     min: 3600000, // 60 minutes
-    max: undefined
-  }
+    max: undefined,
+  },
 ]
 
 // Computed properties
@@ -148,8 +146,8 @@ const isCustomDurationValid = computed(() => {
     return false
   }
   if (
-    customMinDuration.value !== null && 
-    customMaxDuration.value !== null && 
+    customMinDuration.value !== null &&
+    customMaxDuration.value !== null &&
     customMinDuration.value > customMaxDuration.value
   ) {
     return false
@@ -157,22 +155,21 @@ const isCustomDurationValid = computed(() => {
   return true
 })
 
-const hasActiveDuration = computed(() => {
-  return currentFilters.value.minDuration !== undefined || currentFilters.value.maxDuration !== undefined
+const _hasActiveDuration = computed(() => {
+  return (
+    currentFilters.value.minDuration !== undefined || currentFilters.value.maxDuration !== undefined
+  )
 })
 
 // Methods
 const isDurationRangeActive = (min?: number, max?: number) => {
-  return (
-    currentFilters.value.minDuration === min &&
-    currentFilters.value.maxDuration === max
-  )
+  return currentFilters.value.minDuration === min && currentFilters.value.maxDuration === max
 }
 
-const setDurationRange = (min?: number, max?: number) => {
+const _setDurationRange = (min?: number, max?: number) => {
   // Check if this range is already active - if so, clear it
   const isCurrentlyActive = isDurationRangeActive(min, max)
-  
+
   if (isCurrentlyActive) {
     // Clear the filter
     setDurationRangeFilter(undefined, undefined)
@@ -183,48 +180,49 @@ const setDurationRange = (min?: number, max?: number) => {
   // Note: No need to emit since we handle it directly
 }
 
-const applyCustomDuration = () => {
+const _applyCustomDuration = () => {
   if (!isCustomDurationValid.value) return
-  
+
   const minMs = customMinDuration.value !== null ? customMinDuration.value * 60 * 1000 : undefined
   const maxMs = customMaxDuration.value !== null ? customMaxDuration.value * 60 * 1000 : undefined
-  
+
   setDurationRangeFilter(minMs, maxMs)
   emit('duration-changed', minMs, maxMs)
-  
+
   // Clear inputs after applying
   customMinDuration.value = null
   customMaxDuration.value = null
   showCustomRange.value = false
 }
 
-const clearDuration = () => {
+const _clearDuration = () => {
   clearDurationRangeFilter()
   emit('duration-changed', undefined, undefined)
 }
 
-const formatActiveDuration = () => {
+const _formatActiveDuration = () => {
   const { minDuration, maxDuration } = currentFilters.value
-  
+
   const formatMs = (ms: number) => {
     const minutes = Math.round(ms / 60000)
     if (minutes < 60) {
       return `${minutes}min`
-    } else {
-      const hours = Math.floor(minutes / 60)
-      const remainingMins = minutes % 60
-      return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
     }
+    const hours = Math.floor(minutes / 60)
+    const remainingMins = minutes % 60
+    return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
   }
-  
+
   if (minDuration !== undefined && maxDuration !== undefined) {
     return `${formatMs(minDuration)} - ${formatMs(maxDuration)}`
-  } else if (minDuration !== undefined) {
+  }
+  if (minDuration !== undefined) {
     return `≥ ${formatMs(minDuration)}`
-  } else if (maxDuration !== undefined) {
+  }
+  if (maxDuration !== undefined) {
     return `≤ ${formatMs(maxDuration)}`
   }
-  
+
   return 'Duration'
 }
 </script>

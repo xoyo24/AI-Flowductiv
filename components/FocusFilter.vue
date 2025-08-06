@@ -26,26 +26,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Target } from 'lucide-vue-next'
-import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
+import { computed } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
-interface Emits {
-  (e: 'focus-toggle', focus: number): void
-}
+type Emits = (e: 'focus-toggle', focus: number) => void
 
-const emit = defineEmits<Emits>()
+const _emit = defineEmits<Emits>()
 
 // Composables
 const { toggleFocusRatingFilter } = useAdvancedFilters()
 const { activeFilters } = useActivities()
 
 // Current filter state
-const currentFilters = computed(() => activeFilters.value)
+const _currentFilters = computed(() => activeFilters.value)
 
 // Methods
-const toggleFocus = (focus: number) => {
+const _toggleFocus = (focus: number) => {
   toggleFocusRatingFilter(focus)
 }
 </script>

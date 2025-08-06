@@ -181,9 +181,16 @@
 </template>
 
 <script setup lang="ts">
-import { 
-  Calendar, Target, Pause, Play, CheckCircle, MoreHorizontal, 
-  Edit, Eye, Trash2 
+import {
+  Calendar,
+  CheckCircle,
+  Edit,
+  Eye,
+  MoreHorizontal,
+  Pause,
+  Play,
+  Target,
+  Trash2,
 } from 'lucide-vue-next'
 import type { Goal } from '~/server/database/schema'
 import type { GoalProgress } from '~/types/goal'
@@ -206,98 +213,109 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   progress: null,
   loading: false,
-  showCelebration: false
+  showCelebration: false,
 })
 
-const emit = defineEmits<Emits>()
+const _emit = defineEmits<Emits>()
 
 // Local state
 const showDropdown = ref(false)
 
 // Close dropdown when clicking outside
 onMounted(() => {
-  const handleClickOutside = (event: Event) => {
+  const handleClickOutside = (_event: Event) => {
     if (showDropdown.value) {
       showDropdown.value = false
     }
   }
   document.addEventListener('click', handleClickOutside)
-  
+
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
   })
 })
 
 // Computed properties
-const statusBadgeClass = computed(() => {
+const _statusBadgeClass = computed(() => {
   switch (props.goal.status) {
-    case 'active': return 'bg-primary text-primary-foreground'
-    case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-    case 'paused': return 'bg-secondary text-secondary-foreground'
-    case 'archived': return 'bg-muted text-muted-foreground border border-border'
-    default: return 'bg-primary text-primary-foreground'
+    case 'active':
+      return 'bg-primary text-primary-foreground'
+    case 'completed':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+    case 'paused':
+      return 'bg-secondary text-secondary-foreground'
+    case 'archived':
+      return 'bg-muted text-muted-foreground border border-border'
+    default:
+      return 'bg-primary text-primary-foreground'
   }
 })
 
-const periodDisplay = computed(() => {
+const _periodDisplay = computed(() => {
   const period = props.goal.period.charAt(0).toUpperCase() + props.goal.period.slice(1)
   return period
 })
 
-const typeDisplay = computed(() => {
+const _typeDisplay = computed(() => {
   switch (props.goal.type) {
-    case 'time': return 'Time-based'
-    case 'activity_count': return 'Activity Count'
-    case 'streak': return 'Streak'
-    case 'focus_rating': return 'Focus Rating'
-    default: return props.goal.type
+    case 'time':
+      return 'Time-based'
+    case 'activity_count':
+      return 'Activity Count'
+    case 'streak':
+      return 'Streak'
+    case 'focus_rating':
+      return 'Focus Rating'
+    default:
+      return props.goal.type
   }
 })
 
-const progressBarColor = computed(() => {
+const _progressBarColor = computed(() => {
   if (!props.progress) return 'bg-primary'
-  
+
   if (props.progress.isCompleted) {
     return 'bg-green-500'
-  } else if (props.progress.progressPercentage >= 80) {
-    return 'bg-yellow-500'
-  } else if (props.progress.progressPercentage >= 50) {
-    return 'bg-blue-500'
-  } else {
-    return 'bg-primary'
   }
+  if (props.progress.progressPercentage >= 80) {
+    return 'bg-yellow-500'
+  }
+  if (props.progress.progressPercentage >= 50) {
+    return 'bg-blue-500'
+  }
+  return 'bg-primary'
 })
 
-const timeRemaining = computed(() => {
+const _timeRemaining = computed(() => {
   if (!props.progress) return null
-  
+
   const now = new Date()
   const endTime = new Date(props.progress.periodEnd)
   const diffMs = endTime.getTime() - now.getTime()
-  
+
   if (diffMs <= 0) return 'Period ended'
-  
+
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  
+
   if (days > 0) {
     return `${days} day${days > 1 ? 's' : ''}`
-  } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''}`
-  } else {
-    return 'Less than 1 hour'
   }
+  if (hours > 0) {
+    return `${hours} hour${hours > 1 ? 's' : ''}`
+  }
+  return 'Less than 1 hour'
 })
 
 // Methods
-const formatValue = (value: number): string => {
+const _formatValue = (value: number): string => {
   if (props.goal.type === 'time') {
     return value.toFixed(1)
-  } else if (props.goal.type === 'focus_rating') {
-    return value.toFixed(1)
-  } else {
-    return Math.round(value).toString()
   }
+  if (props.goal.type === 'focus_rating') {
+    return value.toFixed(1)
+  }
+  return Math.round(value).toString()
 }
 </script>
 

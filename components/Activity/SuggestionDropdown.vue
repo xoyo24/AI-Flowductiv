@@ -119,7 +119,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // Selection handlers
-const selectSuggestion = (suggestion: ActivitySuggestion) => {
+const _selectSuggestion = (suggestion: ActivitySuggestion) => {
   emit('select', suggestion)
 }
 

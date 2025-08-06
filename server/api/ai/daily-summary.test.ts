@@ -322,7 +322,7 @@ describe('AI Summary Rate Limiting Integration', () => {
           method: 'POST',
           body: { activities },
         })
-      } catch (error) {
+      } catch (_error) {
         // Expected to fail due to insufficient focus time
       }
 

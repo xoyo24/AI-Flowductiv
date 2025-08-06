@@ -300,14 +300,14 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Local reactive state  
+// Local reactive state
 const activityInput = ref(props.modelValue || '')
 const inputFocused = ref(false)
 const dropdownVisible = ref(false)
 const justSelectedSuggestion = ref(false)
 const dropdownContainer = ref(null)
 
-const showSuggestions = computed(
+const _showSuggestions = computed(
   () =>
     inputFocused.value &&
     dropdownVisible.value &&
@@ -320,11 +320,14 @@ watch(activityInput, (newValue) => {
 })
 
 // Watch parent changes and sync to local state (parent to child)
-watch(() => props.modelValue, (newValue) => {
-  if (newValue !== activityInput.value) {
-    activityInput.value = newValue || ''
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue !== activityInput.value) {
+      activityInput.value = newValue || ''
+    }
   }
-})
+)
 
 // Dropdown management
 const showDropdown = () => {
@@ -339,7 +342,7 @@ const hideDropdown = () => {
 }
 
 // Event handlers
-const handleSuggestionSelect = (suggestion) => {
+const _handleSuggestionSelect = (suggestion) => {
   if (suggestion.type === 'activity') {
     activityInput.value = suggestion.text
   } else {
@@ -370,16 +373,16 @@ const handleSuggestionSelect = (suggestion) => {
   emit('suggestion-select', suggestion)
 }
 
-const handleKeydown = (event) => {
+const _handleKeydown = (event) => {
   emit('keydown', event)
 }
 
-const handleInputFocus = () => {
+const _handleInputFocus = () => {
   inputFocused.value = true
   emit('input-focus')
 }
 
-const handleInputBlur = () => {
+const _handleInputBlur = () => {
   setTimeout(() => {
     if (!justSelectedSuggestion.value) {
       inputFocused.value = false
@@ -389,14 +392,14 @@ const handleInputBlur = () => {
   emit('input-blur')
 }
 
-const handleEnterKey = (event: KeyboardEvent) => {
+const _handleEnterKey = (event: KeyboardEvent) => {
   if (justSelectedSuggestion.value) {
     return
   }
   emit('enter-key', event)
 }
 
-const selectIndex = (index: number) => {
+const _selectIndex = (index: number) => {
   emit('select-index', index)
 }
 
@@ -408,17 +411,23 @@ const handleClickOutside = (event) => {
 }
 
 // Watch for suggestions and loading changes
-watch(() => props.suggestions, (newSuggestions) => {
-  if (inputFocused.value && newSuggestions.length > 0) {
-    showDropdown()
+watch(
+  () => props.suggestions,
+  (newSuggestions) => {
+    if (inputFocused.value && newSuggestions.length > 0) {
+      showDropdown()
+    }
   }
-})
+)
 
-watch(() => props.suggestionsLoading, (loading) => {
-  if (loading && inputFocused.value) {
-    dropdownVisible.value = true
+watch(
+  () => props.suggestionsLoading,
+  (loading) => {
+    if (loading && inputFocused.value) {
+      dropdownVisible.value = true
+    }
   }
-})
+)
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
@@ -431,6 +440,8 @@ onUnmounted(() => {
 // Expose methods and data for parent component
 defineExpose({
   activityInput,
-  clearInput: () => { activityInput.value = '' }
+  clearInput: () => {
+    activityInput.value = ''
+  },
 })
 </script>

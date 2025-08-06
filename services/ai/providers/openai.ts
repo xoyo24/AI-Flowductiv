@@ -15,7 +15,7 @@ export class OpenAIProvider {
 
   static async generate(prompt: string, activities: Activity[]): Promise<AIResponse> {
     try {
-      const apiKey = this.getApiKey()
+      const apiKey = OpenAIProvider.getApiKey()
 
       // Format activities into the prompt
       const formattedPrompt =
@@ -58,7 +58,7 @@ export class OpenAIProvider {
     const startTime = Date.now()
 
     try {
-      const apiKey = this.getApiKey()
+      const apiKey = OpenAIProvider.getApiKey()
       const model = openai('gpt-4-turbo', { apiKey })
 
       await generateText({

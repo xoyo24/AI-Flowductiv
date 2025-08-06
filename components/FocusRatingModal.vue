@@ -107,45 +107,49 @@ const emit = defineEmits<Emits>()
 const currentRating = ref<number>(0)
 
 // Watch for activity changes to initialize rating
-watch(() => props.activity, (newActivity) => {
-  if (newActivity) {
-    currentRating.value = newActivity.focusRating || 0
-  }
-}, { immediate: true })
+watch(
+  () => props.activity,
+  (newActivity) => {
+    if (newActivity) {
+      currentRating.value = newActivity.focusRating || 0
+    }
+  },
+  { immediate: true }
+)
 
 // Rating labels for user feedback
-const getRatingLabel = (rating: number): string => {
+const _getRatingLabel = (rating: number): string => {
   const labels = {
-    1: 'Very distracted - couldn\'t stay focused',
+    1: "Very distracted - couldn't stay focused",
     2: 'Somewhat distracted - frequent interruptions',
     3: 'Moderate focus - some distractions',
     4: 'Good focus - stayed on task most of the time',
-    5: 'Excellent focus - completely absorbed in the task'
+    5: 'Excellent focus - completely absorbed in the task',
   }
   return labels[rating as keyof typeof labels] || ''
 }
 
 // Actions
-const setRating = (rating: number) => {
+const _setRating = (rating: number) => {
   currentRating.value = rating
   emit('rating-changed', rating)
 }
 
-const handleSave = () => {
+const _handleSave = () => {
   if (currentRating.value > 0) {
     emit('save', currentRating.value)
   }
 }
 
-const handleSkip = () => {
+const _handleSkip = () => {
   emit('skip')
 }
 
-const handleCancel = () => {
+const _handleCancel = () => {
   emit('close')
 }
 
-const handleBackdropClick = () => {
+const _handleBackdropClick = () => {
   emit('close')
 }
 </script>

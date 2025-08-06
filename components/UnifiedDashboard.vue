@@ -316,15 +316,15 @@
 <script setup lang="ts">
 import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
 import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
-import ActivityList from '~/components/ActivityList.vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
+import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
+import ActivityList from '~/components/ActivityList.vue'
 import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
 import FilterBar from '~/components/FilterBar.vue'
 import FocusRatingModal from '~/components/FocusRatingModal.vue'
 import InputComposer from '~/components/InputComposer.vue'
 import MobileAnalyticsPanel from '~/components/MobileAnalyticsPanel.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
-import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import TimerDisplay from '~/components/TimerDisplay.vue'
 import type { HeatmapDay } from '~/composables/useActivities'
@@ -372,7 +372,7 @@ const {
   toggleEnergyLevelFilter,
   setDurationRangeFilter,
   clearDurationRangeFilter,
-  clearAllAdvancedFilters
+  clearAllAdvancedFilters,
 } = useAdvancedFilters()
 
 // Focus rating system
@@ -382,52 +382,50 @@ const {
   promptForRating,
   saveRating: saveFocusRating,
   skipRating: skipFocusRating,
-  closeModal: closeFocusRatingModal
+  closeModal: closeFocusRatingModal,
 } = useFocusRating()
 
 // Tag management
-const {
-  allTags,
-  getAllTags,
-  loading: tagsLoading
-} = useTagManagement()
+const { allTags, getAllTags, loading: tagsLoading } = useTagManagement()
 
 // Computed properties for tag data - transformed to match existing interface
-const tagData = computed(() => {
+const _tagData = computed(() => {
   const stats = getActivityStats.value
-  return allTags.value.map(tagName => {
-    const tagStats = stats.tagStats[tagName]
-    return {
-      name: tagName,
-      count: tagStats?.count || 0,
-      totalTime: tagStats?.totalTime || 0,
-      isFavorite: false // TODO: implement favorites
-    }
-  }).sort((a, b) => b.count - a.count) // Sort by usage
+  return allTags.value
+    .map((tagName) => {
+      const tagStats = stats.tagStats[tagName]
+      return {
+        name: tagName,
+        count: tagStats?.count || 0,
+        totalTime: tagStats?.totalTime || 0,
+        isFavorite: false, // TODO: implement favorites
+      }
+    })
+    .sort((a, b) => b.count - a.count) // Sort by usage
 })
 
-const selectedTags = computed(() => new Set(activeFilters.value.tags || []))
+const _selectedTags = computed(() => new Set(activeFilters.value.tags || []))
 
 // Extract selected date from active date range filter
-const activeDateFilter = computed(() => {
+const _activeDateFilter = computed(() => {
   const dateRange = activeFilters.value.dateRange
   if (!dateRange) return null
-  
+
   // Check if it's a single day filter (start and end are on the same day)
   const start = new Date(dateRange.start)
   const end = new Date(dateRange.end)
-  
+
   // Reset hours to compare dates only
   const startDate = new Date(start)
   startDate.setHours(0, 0, 0, 0)
   const endDate = new Date(end)
   endDate.setHours(0, 0, 0, 0)
-  
+
   if (startDate.getTime() === endDate.getTime()) {
     // It's a single day filter, return the date in YYYY-MM-DD format
     return start.toISOString().split('T')[0]
   }
-  
+
   return null // Multi-day range, don't show as selected
 })
 
@@ -435,35 +433,34 @@ const activeDateFilter = computed(() => {
 const { motivationalInsight } = useContextualStatus()
 
 // Context-aware empty message for activities
-const recentActivitiesMessage = computed((): string => {
+const _recentActivitiesMessage = computed((): string => {
   const hasAnyActivities = activities.value.length > 0
   const hasFiltersActive = filterMetadata.value.hasActiveFilters
   const hasSearchQuery = searchQuery.value.trim().length > 0
-  
+
   // No activities at all in database
   if (!hasAnyActivities) {
     return 'Your activities will appear here. Start your first timer above!'
   }
-  
+
   // Has activities but search query returns no results
   if (hasSearchQuery && recentActivities.value.length === 0) {
     return `No activities match "${searchQuery.value}". Try a different search term.`
   }
-  
+
   // Has activities but filters hide them all
   if (hasFiltersActive && recentActivities.value.length === 0) {
     return 'No activities match your current filters. Try adjusting or clearing filters above.'
   }
-  
+
   // Has activities but none shown (shouldn't happen in current logic)
   if (recentActivities.value.length === 0) {
     return 'No recent activities to display.'
   }
-  
+
   // This shouldn't be reached since this message is only shown when list is empty
   return 'Start tracking to see your activities here.'
 })
-
 
 // Pagination state
 const currentPage = ref(1)
@@ -472,96 +469,99 @@ const hasMoreActivities = ref(true)
 // Use filtered activities for display with search
 const recentActivities = computed(() => {
   let activities = filteredActivities.value
-  
+
   // Apply search filter if search query exists
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase().trim()
-    activities = activities.filter(activity => {
+    activities = activities.filter((activity) => {
       // Search in title
       if (activity.title.toLowerCase().includes(query)) return true
-      
+
       // Search in tags
-      if (activity.tags?.some(tag => tag.toLowerCase().includes(query))) return true
-      
+      if (activity.tags?.some((tag) => tag.toLowerCase().includes(query))) return true
+
       return false
     })
   }
-  
+
   return activities
 })
 
 // Mobile analytics computed properties
-const mobileHeatmapData = computed(() => {
+const _mobileHeatmapData = computed(() => {
   // Transform activities data into heatmap format for last 28 days
   const days = []
   const today = new Date()
-  
+
   for (let i = 27; i >= 0; i--) {
     const date = new Date(today)
     date.setDate(today.getDate() - i)
     const dateStr = date.toISOString().split('T')[0]
-    
+
     // Get activities for this date
-    const dayActivities = activities.value.filter(activity => {
+    const dayActivities = activities.value.filter((activity) => {
       const activityDate = new Date(activity.startTime).toISOString().split('T')[0]
       return activityDate === dateStr
     })
-    
+
     const totalTime = dayActivities.reduce((sum, activity) => sum + (activity.durationMs || 0), 0)
     const activityCount = dayActivities.length
-    const avgFocus = dayActivities.length > 0 
-      ? dayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) / dayActivities.length
-      : 0
-    
+    const avgFocus =
+      dayActivities.length > 0
+        ? dayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) /
+          dayActivities.length
+        : 0
+
     days.push({
       date: dateStr,
       totalTime,
       activityCount,
-      avgFocus
+      avgFocus,
     })
   }
-  
+
   return days
 })
 
-const mobileTodayStats = computed(() => {
+const _mobileTodayStats = computed(() => {
   const today = new Date().toISOString().split('T')[0]
-  const todayActivities = activities.value.filter(activity => {
+  const todayActivities = activities.value.filter((activity) => {
     const activityDate = new Date(activity.startTime).toISOString().split('T')[0]
     return activityDate === today
   })
-  
+
   const totalTime = todayActivities.reduce((sum, activity) => sum + (activity.durationMs || 0), 0)
   const activityCount = todayActivities.length
-  const avgFocus = todayActivities.length > 0 
-    ? todayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) / todayActivities.length
-    : 0
-  
+  const avgFocus =
+    todayActivities.length > 0
+      ? todayActivities.reduce((sum, activity) => sum + (activity.focusRating || 0), 0) /
+        todayActivities.length
+      : 0
+
   return {
     totalTime: formatDuration(totalTime),
     activityCount,
-    avgFocus: avgFocus.toFixed(1)
+    avgFocus: avgFocus.toFixed(1),
   }
 })
 
-const mobileActiveGoals = computed(() => {
+const _mobileActiveGoals = computed(() => {
   // TODO: Implement goals system
   // For now, return empty array
   return []
 })
-
 
 // Local reactive state
 const activityInput = ref('')
 const searchQuery = ref('')
 const showMobileMenu = ref(false)
 const showMobileAnalyticsPanel = ref(false)
-const sidebarCollapsed = ref(false)
+const _sidebarCollapsed = ref(false)
 const analyticsLoading = ref(false)
-const showAnalyticsModal = ref(false)
-const showHeatmapModal = ref(false)
-const showInsightsModal = ref(false)
-const showGoalsModal = ref(false)
+const _showAnalyticsModal = ref(false)
+const _showHeatmapModal = ref(false)
+const _showInsightsModal = ref(false)
+const _showGoalsModal = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -617,24 +617,24 @@ const handleStart = () => {
   }
 }
 
-const handlePause = () => {
+const _handlePause = () => {
   pauseTimer()
   vibrate([50, 50])
 }
 
-const handleResume = () => {
+const _handleResume = () => {
   resumeTimer()
   vibrate([100])
 }
 
-const handleFinish = async () => {
+const _handleFinish = async () => {
   const result = await finishTimer()
   if (result.success) {
     // Clear the activity input to provide clean slate for next timer
     activityInput.value = ''
     quickStartHidden.value = false // Show quick start again
     vibrate([200])
-    
+
     // If an activity was saved (not skipped due to short duration), prompt for focus rating
     if (result.activity) {
       promptForRating(result.activity)
@@ -642,7 +642,7 @@ const handleFinish = async () => {
   }
 }
 
-const handleReset = () => {
+const _handleReset = () => {
   if (confirm('Reset timer? This will discard the current session.')) {
     resetTimer()
     activityInput.value = ''
@@ -652,7 +652,7 @@ const handleReset = () => {
 }
 
 // Quick start handler - set activity and start timer immediately
-const handleQuickStart = (activity: string) => {
+const _handleQuickStart = (activity: string) => {
   activityInput.value = activity
   if (startTimer(activity)) {
     quickStartHidden.value = true // Hide quick start section
@@ -666,15 +666,15 @@ const handleSearchInput = () => {
   // when searchQuery changes due to Vue's reactivity
 }
 
-const handleSearchFocus = () => {
+const _handleSearchFocus = () => {
   // Optional: Could implement search suggestions
 }
 
-const handleSearchBlur = () => {
+const _handleSearchBlur = () => {
   // Optional: Could hide search suggestions
 }
 
-const clearSearch = () => {
+const _clearSearch = () => {
   searchQuery.value = ''
   handleSearchInput()
 }
@@ -730,7 +730,7 @@ const handleSuggestionSelect = (suggestion) => {
   })
 }
 
-const handleKeydown = (event) => {
+const _handleKeydown = (event) => {
   if (showSuggestions.value) {
     switch (event.key) {
       case 'ArrowDown':
@@ -750,9 +750,8 @@ const handleKeydown = (event) => {
             handleSuggestionSelect(selected)
           }
           return
-        } else {
-          hideDropdown()
         }
+        hideDropdown()
         break
       case 'Escape':
         event.preventDefault()
@@ -774,7 +773,7 @@ const handleKeydown = (event) => {
   }
 }
 
-const handleInputFocus = () => {
+const _handleInputFocus = () => {
   inputFocused.value = true
 
   nextTick(() => {
@@ -790,7 +789,7 @@ const handleInputFocus = () => {
   }
 }
 
-const handleInputBlur = () => {
+const _handleInputBlur = () => {
   setTimeout(() => {
     if (!justSelectedSuggestion.value) {
       inputFocused.value = false
@@ -799,11 +798,11 @@ const handleInputBlur = () => {
   }, 150)
 }
 
-const handleEnterKey = (event: KeyboardEvent) => {
+const _handleEnterKey = (event: KeyboardEvent) => {
   if (justSelectedSuggestion.value) {
     return
   }
-  
+
   // In textarea: Enter starts timer (Flomo-style), Shift+Enter creates new line
   if (!event.shiftKey) {
     event.preventDefault()
@@ -818,27 +817,27 @@ const navigateAndCloseMenu = (path: string) => {
   navigateTo(path)
 }
 
-const navigateToSettings = () => navigateAndCloseMenu('/settings')
-const navigateToHistory = () => navigateAndCloseMenu('/history')
+const _navigateToSettings = () => navigateAndCloseMenu('/settings')
+const _navigateToHistory = () => navigateAndCloseMenu('/history')
 
 // Handle heatmap day selection
 const handleDaySelected = (day: HeatmapDay) => {
   if (!day.date) return
-  
+
   // Create date range for the selected day (full day in UTC)
-  const selectedDate = new Date(day.date + 'T00:00:00.000Z')
+  const selectedDate = new Date(`${day.date}T00:00:00.000Z`)
   const startOfDay = new Date(selectedDate)
   startOfDay.setUTCHours(0, 0, 0, 0)
-  
+
   const endOfDay = new Date(selectedDate)
   endOfDay.setUTCHours(23, 59, 59, 999)
-  
+
   // Apply date filter using the universal filter system
   setDateRangeFilter(startOfDay, endOfDay)
-  
+
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
-  
+
   // Haptic feedback for mobile
   vibrate([100])
 }
@@ -863,58 +862,58 @@ const handleTagSelected = (tag: string) => {
   showMobileMenu.value = false
 }
 
-const handleTagDeselected = (tag: string) => {
+const _handleTagDeselected = (tag: string) => {
   removeTagFilter(tag)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const handleTagsCleared = () => {
+const _handleTagsCleared = () => {
   // Clear only tag filters, keep other filters intact
   if (activeFilters.value.tags) {
-    activeFilters.value.tags.forEach(tag => removeTagFilter(tag))
+    activeFilters.value.tags.forEach((tag) => removeTagFilter(tag))
   }
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
+const _handleTagSelectionChanged = (newSelectedTags: Set<string>) => {
   // Clear existing tag filters first
   if (activeFilters.value.tags) {
-    [...activeFilters.value.tags].forEach(tag => removeTagFilter(tag))
+    ;[...activeFilters.value.tags].forEach((tag) => removeTagFilter(tag))
   }
-  
+
   // Add new tag filters
-  newSelectedTags.forEach(tag => addTagFilter(tag))
+  newSelectedTags.forEach((tag) => addTagFilter(tag))
 }
 
 // FilterBar event handlers
-const handleRemoveTagFilter = (tag: string) => {
+const _handleRemoveTagFilter = (tag: string) => {
   removeTagFilter(tag)
 }
 
-const handleClearAllFilters = () => {
+const _handleClearAllFilters = () => {
   clearAllFilters()
 }
 
-const handleClearDateRangeFilter = () => {
+const _handleClearDateRangeFilter = () => {
   clearDateRangeFilter()
 }
 
-const handleTagFavorite = async (tag: any) => {
+const _handleTagFavorite = async (tag: any) => {
   console.log('Toggle favorite for tag:', tag.name)
   // Tag favorite operation is handled within TagFilters component
   // No need for additional refresh as it's just UI state
 }
 
-const handleTagEdit = async (tag: any) => {
+const _handleTagEdit = async (tag: any) => {
   console.log('Tag edited:', tag.name)
   // After tag rename, refresh activities and analytics
   await refreshActivities()
   await refreshAnalytics()
 }
 
-const handleTagRemove = async (tag: any, includeActivities: boolean) => {
+const _handleTagRemove = async (tag: any, includeActivities: boolean) => {
   console.log('Tag removed:', tag.name, 'Include activities:', includeActivities)
   // After tag removal, refresh activities and analytics
   await refreshActivities()
@@ -922,38 +921,38 @@ const handleTagRemove = async (tag: any, includeActivities: boolean) => {
 }
 
 // Filter event handlers for sidebar components
-const handleApplyFilterCombination = (combinationId: string) => {
+const _handleApplyFilterCombination = (combinationId: string) => {
   // This will be handled by the useAdvancedFilters composable through applySavedFilterCombination
   console.log('Apply filter combination:', combinationId)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const handlePriorityToggle = (priority: number) => {
+const _handlePriorityToggle = (priority: number) => {
   togglePriorityFilter(priority)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const handleFocusToggle = (focus: number) => {
+const _handleFocusToggle = (focus: number) => {
   toggleFocusRatingFilter(focus)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
-const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+const _handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   setDurationRangeFilter(minDuration, maxDuration)
   // Close mobile menu after filter action so user can see results
   showMobileMenu.value = false
 }
 
 // Dropdown management (simplified since moved to InputComposer)
-const handleClickOutside = (event) => {
+const handleClickOutside = (_event) => {
   // Most dropdown logic now handled by InputComposer
 }
 
 // Load more activities
-const loadMoreActivities = async () => {
+const _loadMoreActivities = async () => {
   if (activitiesLoading.value || !hasMoreActivities.value) return
 
   currentPage.value++
@@ -973,19 +972,19 @@ const refreshActivities = async () => {
 }
 
 // Activity interaction handlers
-const handleActivityClick = (activity) => {
+const _handleActivityClick = (activity) => {
   // For future: implement activity detail view or inline editing
   console.log('Activity clicked:', activity)
 }
 
-const handleActivityFocusRating = async (activity, rating: number) => {
+const _handleActivityFocusRating = async (activity, rating: number) => {
   try {
     const { updateActivity } = useActivities()
     await updateActivity(activity.id, { focusRating: rating })
-    
+
     // Refresh activities to reflect the changes
     await refreshActivities()
-    
+
     // Haptic feedback for successful rating
     vibrate([100])
   } catch (error) {
@@ -1000,41 +999,41 @@ const isDeleteDialogOpen = ref(false)
 const editData = ref({
   title: '',
   tags: [],
-  priority: null
+  priority: null,
 })
 
-const handleActivityEdit = (activity) => {
+const _handleActivityEdit = (activity) => {
   selectedActivity.value = activity
   editData.value = {
     title: activity.title,
     tags: [...(activity.tags || [])],
-    priority: activity.priority || null
+    priority: activity.priority || null,
   }
   isEditDialogOpen.value = true
 }
 
-const handleEditUpdate = (data) => {
+const _handleEditUpdate = (data) => {
   editData.value = data
 }
 
-const handleEditSave = () => {
+const _handleEditSave = () => {
   // Save when Enter is pressed in the smart input
   saveEdit()
 }
 
-const handleActivityDelete = (activity) => {
+const _handleActivityDelete = (activity) => {
   selectedActivity.value = activity
   isDeleteDialogOpen.value = true
 }
 
-const confirmDelete = async () => {
+const _confirmDelete = async () => {
   if (!selectedActivity.value) return
-  
+
   try {
     await $fetch(`/api/activities/${selectedActivity.value.id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
-    
+
     // Refresh activities to reflect the deletion
     await refreshActivities()
     isDeleteDialogOpen.value = false
@@ -1044,26 +1043,26 @@ const confirmDelete = async () => {
   }
 }
 
-const cancelDelete = () => {
+const _cancelDelete = () => {
   isDeleteDialogOpen.value = false
   selectedActivity.value = null
 }
 
 const saveEdit = async () => {
   if (!selectedActivity.value) return
-  
+
   try {
     const updateData = {
       title: editData.value.title,
       tags: editData.value.tags,
-      priority: editData.value.priority
+      priority: editData.value.priority,
     }
-    
+
     await $fetch(`/api/activities/${selectedActivity.value.id}`, {
       method: 'PATCH',
-      body: updateData
+      body: updateData,
     })
-    
+
     // Refresh activities to reflect the changes
     await refreshActivities()
     isEditDialogOpen.value = false
@@ -1074,7 +1073,7 @@ const saveEdit = async () => {
 }
 
 // Focus Rating Modal Handlers
-const handleFocusRatingSave = async (rating: number) => {
+const _handleFocusRatingSave = async (rating: number) => {
   try {
     const success = await saveFocusRating(rating)
     if (success) {
@@ -1087,62 +1086,58 @@ const handleFocusRatingSave = async (rating: number) => {
   }
 }
 
-const handleFocusRatingSkip = () => {
+const _handleFocusRatingSkip = () => {
   skipFocusRating()
   vibrate([50]) // Light haptic feedback
 }
 
-const handleFocusRatingClose = () => {
+const _handleFocusRatingClose = () => {
   closeFocusRatingModal()
 }
 
 // Mobile Analytics Panel Handlers
-const handleMobileDaySelected = (day: any) => {
+const _handleMobileDaySelected = (day: any) => {
   // Reuse existing day selection logic (already closes mobile menu)
   handleDaySelected(day)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([100])
 }
 
-const handleMobileTagSelected = (tag: string) => {
+const _handleMobileTagSelected = (tag: string) => {
   // Reuse existing tag selection logic (already closes mobile menu)
   handleTagSelected(tag)
   showMobileAnalyticsPanel.value = false // Close panel after selection
   vibrate([50])
 }
 
-const handleMobileRefreshData = () => {
+const _handleMobileRefreshData = () => {
   // Reuse existing refresh logic
   refreshAnalytics()
   vibrate([100])
 }
 
-
 // Format time range helper
-const formatTimeRange = (startTime, endTime) => {
+const _formatTimeRange = (startTime, endTime) => {
   const start = new Date(startTime)
   const end = new Date(endTime)
-  
+
   const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
     })
   }
-  
+
   return `${formatTime(start)} - ${formatTime(end)}`
 }
 
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleKeyboardShortcuts)
-  
+
   // Load first page of activities and all tags concurrently
-  await Promise.all([
-    refreshActivities(),
-    getAllTags()
-  ])
+  await Promise.all([refreshActivities(), getAllTags()])
 
   // Listen for activity saved events to refresh the list
   window.addEventListener('activity-saved', refreshActivities)

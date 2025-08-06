@@ -1,5 +1,5 @@
 import type { Goal, NewGoal } from '~/server/database/schema'
-import type { GoalProgress, GoalMetrics, GoalSuggestion } from '~/types/goal'
+import type { GoalMetrics, GoalProgress, GoalSuggestion } from '~/types/goal'
 
 interface GoalFilters {
   status?: 'active' | 'completed' | 'paused' | 'archived'
@@ -22,7 +22,7 @@ export const useGoals = () => {
       const queryParams = new URLSearchParams({
         limit: limit.toString(),
         offset: offset.toString(),
-        ...filters
+        ...filters,
       })
 
       const response = await $fetch<{ data: Goal[] }>(`/api/goals?${queryParams}`)
@@ -62,12 +62,12 @@ export const useGoals = () => {
 
       const response = await $fetch<{ data: Goal }>('/api/goals', {
         method: 'POST',
-        body: goalData
+        body: goalData,
       })
 
       // Add to local state
       goals.value.unshift(response.data)
-      
+
       // Emit event for other components
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('goal-created', { detail: response.data }))
@@ -91,11 +91,11 @@ export const useGoals = () => {
 
       const response = await $fetch<{ data: Goal }>(`/api/goals/${id}`, {
         method: 'PUT',
-        body: updates
+        body: updates,
       })
 
       // Update local state
-      const index = goals.value.findIndex(g => g.id === id)
+      const index = goals.value.findIndex((g) => g.id === id)
       if (index !== -1) {
         goals.value[index] = response.data
       }
@@ -122,11 +122,11 @@ export const useGoals = () => {
       error.value = null
 
       await $fetch(`/api/goals/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       // Remove from local state
-      goals.value = goals.value.filter(g => g.id !== id)
+      goals.value = goals.value.filter((g) => g.id !== id)
 
       // Emit event for other components
       if (typeof window !== 'undefined') {
@@ -146,7 +146,7 @@ export const useGoals = () => {
   // Calculate goal progress based on current activities
   const calculateGoalProgress = async (goal: Goal): Promise<GoalProgress> => {
     const { getActivities } = useActivities()
-    
+
     // Get period boundaries
     const now = new Date()
     let periodStart = new Date(goal.startDate)
@@ -171,19 +171,19 @@ export const useGoals = () => {
 
     // Get activities for the period
     const activities = await getActivities(1, 1000) // Get enough activities
-    const filteredActivities = activities.filter(activity => {
+    const filteredActivities = activities.filter((activity) => {
       const activityDate = new Date(activity.endTime)
       if (activityDate < periodStart || activityDate >= periodEnd) return false
-      
+
       // Filter by tags if specified
       if (goal.tags && goal.tags.length > 0) {
-        const hasMatchingTag = goal.tags.some(tag => activity.tags.includes(tag))
+        const hasMatchingTag = goal.tags.some((tag) => activity.tags.includes(tag))
         if (!hasMatchingTag) return false
       }
-      
+
       // Filter by priority if specified
       if (goal.priority && activity.priority !== goal.priority) return false
-      
+
       return true
     })
 
@@ -191,7 +191,8 @@ export const useGoals = () => {
     let currentValue = 0
     switch (goal.type) {
       case 'time':
-        currentValue = filteredActivities.reduce((sum, a) => sum + a.durationMs, 0) / (1000 * 60 * 60) // Convert to hours
+        currentValue =
+          filteredActivities.reduce((sum, a) => sum + a.durationMs, 0) / (1000 * 60 * 60) // Convert to hours
         break
       case 'activity_count':
         currentValue = filteredActivities.length
@@ -200,12 +201,15 @@ export const useGoals = () => {
         // Calculate consecutive days with activities
         currentValue = calculateStreak(filteredActivities, periodStart, periodEnd)
         break
-      case 'focus_rating':
-        const activitiesWithRating = filteredActivities.filter(a => a.focusRating !== null)
+      case 'focus_rating': {
+        const activitiesWithRating = filteredActivities.filter((a) => a.focusRating !== null)
         if (activitiesWithRating.length > 0) {
-          currentValue = activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) / activitiesWithRating.length
+          currentValue =
+            activitiesWithRating.reduce((sum, a) => sum + (a.focusRating || 0), 0) /
+            activitiesWithRating.length
         }
         break
+      }
     }
 
     const progressPercentage = Math.min((currentValue / goal.target) * 100, 100)
@@ -219,23 +223,23 @@ export const useGoals = () => {
       isCompleted,
       periodStart,
       periodEnd,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     }
   }
 
   // Calculate streak of consecutive days with activities
   const calculateStreak = (activities: any[], periodStart: Date, periodEnd: Date): number => {
     const daysWithActivity = new Set()
-    
-    activities.forEach(activity => {
+
+    activities.forEach((activity) => {
       const date = new Date(activity.endTime).toDateString()
       daysWithActivity.add(date)
     })
-    
+
     let streak = 0
     const currentDate = new Date(periodEnd)
     currentDate.setDate(currentDate.getDate() - 1) // Start from yesterday
-    
+
     while (currentDate >= periodStart) {
       if (daysWithActivity.has(currentDate.toDateString())) {
         streak++
@@ -244,37 +248,37 @@ export const useGoals = () => {
       }
       currentDate.setDate(currentDate.getDate() - 1)
     }
-    
+
     return streak
   }
 
   // Calculate goal metrics for analytics
   const calculateGoalMetrics = async (): Promise<GoalMetrics> => {
     const allGoals = await getGoals()
-    const activeGoals = allGoals.filter(g => g.status === 'active')
-    const completedGoals = allGoals.filter(g => g.status === 'completed')
-    
+    const activeGoals = allGoals.filter((g) => g.status === 'active')
+    const completedGoals = allGoals.filter((g) => g.status === 'completed')
+
     let totalProgress = 0
     for (const goal of activeGoals) {
       const progress = await calculateGoalProgress(goal)
       totalProgress += progress.progressPercentage
     }
-    
+
     const averageProgress = activeGoals.length > 0 ? totalProgress / activeGoals.length : 0
     const completionRate = allGoals.length > 0 ? (completedGoals.length / allGoals.length) * 100 : 0
-    
+
     // Calculate current streak (simplified)
     const { getActivities } = useActivities()
     const recentActivities = await getActivities(1, 100)
     const streakDays = calculateCurrentStreak(recentActivities)
-    
+
     return {
       totalGoals: allGoals.length,
       activeGoals: activeGoals.length,
       completedGoals: completedGoals.length,
       completionRate,
       averageProgress,
-      streakDays
+      streakDays,
     }
   }
 
@@ -282,24 +286,26 @@ export const useGoals = () => {
   const calculateCurrentStreak = (activities: any[]): number => {
     const today = new Date()
     const daysWithActivity = new Set()
-    
-    activities.forEach(activity => {
+
+    activities.forEach((activity) => {
       const date = new Date(activity.endTime).toDateString()
       daysWithActivity.add(date)
     })
-    
+
     let streak = 0
     const currentDate = new Date(today)
-    
-    for (let i = 0; i < 30; i++) { // Check last 30 days
+
+    for (let i = 0; i < 30; i++) {
+      // Check last 30 days
       if (daysWithActivity.has(currentDate.toDateString())) {
         streak++
-      } else if (i > 0) { // Allow today to be empty
+      } else if (i > 0) {
+        // Allow today to be empty
         break
       }
       currentDate.setDate(currentDate.getDate() - 1)
     }
-    
+
     return streak
   }
 
@@ -307,7 +313,7 @@ export const useGoals = () => {
   const formatDuration = (ms: number): string => {
     const hours = Math.floor(ms / (1000 * 60 * 60))
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`
     }
@@ -320,7 +326,7 @@ export const useGoals = () => {
     goals: readonly(goals),
     loading: readonly(loading),
     error: readonly(error),
-    
+
     // Actions
     getGoals,
     getGoal,
@@ -329,8 +335,8 @@ export const useGoals = () => {
     deleteGoal,
     calculateGoalProgress,
     calculateGoalMetrics,
-    
+
     // Utilities
-    formatDuration
+    formatDuration,
   }
 }

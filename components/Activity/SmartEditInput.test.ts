@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 import SmartEditInput from './SmartEditInput.vue'
 
@@ -11,7 +11,7 @@ mockNuxtImport('useAutoComplete', () => {
     selectNext: vi.fn(),
     selectPrevious: vi.fn(),
     performSearch: vi.fn(),
-    getInitialSuggestions: vi.fn()
+    getInitialSuggestions: vi.fn(),
   })
 })
 
@@ -19,7 +19,7 @@ mockNuxtImport('useInputParser', () => {
   return () => ({
     tags: ref(['test']),
     priority: ref(null),
-    cleanText: ref('Test Activity')
+    cleanText: ref('Test Activity'),
   })
 })
 
@@ -27,7 +27,7 @@ describe('SmartEditInput Component', () => {
   const mockActivity = {
     id: 'test-id',
     title: 'Test Activity #test',
-    tags: ['test']
+    tags: ['test'],
   }
 
   beforeEach(() => {
@@ -37,20 +37,19 @@ describe('SmartEditInput Component', () => {
   it('should render activity edit form', async () => {
     const wrapper = await mountSuspended(SmartEditInput, {
       props: {
-        activity: mockActivity
-      }
+        activity: mockActivity,
+      },
     })
 
     expect(wrapper.find('[data-testid="edit-unified-input"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Activity')
   })
 
-
   it('should emit save event when Enter is pressed', async () => {
     const wrapper = await mountSuspended(SmartEditInput, {
       props: {
-        activity: mockActivity
-      }
+        activity: mockActivity,
+      },
     })
 
     const input = wrapper.find('[data-testid="edit-unified-input"]')
@@ -62,8 +61,8 @@ describe('SmartEditInput Component', () => {
   it('should include title, tags, and priority in update emissions', async () => {
     const wrapper = await mountSuspended(SmartEditInput, {
       props: {
-        activity: mockActivity
-      }
+        activity: mockActivity,
+      },
     })
 
     // Change the input text to trigger update
@@ -71,7 +70,7 @@ describe('SmartEditInput Component', () => {
     await input.setValue('New Activity Text')
 
     expect(wrapper.emitted('update')).toBeTruthy()
-    const updateEvent = wrapper.emitted('update')?.[0]?.[0] as any
+    const updateEvent = wrapper.emitted('update')?.[0]?.[0] as { title: string; tags: string[]; priority: number | null }
     expect(updateEvent).toHaveProperty('title')
     expect(updateEvent).toHaveProperty('tags')
     expect(updateEvent).toHaveProperty('priority')

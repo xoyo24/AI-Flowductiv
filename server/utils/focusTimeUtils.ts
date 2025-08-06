@@ -23,11 +23,11 @@ export function formatDuration(ms: number): string {
 
   if (hours === 0) {
     return `${minutes} minutes`
-  } else if (remainingMinutes === 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''}`
-  } else {
-    return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minutes`
   }
+  if (remainingMinutes === 0) {
+    return `${hours} hour${hours > 1 ? 's' : ''}`
+  }
+  return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minutes`
 }
 
 /**

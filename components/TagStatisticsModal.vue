@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { X, BarChart3 } from 'lucide-vue-next'
+import { BarChart3, X } from 'lucide-vue-next'
 
 interface TagStatistic {
   name: string
@@ -146,9 +146,7 @@ interface Props {
   isOpen: boolean
 }
 
-interface Emits {
-  (e: 'close'): void
-}
+type Emits = (e: 'close') => void
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
@@ -170,16 +168,16 @@ const totalTime = computed(() => {
   return statistics.value.reduce((sum, stat) => sum + stat.totalTime, 0)
 })
 
-const avgSessionTime = computed(() => {
+const _avgSessionTime = computed(() => {
   return totalActivities.value > 0 ? totalTime.value / totalActivities.value : 0
 })
 
-const sortedStatistics = computed(() => {
+const _sortedStatistics = computed(() => {
   return [...statistics.value].sort((a, b) => b.totalTime - a.totalTime)
 })
 
-const maxTime = computed(() => {
-  return Math.max(...statistics.value.map(s => s.totalTime), 1)
+const _maxTime = computed(() => {
+  return Math.max(...statistics.value.map((s) => s.totalTime), 1)
 })
 
 // Methods
@@ -193,7 +191,7 @@ const loadStatistics = async () => {
 
   try {
     const rawStats = await getTagStatistics()
-    statistics.value = rawStats.map(stat => formatTagStats(stat))
+    statistics.value = rawStats.map((stat) => formatTagStats(stat))
   } catch (err: any) {
     error.value = err.message || 'Failed to load tag statistics'
   } finally {
@@ -201,9 +199,9 @@ const loadStatistics = async () => {
   }
 }
 
-const getProductivityColorClass = (score: number, prefix: string = '') => {
+const _getProductivityColorClass = (score: number, prefix = '') => {
   const basePrefix = prefix ? `${prefix}-` : ''
-  
+
   if (score >= 0.8) return `${basePrefix}green-500`
   if (score >= 0.6) return `${basePrefix}blue-500`
   if (score >= 0.4) return `${basePrefix}yellow-500`
@@ -212,11 +210,14 @@ const getProductivityColorClass = (score: number, prefix: string = '') => {
 }
 
 // Watch for modal open to load data
-watch(() => props.isOpen, (isOpen) => {
-  if (isOpen) {
-    loadStatistics()
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (isOpen) {
+      loadStatistics()
+    }
   }
-})
+)
 
 // Handle escape key to close modal
 onMounted(() => {
@@ -226,7 +227,7 @@ onMounted(() => {
     }
   }
   document.addEventListener('keydown', handleEscape)
-  
+
   onUnmounted(() => {
     document.removeEventListener('keydown', handleEscape)
   })

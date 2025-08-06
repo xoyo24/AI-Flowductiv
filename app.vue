@@ -16,7 +16,7 @@ useHead({
 })
 
 // Initialize color mode - let the module handle HTML class updates
-const colorMode = useColorMode({
+const _colorMode = useColorMode({
   preference: 'dark',
   fallback: 'dark',
 })

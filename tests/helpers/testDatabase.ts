@@ -21,7 +21,7 @@ export async function setupTestDatabase() {
   // Run migrations to set up schema
   try {
     await migrate(testDb, { migrationsFolder: './drizzle' })
-  } catch (error) {
+  } catch (_error) {
     // If migrations folder doesn't exist, create tables manually
     testDbInstance.exec(`
       CREATE TABLE IF NOT EXISTS activities (
@@ -150,6 +150,6 @@ export function setupTestEnvironment() {
  * Reset test environment after tests
  */
 export function resetTestEnvironment() {
-  delete process.env.DATABASE_URL
-  delete process.env.NUXT_API_BASE_URL
+  process.env.DATABASE_URL = undefined
+  process.env.NUXT_API_BASE_URL = undefined
 }

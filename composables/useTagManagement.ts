@@ -1,4 +1,4 @@
-import { ref, readonly, computed } from 'vue'
+import { computed, readonly, ref } from 'vue'
 
 export interface TagStatistic {
   name: string
@@ -57,9 +57,9 @@ export const useTagManagement = () => {
     try {
       await $fetch('/api/tags/favorites', {
         method: 'POST',
-        body: { tagName }
+        body: { tagName },
       })
-      
+
       if (!favoriteTags.value.includes(tagName)) {
         favoriteTags.value.push(tagName)
       }
@@ -76,10 +76,10 @@ export const useTagManagement = () => {
 
     try {
       await $fetch(`/api/tags/favorites/${tagName}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
-      favoriteTags.value = favoriteTags.value.filter(tag => tag !== tagName)
+
+      favoriteTags.value = favoriteTags.value.filter((tag) => tag !== tagName)
     } catch (err) {
       handleError(err)
     } finally {
@@ -112,30 +112,31 @@ export const useTagManagement = () => {
     clearError()
 
     try {
-      const response = await $fetch<{ data: { updatedActivities: number, success: boolean } }>('/api/tags/rename', {
-        method: 'PATCH',
-        body: { 
-          oldName: oldName.trim(), 
-          newName: newName.trim() 
+      const response = await $fetch<{ data: { updatedActivities: number; success: boolean } }>(
+        '/api/tags/rename',
+        {
+          method: 'PATCH',
+          body: {
+            oldName: oldName.trim(),
+            newName: newName.trim(),
+          },
         }
-      })
+      )
 
       // Update favorites if the renamed tag was a favorite
       if (favoriteTags.value.includes(oldName)) {
-        favoriteTags.value = favoriteTags.value.map(tag => 
-          tag === oldName ? newName : tag
-        )
+        favoriteTags.value = favoriteTags.value.map((tag) => (tag === oldName ? newName : tag))
       }
 
       return {
         success: true,
-        updatedActivities: response.data.updatedActivities
+        updatedActivities: response.data.updatedActivities,
       }
     } catch (err) {
       handleError(err)
-      return { 
-        success: false, 
-        error: error.value || 'Failed to rename tag' 
+      return {
+        success: false,
+        error: error.value || 'Failed to rename tag',
       }
     } finally {
       loading.value = false
@@ -187,45 +188,48 @@ export const useTagManagement = () => {
       ...stat,
       productivityScore,
       formattedDuration: formatDuration(stat.totalTime),
-      formattedAvgDuration: formatDuration(stat.avgDuration)
+      formattedAvgDuration: formatDuration(stat.avgDuration),
     }
   }
 
   // Tag Removal
-  const removeTag = async (tagName: string, deleteActivities: boolean = false): Promise<TagOperationResult> => {
+  const removeTag = async (
+    tagName: string,
+    deleteActivities = false
+  ): Promise<TagOperationResult> => {
     loading.value = true
     clearError()
 
     try {
-      const response = await $fetch<{ 
-        data: { 
-          updatedActivities: number, 
-          deletedActivities: number,
-          removedFromActivities: boolean 
-        } 
+      const response = await $fetch<{
+        data: {
+          updatedActivities: number
+          deletedActivities: number
+          removedFromActivities: boolean
+        }
       }>('/api/tags/remove', {
         method: 'DELETE',
-        body: { 
-          tagName, 
-          deleteActivities 
-        }
+        body: {
+          tagName,
+          deleteActivities,
+        },
       })
 
       // Remove from favorites if it was a favorite
       if (favoriteTags.value.includes(tagName)) {
-        favoriteTags.value = favoriteTags.value.filter(tag => tag !== tagName)
+        favoriteTags.value = favoriteTags.value.filter((tag) => tag !== tagName)
       }
 
       return {
         success: true,
         updatedActivities: response.data.updatedActivities,
-        deletedActivities: response.data.deletedActivities
+        deletedActivities: response.data.deletedActivities,
       }
     } catch (err) {
       handleError(err)
-      return { 
-        success: false, 
-        error: error.value || 'Failed to remove tag' 
+      return {
+        success: false,
+        error: error.value || 'Failed to remove tag',
       }
     } finally {
       loading.value = false
@@ -288,6 +292,6 @@ export const useTagManagement = () => {
 
     // Utilities
     formatDuration,
-    clearError
+    clearError,
   }
 }

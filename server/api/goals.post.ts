@@ -10,8 +10,14 @@ const createGoalSchema = z.object({
   target: z.number().min(0.1, 'Target must be positive'),
   targetUnit: z.string().max(20).optional(),
   status: z.enum(['active', 'completed', 'paused', 'archived']).default('active'),
-  startDate: z.string().transform(str => new Date(str)).optional(),
-  endDate: z.string().transform(str => new Date(str)).optional(),
+  startDate: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional(),
+  endDate: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional(),
   tags: z.array(z.string()).max(10, 'Too many tags').optional(),
   priority: z.number().min(1).max(5).optional(),
   userId: z.string().optional(),
@@ -21,12 +27,12 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
     const validatedData = createGoalSchema.parse(body)
-    
+
     // Set default start date if not provided
     if (!validatedData.startDate) {
       validatedData.startDate = new Date()
     }
-    
+
     // Calculate end date based on period if not provided
     if (!validatedData.endDate) {
       const endDate = new Date(validatedData.startDate)
@@ -43,7 +49,7 @@ export default defineEventHandler(async (event) => {
       }
       validatedData.endDate = endDate
     }
-    
+
     // Set default target unit based on type
     if (!validatedData.targetUnit) {
       switch (validatedData.type) {
@@ -61,27 +67,27 @@ export default defineEventHandler(async (event) => {
           break
       }
     }
-    
+
     const result = await db.insert(goals).values(validatedData).returning()
-    
-    return { 
+
+    return {
       data: result[0],
-      message: 'Goal created successfully'
+      message: 'Goal created successfully',
     }
   } catch (error) {
     console.error('Failed to create goal:', error)
-    
+
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Invalid goal data',
-        data: error.errors
+        data: error.errors,
       })
     }
-    
+
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to create goal'
+      statusMessage: 'Failed to create goal',
     })
   }
 })

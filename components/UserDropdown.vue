@@ -75,8 +75,8 @@ interface Emits {
   (e: 'navigate-to-history'): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  collapsed: false
+const _props = withDefaults(defineProps<Props>(), {
+  collapsed: false,
 })
 
 const emit = defineEmits<Emits>()
@@ -86,22 +86,22 @@ const isOpen = ref(false)
 
 // User data (hardcoded for now - could be from composable later)
 const username = 'xoyo24'
-const userInitials = computed(() => {
+const _userInitials = computed(() => {
   return username.slice(0, 2).toUpperCase()
 })
 
 // Handlers
-const handleSettingsClick = () => {
+const _handleSettingsClick = () => {
   isOpen.value = false
   emit('navigate-to-settings')
 }
 
-const handleHistoryClick = () => {
+const _handleHistoryClick = () => {
   isOpen.value = false
   emit('navigate-to-history')
 }
 
-const handleThemeToggle = () => {
+const _handleThemeToggle = () => {
   const { $colorMode } = useNuxtApp()
   $colorMode.preference = $colorMode.value === 'dark' ? 'light' : 'dark'
   isOpen.value = false

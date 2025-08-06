@@ -4,7 +4,7 @@ import { db } from '~/server/database'
 import { users } from '~/server/database/schema'
 
 const AddFavoriteSchema = z.object({
-  tagName: z.string().min(1, 'Tag name is required').trim()
+  tagName: z.string().min(1, 'Tag name is required').trim(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -16,11 +16,7 @@ export default defineEventHandler(async (event) => {
     const userId = 'demo-user'
 
     // Get current user preferences
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
+    const user = await db.select().from(users).where(eq(users.id, userId)).limit(1)
 
     let currentFavorites: string[] = []
 
@@ -32,8 +28,8 @@ export default defineEventHandler(async (event) => {
         id: userId,
         name: 'Demo User',
         preferences: {
-          favoriteTags: []
-        }
+          favoriteTags: [],
+        },
       })
     }
 
@@ -46,10 +42,10 @@ export default defineEventHandler(async (event) => {
         .update(users)
         .set({
           preferences: {
-            ...user[0]?.preferences || {},
-            favoriteTags: currentFavorites
+            ...(user[0]?.preferences || {}),
+            favoriteTags: currentFavorites,
           },
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(users.id, userId))
     }
@@ -59,14 +55,14 @@ export default defineEventHandler(async (event) => {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        statusMessage: error.errors[0].message
+        statusMessage: error.errors[0].message,
       })
     }
 
     console.error('Failed to add favorite tag:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to add favorite tag'
+      statusMessage: 'Failed to add favorite tag',
     })
   }
 })

@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { readonly, ref } from 'vue'
 
 export interface FocusRatingState {
   showModal: boolean
@@ -10,7 +10,6 @@ const showModal = ref(false)
 const pendingActivity = ref<any | null>(null)
 
 export const useFocusRating = () => {
-
   // Actions
   const promptForRating = (activity: any) => {
     pendingActivity.value = activity
@@ -25,11 +24,11 @@ export const useFocusRating = () => {
       const { updateActivity } = useActivities()
       const updatedActivity = {
         ...pendingActivity.value,
-        focusRating: rating
+        focusRating: rating,
       }
-      
+
       await updateActivity(updatedActivity.id, { focusRating: rating })
-      
+
       // Clear state
       closeModal()
       return true
@@ -58,6 +57,6 @@ export const useFocusRating = () => {
     promptForRating,
     saveRating,
     skipRating,
-    closeModal
+    closeModal,
   }
 }

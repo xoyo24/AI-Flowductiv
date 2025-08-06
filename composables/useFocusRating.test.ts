@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useFocusRating } from '~/composables/useFocusRating'
 
 // Mock useActivities composable
@@ -34,14 +34,14 @@ describe('useFocusRating Composable', () => {
 
   it('should maintain singleton state across multiple instances', () => {
     const mockActivity = { id: 'test-id', title: 'Test Activity' }
-    
+
     // Create first instance and prompt for rating
     const instance1 = useFocusRating()
     instance1.promptForRating(mockActivity)
-    
+
     // Create second instance - should see the same state
     const instance2 = useFocusRating()
-    
+
     expect(instance1.showModal.value).toBe(true)
     expect(instance2.showModal.value).toBe(true)
     expect(instance1.pendingActivity.value).toEqual(mockActivity)

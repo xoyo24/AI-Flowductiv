@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, Trash2, Info, CheckCircle } from 'lucide-vue-next'
+import { AlertTriangle, CheckCircle, Info, Trash2 } from 'lucide-vue-next'
 
 type ConfirmType = 'danger' | 'warning' | 'info' | 'success'
 
@@ -90,7 +90,7 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'info',
   confirmText: 'Confirm',
   cancelText: 'Cancel',
-  loadingText: 'Processing...'
+  loadingText: 'Processing...',
 })
 
 const emit = defineEmits<Emits>()
@@ -100,39 +100,55 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 // Computed properties
-const iconComponent = computed(() => {
+const _iconComponent = computed(() => {
   switch (props.type) {
-    case 'danger': return Trash2
-    case 'warning': return AlertTriangle
-    case 'success': return CheckCircle
-    default: return Info
+    case 'danger':
+      return Trash2
+    case 'warning':
+      return AlertTriangle
+    case 'success':
+      return CheckCircle
+    default:
+      return Info
   }
 })
 
-const iconClass = computed(() => {
+const _iconClass = computed(() => {
   switch (props.type) {
-    case 'danger': return 'text-red-600'
-    case 'warning': return 'text-yellow-600'
-    case 'success': return 'text-green-600'
-    default: return 'text-blue-600'
+    case 'danger':
+      return 'text-red-600'
+    case 'warning':
+      return 'text-yellow-600'
+    case 'success':
+      return 'text-green-600'
+    default:
+      return 'text-blue-600'
   }
 })
 
-const iconBgClass = computed(() => {
+const _iconBgClass = computed(() => {
   switch (props.type) {
-    case 'danger': return 'bg-red-50'
-    case 'warning': return 'bg-yellow-50'
-    case 'success': return 'bg-green-50'
-    default: return 'bg-blue-50'
+    case 'danger':
+      return 'bg-red-50'
+    case 'warning':
+      return 'bg-yellow-50'
+    case 'success':
+      return 'bg-green-50'
+    default:
+      return 'bg-blue-50'
   }
 })
 
-const confirmButtonClass = computed(() => {
+const _confirmButtonClass = computed(() => {
   switch (props.type) {
-    case 'danger': return 'bg-red-600 text-white hover:bg-red-700'
-    case 'warning': return 'bg-yellow-600 text-white hover:bg-yellow-700'
-    case 'success': return 'bg-green-600 text-white hover:bg-green-700'
-    default: return 'bg-primary text-primary-foreground hover:bg-primary/90'
+    case 'danger':
+      return 'bg-red-600 text-white hover:bg-red-700'
+    case 'warning':
+      return 'bg-yellow-600 text-white hover:bg-yellow-700'
+    case 'success':
+      return 'bg-green-600 text-white hover:bg-green-700'
+    default:
+      return 'bg-primary text-primary-foreground hover:bg-primary/90'
   }
 })
 
@@ -144,7 +160,7 @@ const closeDialog = () => {
   }
 }
 
-const handleConfirm = () => {
+const _handleConfirm = () => {
   error.value = null
   emit('confirm')
 }
@@ -166,23 +182,26 @@ onMounted(() => {
     }
   }
   document.addEventListener('keydown', handleEscape)
-  
+
   onUnmounted(() => {
     document.removeEventListener('keydown', handleEscape)
   })
 })
 
 // Watch for dialog close to reset state
-watch(() => props.isOpen, (isOpen) => {
-  if (!isOpen) {
-    loading.value = false
-    error.value = null
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (!isOpen) {
+      loading.value = false
+      error.value = null
+    }
   }
-})
+)
 
 // Expose methods for parent component
 defineExpose({
   setLoading,
-  setError
+  setError,
 })
 </script>

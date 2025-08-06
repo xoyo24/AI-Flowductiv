@@ -73,6 +73,7 @@
 <script setup lang="ts">
 import { useAutoComplete } from '~/composables/useAutoComplete'
 import { useInputParser } from '~/composables/useInputParser'
+import type { ActivitySuggestion } from '~/types/activity'
 
 interface Activity {
   id: string
@@ -106,7 +107,11 @@ onMounted(() => {
 })
 
 // Use input parser to extract title, tags, and priority from unified input
-const { tags: parsedTags, priority: parsedPriority, cleanText: parsedTitle } = useInputParser(unifiedInput)
+const {
+  tags: parsedTags,
+  priority: parsedPriority,
+  cleanText: parsedTitle,
+} = useInputParser(unifiedInput)
 
 // Use autocomplete for suggestions
 const {
@@ -119,13 +124,9 @@ const {
 } = useAutoComplete(unifiedInput, { debounceMs: 300, maxSuggestions: 6 })
 
 // Filter suggestions to only show tag suggestions
-const tagSuggestions = computed(() => 
-  suggestions.value.filter(s => s.type === 'tag')
-)
+const tagSuggestions = computed(() => suggestions.value.filter((s) => s.type === 'tag'))
 
-const showSuggestions = computed(() => 
-  inputFocused.value && tagSuggestions.value.length > 0
-)
+const showSuggestions = computed(() => inputFocused.value && tagSuggestions.value.length > 0)
 
 // Input handlers
 const handleInput = () => {
@@ -180,20 +181,18 @@ const handleSave = () => {
   emit('save')
 }
 
-const selectSuggestion = (suggestion: any) => {
+const selectSuggestion = (suggestion: ActivitySuggestion) => {
   const tagName = suggestion.text.startsWith('#') ? suggestion.text.slice(1) : suggestion.text
-  
+
   // Check if tag already exists in the input
   const currentInput = unifiedInput.value.toLowerCase()
   const tagToAdd = `#${tagName}`.toLowerCase()
-  
+
   if (!currentInput.includes(tagToAdd)) {
     const newTag = `#${tagName}`
-    unifiedInput.value = unifiedInput.value.trim() 
-      ? `${unifiedInput.value} ${newTag}`
-      : newTag
+    unifiedInput.value = unifiedInput.value.trim() ? `${unifiedInput.value} ${newTag}` : newTag
   }
-  
+
   selectedIndex.value = -1
   inputFocused.value = false
   updateFormData()
@@ -205,7 +204,7 @@ const updateFormData = () => {
   emit('update', {
     title: unifiedInput.value.trim(),
     tags: parsedTags.value,
-    priority: parsedPriority.value
+    priority: parsedPriority.value,
   })
 }
 
@@ -215,10 +214,14 @@ watch(unifiedInput, () => {
 })
 
 // Watch for activity prop changes to update input
-watch(() => props.activity, (newActivity) => {
-  if (newActivity) {
-    // Use the title as-is since it already contains hashtag references
-    unifiedInput.value = newActivity.title
-  }
-}, { deep: true })
+watch(
+  () => props.activity,
+  (newActivity) => {
+    if (newActivity) {
+      // Use the title as-is since it already contains hashtag references
+      unifiedInput.value = newActivity.title
+    }
+  },
+  { deep: true }
+)
 </script>

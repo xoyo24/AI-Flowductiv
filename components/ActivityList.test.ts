@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ActivityList from './ActivityList.vue'
 
 describe('ActivityList Component', () => {
@@ -12,7 +12,7 @@ describe('ActivityList Component', () => {
       endTime: '2024-01-01T10:00:00Z',
       tags: ['work', 'typescript'],
       priority: 2,
-      focusRating: 3
+      focusRating: 3,
     },
     {
       id: 'activity-2',
@@ -22,8 +22,8 @@ describe('ActivityList Component', () => {
       endTime: '2024-01-01T14:30:00Z',
       tags: ['meeting'],
       priority: null,
-      focusRating: null
-    }
+      focusRating: null,
+    },
   ]
 
   const defaultProps = {
@@ -32,8 +32,8 @@ describe('ActivityList Component', () => {
     loading: false,
     emptyMessage: 'No activities found',
     formatDuration: (ms: number) => `${Math.round(ms / 60000)}m`,
-    formatRelativeTime: (time: string) => '2 hours ago',
-    formatTimeRange: (start: string, end: string) => '9:00 AM - 10:00 AM'
+    formatRelativeTime: (_time: string) => '2 hours ago',
+    formatTimeRange: (_start: string, _end: string) => '9:00 AM - 10:00 AM',
   }
 
   beforeEach(() => {
@@ -42,13 +42,13 @@ describe('ActivityList Component', () => {
 
   it('should render activity list with focus rating stars', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     expect(wrapper.text()).toContain('Work on project #work #typescript')
     expect(wrapper.text()).toContain('Meeting #meeting')
     expect(wrapper.text()).toContain('Focus:')
-    
+
     // Should have 10 stars total (5 for each activity)
     const stars = wrapper.findAll('button[data-testid*="star-"]')
     expect(stars).toHaveLength(10)
@@ -56,7 +56,7 @@ describe('ActivityList Component', () => {
 
   it('should display correct filled stars for activity with rating', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // First activity has rating 3, so first 3 stars should be filled
@@ -74,7 +74,7 @@ describe('ActivityList Component', () => {
 
   it('should display all empty stars for activity without rating', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Second activity has no rating, so all stars should be empty
@@ -86,7 +86,7 @@ describe('ActivityList Component', () => {
 
   it('should emit activity-focus-rating when star is clicked', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const fourthStar = wrapper.find('[data-testid="activity-activity-1-star-4"]')
@@ -100,7 +100,7 @@ describe('ActivityList Component', () => {
 
   it('should not trigger activity-click when star is clicked', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     const star = wrapper.find('[data-testid="activity-activity-1-star-2"]')
@@ -112,7 +112,7 @@ describe('ActivityList Component', () => {
 
   it('should show hover effects on unrated stars', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // For activity with rating 3, star 4 and 5 should have hover class
@@ -125,7 +125,7 @@ describe('ActivityList Component', () => {
 
   it('should display tags and priority alongside focus rating', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Should show tags
@@ -144,8 +144,8 @@ describe('ActivityList Component', () => {
     const wrapper = await mountSuspended(ActivityList, {
       props: {
         ...defaultProps,
-        activities: []
-      }
+        activities: [],
+      },
     })
 
     expect(wrapper.text()).toContain('No activities found')
@@ -154,7 +154,7 @@ describe('ActivityList Component', () => {
 
   it('should emit other activity events correctly', async () => {
     const wrapper = await mountSuspended(ActivityList, {
-      props: defaultProps
+      props: defaultProps,
     })
 
     // Test activity click on main card (not on stars)

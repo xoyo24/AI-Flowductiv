@@ -15,7 +15,7 @@ export class ClaudeProvider {
 
   static async generate(prompt: string, activities: Activity[]): Promise<AIResponse> {
     try {
-      const apiKey = this.getApiKey()
+      const apiKey = ClaudeProvider.getApiKey()
 
       // Format activities into the prompt
       const formattedPrompt =
@@ -59,7 +59,7 @@ export class ClaudeProvider {
     const startTime = Date.now()
 
     try {
-      const apiKey = this.getApiKey()
+      const apiKey = ClaudeProvider.getApiKey()
       const anthropic = createAnthropic({ apiKey })
       const model = anthropic('claude-3-5-sonnet-20241022')
 

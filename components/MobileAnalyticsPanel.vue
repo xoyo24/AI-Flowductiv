@@ -189,8 +189,8 @@
 </template>
 
 <script setup lang="ts">
+import { Lightbulb, RefreshCw, X } from 'lucide-vue-next'
 import { computed } from 'vue'
-import { X, Lightbulb, RefreshCw } from 'lucide-vue-next'
 
 interface Props {
   isOpen: boolean
@@ -235,9 +235,9 @@ const props = withDefaults(defineProps<Props>(), {
   todayStats: () => ({
     totalTime: '0m',
     activityCount: 0,
-    avgFocus: '0.0'
+    avgFocus: '0.0',
   }),
-  activeGoals: () => []
+  activeGoals: () => [],
 })
 
 const emit = defineEmits<Emits>()
@@ -253,7 +253,7 @@ const vibrate = (pattern: number | number[]) => {
 const formatDuration = (ms: number): string => {
   const hours = Math.floor(ms / (1000 * 60 * 60))
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m`
   }
@@ -261,96 +261,95 @@ const formatDuration = (ms: number): string => {
 }
 
 // Condensed heatmap for mobile (4 weeks instead of 12)
-const condensedHeatmapWeeks = computed(() => {
+const _condensedHeatmapWeeks = computed(() => {
   if (!props.heatmapData.length) return []
-  
+
   // Get last 28 days (4 weeks)
   const today = new Date()
   const startDate = new Date(today)
   startDate.setDate(today.getDate() - 27) // 28 days including today
-  
+
   const weeks = []
   let currentWeek = []
-  let currentDate = new Date(startDate)
-  
+  const currentDate = new Date(startDate)
+
   // Align to start of week (Sunday)
   const dayOfWeek = currentDate.getDay()
   currentDate.setDate(currentDate.getDate() - dayOfWeek)
-  
-  for (let i = 0; i < 35; i++) { // 5 weeks max to ensure we cover 28 days
+
+  for (let i = 0; i < 35; i++) {
+    // 5 weeks max to ensure we cover 28 days
     const dateStr = currentDate.toISOString().split('T')[0]
-    const dayData = props.heatmapData.find(d => d.date === dateStr)
-    
+    const dayData = props.heatmapData.find((d) => d.date === dateStr)
+
     // Only include days within our 28-day range
     const isInRange = currentDate >= startDate && currentDate <= today
-    
+
     currentWeek.push({
       date: isInRange ? dateStr : null,
       totalTime: dayData?.totalTime || 0,
       activityCount: dayData?.activityCount || 0,
       avgFocus: dayData?.avgFocus || 0,
-      index: i
+      index: i,
     })
-    
+
     if (currentWeek.length === 7) {
       weeks.push({
         week: weeks.length,
-        days: [...currentWeek]
+        days: [...currentWeek],
       })
       currentWeek = []
     }
-    
+
     currentDate.setDate(currentDate.getDate() + 1)
   }
-  
+
   return weeks.slice(0, 4) // Only show 4 weeks
 })
 
 // Top 5 tags by usage
-const topTags = computed(() => {
-  return [...props.tagData]
-    .sort((a, b) => b.totalTime - a.totalTime)
-    .slice(0, 5)
+const _topTags = computed(() => {
+  return [...props.tagData].sort((a, b) => b.totalTime - a.totalTime).slice(0, 5)
 })
 
 // Heatmap styling
-const getHeatmapDayClass = (day: any): string => {
+const _getHeatmapDayClass = (day: any): string => {
   if (!day.totalTime) return 'bg-muted/30'
-  
+
   // Calculate intensity based on total time (in minutes)
   const minutes = day.totalTime / (1000 * 60)
-  
+
   if (minutes >= 240) return 'bg-primary' // 4+ hours
   if (minutes >= 180) return 'bg-primary/80' // 3-4 hours
   if (minutes >= 120) return 'bg-primary/60' // 2-3 hours
   if (minutes >= 60) return 'bg-primary/40' // 1-2 hours
   if (minutes >= 30) return 'bg-primary/20' // 30min-1hour
-  
+
   return 'bg-muted/30'
 }
 
-const getHeatmapDayTooltip = (day: any): string => {
+const _getHeatmapDayTooltip = (day: any): string => {
   const date = new Date(day.date).toLocaleDateString()
   const duration = formatDuration(day.totalTime)
   const focus = day.avgFocus ? ` • ${day.avgFocus.toFixed(1)}/5 focus` : ''
-  
+
   return `${date}: ${duration}${focus}`
 }
 
 // Event handlers with enhanced haptic feedback
-const handleDayClick = (day: any) => {
+const _handleDayClick = (day: any) => {
   // Stronger haptic for day selection (more important action)
   vibrate([100, 50, 100])
   emit('day-selected', day)
 }
 
-const handleTagSelect = (tagName: string) => {
+const _handleTagSelect = (tagName: string) => {
   // Light haptic for tag selection
   vibrate([50])
   emit('tag-selected', tagName)
 }
 
-const handleModalAction = (modalType: string) => {
+const _handleModalAction = (modalType: string) => {
   // Medium haptic for modal opens
   vibrate([75])
   switch (modalType) {
@@ -366,13 +365,13 @@ const handleModalAction = (modalType: string) => {
   }
 }
 
-const handleRefresh = () => {
+const _handleRefresh = () => {
   // Success pattern for refresh
   vibrate([100, 50, 50])
   emit('refresh-data')
 }
 
-const handleClose = () => {
+const _handleClose = () => {
   // Light haptic for close
   vibrate([30])
   emit('close')

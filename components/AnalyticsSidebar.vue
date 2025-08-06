@@ -259,11 +259,11 @@ import {
   Target,
   X,
 } from 'lucide-vue-next'
-import InsightsPanel from '~/components/InsightsPanel.vue'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
 import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
 import GoalProgressCard from '~/components/GoalProgressCard.vue'
+import InsightsPanel from '~/components/InsightsPanel.vue'
 import PriorityFilter from '~/components/PriorityFilter.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
 import SavedFilterCombinations from '~/components/SavedFilterCombinations.vue'
@@ -310,20 +310,20 @@ interface Emits {
   (e: 'duration-changed', minDuration?: number, maxDuration?: number): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
   tagsLoading: false,
   tagData: () => [],
   selectedTags: () => new Set<string>(),
-  mobileMode: false
+  mobileMode: false,
 })
 
 const emit = defineEmits<Emits>()
 
 // Local state
-const showGoals = ref(true) // Show goals by default
-const showInsights = ref(true) // Show insights by default
+const _showGoals = ref(true) // Show goals by default
+const _showInsights = ref(true) // Show insights by default
 const showGoalForm = ref(false)
 const editingGoal = ref<Goal | null>(null)
 
@@ -334,56 +334,55 @@ const goalProgresses = ref<Record<string, GoalProgress>>({})
 const loadingProgresses = ref<Record<string, boolean>>({})
 
 // Actions
-const handleDaySelected = (day: any) => {
+const _handleDaySelected = (day: any) => {
   emit('day-selected', day)
 }
 
-const refreshData = () => {
+const _refreshData = () => {
   emit('refresh-data')
 }
 
 // Tag filter event handlers - forward to parent
-const handleTagSelected = (tag: string) => {
+const _handleTagSelected = (tag: string) => {
   emit('tag-selected', tag)
 }
 
-const handleTagDeselected = (tag: string) => {
+const _handleTagDeselected = (tag: string) => {
   emit('tag-deselected', tag)
 }
 
-const handleTagsCleared = () => {
+const _handleTagsCleared = () => {
   emit('tags-cleared')
 }
 
-const handleTagSelectionChanged = (selectedTags: Set<string>) => {
+const _handleTagSelectionChanged = (selectedTags: Set<string>) => {
   emit('selection-changed', selectedTags)
 }
 
-
-const handleTagEdit = (tag: TagData) => {
+const _handleTagEdit = (tag: TagData) => {
   emit('tag-edit', tag)
 }
 
-const handleTagRemove = (tag: TagData, includeActivities: boolean) => {
+const _handleTagRemove = (tag: TagData, includeActivities: boolean) => {
   emit('tag-remove', tag, includeActivities)
 }
 
 // Filter event handlers
-const handleApplyCombination = (combinationId: string) => {
+const _handleApplyCombination = (combinationId: string) => {
   // This will be handled by the useAdvancedFilters composable
   // We'll emit an event that the parent can handle
   emit('apply-filter-combination', combinationId)
 }
 
-const handlePriorityToggle = (priority: number) => {
+const _handlePriorityToggle = (priority: number) => {
   emit('priority-toggle', priority)
 }
 
-const handleFocusToggle = (focus: number) => {
+const _handleFocusToggle = (focus: number) => {
   emit('focus-toggle', focus)
 }
 
-const handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
+const _handleDurationChanged = (minDuration?: number, maxDuration?: number) => {
   emit('duration-changed', minDuration, maxDuration)
 }
 
@@ -392,7 +391,7 @@ const loadActiveGoals = async () => {
   try {
     const goals = await getGoals({ status: 'active' })
     activeGoals.value = goals
-    
+
     // Load progress for each goal
     for (const goal of goals) {
       loadGoalProgress(goal)
@@ -414,16 +413,16 @@ const loadGoalProgress = async (goal: Goal) => {
   }
 }
 
-const handleEditGoal = (goal: Goal) => {
+const _handleEditGoal = (goal: Goal) => {
   editingGoal.value = goal
   showGoalForm.value = true
 }
 
-const handleDeleteGoal = async (goalId: string) => {
+const _handleDeleteGoal = async (goalId: string) => {
   try {
     const success = await deleteGoal(goalId)
     if (success) {
-      activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+      activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
       delete goalProgresses.value[goalId]
       delete loadingProgresses.value[goalId]
     }
@@ -432,16 +431,16 @@ const handleDeleteGoal = async (goalId: string) => {
   }
 }
 
-const handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
+const _handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
   try {
-    const goal = activeGoals.value.find(g => g.id === goalId)
+    const goal = activeGoals.value.find((g) => g.id === goalId)
     if (!goal) return
-    
+
     const updated = await updateGoal(goalId, { status: newStatus as any })
     if (updated) {
       if (newStatus !== 'active') {
         // Remove from active goals if no longer active
-        activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+        activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
         delete goalProgresses.value[goalId]
         delete loadingProgresses.value[goalId]
       }
@@ -451,11 +450,11 @@ const handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
   }
 }
 
-const handleMarkComplete = async (goalId: string) => {
+const _handleMarkComplete = async (goalId: string) => {
   try {
     const updated = await updateGoal(goalId, { status: 'completed' })
     if (updated) {
-      activeGoals.value = activeGoals.value.filter(g => g.id !== goalId)
+      activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
       delete goalProgresses.value[goalId]
       delete loadingProgresses.value[goalId]
     }
@@ -464,15 +463,15 @@ const handleMarkComplete = async (goalId: string) => {
   }
 }
 
-const handleViewGoalDetails = (goal: Goal) => {
+const _handleViewGoalDetails = (goal: Goal) => {
   // TODO: Implement goal details modal
   console.log('View goal details:', goal)
 }
 
-const handleGoalSaved = (goal: Goal) => {
+const _handleGoalSaved = (goal: Goal) => {
   if (editingGoal.value) {
     // Update existing goal
-    const index = activeGoals.value.findIndex(g => g.id === goal.id)
+    const index = activeGoals.value.findIndex((g) => g.id === goal.id)
     if (index !== -1) {
       activeGoals.value[index] = goal
       loadGoalProgress(goal)
@@ -486,7 +485,7 @@ const handleGoalSaved = (goal: Goal) => {
   showGoalForm.value = false
 }
 
-const handleCloseGoalForm = () => {
+const _handleCloseGoalForm = () => {
   showGoalForm.value = false
   editingGoal.value = null
 }
@@ -501,11 +500,11 @@ if (typeof window !== 'undefined') {
   window.addEventListener('goal-created', () => {
     loadActiveGoals()
   })
-  
+
   window.addEventListener('goal-updated', () => {
     loadActiveGoals()
   })
-  
+
   window.addEventListener('activity-saved', () => {
     // Refresh goal progress when activities change
     for (const goal of activeGoals.value) {

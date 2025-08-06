@@ -78,7 +78,7 @@ const emit = defineEmits<Emits>()
 const isOpen = ref(false)
 const menuRef = ref<HTMLElement>()
 
-const toggleMenu = () => {
+const _toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
 
@@ -86,13 +86,12 @@ const closeMenu = () => {
   isOpen.value = false
 }
 
-const handleEdit = () => {
+const _handleEdit = () => {
   emit('edit', props.activity)
   closeMenu()
 }
 
-
-const handleDelete = () => {
+const _handleDelete = () => {
   emit('delete', props.activity)
   closeMenu()
 }
@@ -104,9 +103,9 @@ onMounted(() => {
       closeMenu()
     }
   }
-  
+
   document.addEventListener('click', handleClickOutside)
-  
+
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
   })

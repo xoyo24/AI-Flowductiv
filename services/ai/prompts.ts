@@ -6,12 +6,12 @@ export class PromptTemplates {
       throw new Error('No activities provided for daily summary')
     }
 
-    const totalDuration = this.getTotalDuration(activities)
-    const groupedByTags = this.groupByTags(activities)
+    const totalDuration = PromptTemplates.getTotalDuration(activities)
+    const groupedByTags = PromptTemplates.groupByTags(activities)
 
     const activitiesList = activities
       .map((activity) => {
-        const duration = this.formatDuration(activity.durationMs)
+        const duration = PromptTemplates.formatDuration(activity.durationMs)
         const tags = activity.tags.length > 0 ? ` #${activity.tags.join(' #')}` : ''
         return `- ${activity.title}${tags} (${duration})`
       })
@@ -20,7 +20,7 @@ export class PromptTemplates {
     const tagSummary = Object.entries(groupedByTags)
       .map(
         ([tag, duration]) =>
-          `${tag.charAt(0).toUpperCase() + tag.slice(1)}: ${this.formatDuration(duration)}`
+          `${tag.charAt(0).toUpperCase() + tag.slice(1)}: ${PromptTemplates.formatDuration(duration)}`
       )
       .join(', ')
 
@@ -28,7 +28,7 @@ export class PromptTemplates {
 
 ${activitiesList}
 
-Total time: ${this.formatDuration(totalDuration)}
+Total time: ${PromptTemplates.formatDuration(totalDuration)}
 ${tagSummary ? `Time by category: ${tagSummary}` : ''}
 
 Please analyze:
@@ -41,7 +41,7 @@ Keep the summary concise but insightful, focusing on actionable insights that ca
   }
 
   static enhanceActivity(activity: Activity): string {
-    const duration = this.formatDuration(activity.durationMs)
+    const duration = PromptTemplates.formatDuration(activity.durationMs)
 
     return `Please enhance this activity description to make it more specific and actionable:
 
@@ -65,11 +65,11 @@ Respond in JSON format with: title, tags, priority, notes`
 
     if (hours === 0) {
       return `${minutes}m`
-    } else if (minutes === 0) {
-      return `${hours}h`
-    } else {
-      return `${hours}h ${minutes}m`
     }
+    if (minutes === 0) {
+      return `${hours}h`
+    }
+    return `${hours}h ${minutes}m`
   }
 
   static getTotalDuration(activities: Activity[]): number {

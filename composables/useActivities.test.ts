@@ -195,7 +195,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work', 'coding'],
           priority: 2,
           focusRating: 4,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -209,7 +209,7 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work', 'meeting'],
           priority: 1,
           focusRating: 3,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -363,9 +363,9 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work'],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         {
           id: '2',
@@ -377,9 +377,9 @@ describe('useActivities - Integration Tests', () => {
           tags: ['personal'],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         {
           id: '3',
@@ -391,10 +391,10 @@ describe('useActivities - Integration Tests', () => {
           tags: ['work'],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       ]
 
       // Mock the fetch response
@@ -430,9 +430,9 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         {
           id: '2',
@@ -444,16 +444,17 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       ]
 
       mockFetch.mockResolvedValueOnce({ data: mockActivities })
-      
-      const { getActivities, filteredActivities, setDateRangeFilter, clearDateRangeFilter } = useActivities()
-      
+
+      const { getActivities, filteredActivities, setDateRangeFilter, clearDateRangeFilter } =
+        useActivities()
+
       await getActivities(1, 10)
 
       // Apply and then clear date filter
@@ -479,9 +480,9 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         {
           id: '2',
@@ -493,16 +494,16 @@ describe('useActivities - Integration Tests', () => {
           tags: [],
           priority: null,
           focusRating: null,
-            userId: null,
+          userId: null,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       ]
 
       mockFetch.mockResolvedValueOnce({ data: mockActivities })
-      
+
       const { getActivities, filterMetadata, setDateRangeFilter } = useActivities()
-      
+
       await getActivities(1, 10)
 
       // Apply date filter

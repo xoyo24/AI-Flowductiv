@@ -18,16 +18,16 @@ interface Props {
 const props = defineProps<Props>()
 
 // Show callout only when action is truly needed
-const shouldShowCallout = computed(() => {
+const _shouldShowCallout = computed(() => {
   const count = props.activities.length
   // Only show for first-time users and early habit building (0-3 activities)
   return count <= 3
 })
 
 // Simple action-oriented message for early users only
-const contextualMessage = computed(() => {
+const _contextualMessage = computed(() => {
   const count = props.activities.length
-  
+
   // First-time user
   if (count === 0) {
     return 'Track your first activity to get started'

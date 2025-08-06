@@ -118,7 +118,7 @@ export const useTimer = () => {
     // Create activity data
     const extractedTags = InputParserService.extractTags(currentActivity.value)
     const extractedPriority = InputParserService.extractPriority(currentActivity.value)
-    
+
     const activityData = {
       title: currentActivity.value, // Preserve original input with tags/priority
       durationMs: finalDuration,
@@ -143,9 +143,8 @@ export const useTimer = () => {
         // Reset timer state
         resetTimer()
         return { success: true, activity: savedActivity }
-      } else {
-        return { success: false }
       }
+      return { success: false }
     } catch (error) {
       console.error('Failed to save activity:', error)
       return { success: false }

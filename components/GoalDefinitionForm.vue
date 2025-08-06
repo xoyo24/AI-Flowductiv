@@ -212,7 +212,7 @@
 </template>
 
 <script setup lang="ts">
-import { X, ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, X } from 'lucide-vue-next'
 import type { Goal, NewGoal } from '~/server/database/schema'
 
 interface Props {
@@ -225,7 +225,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  editingGoal: null
+  editingGoal: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -240,7 +240,7 @@ const tagInput = ref('')
 const errors = ref<Record<string, string>>({})
 
 // Form data
-const form = ref<NewGoal & { priority?: number | null, status: string }>({
+const form = ref<NewGoal & { priority?: number | null; status: string }>({
   title: '',
   description: '',
   type: 'time',
@@ -249,7 +249,7 @@ const form = ref<NewGoal & { priority?: number | null, status: string }>({
   targetUnit: '',
   status: 'active',
   tags: [],
-  priority: null
+  priority: null,
 })
 
 // Methods
@@ -263,50 +263,61 @@ const resetForm = () => {
     targetUnit: '',
     status: 'active',
     tags: [],
-    priority: null
+    priority: null,
   }
   errors.value = {}
   showAdvanced.value = false
 }
 
 // Initialize form with editing data
-watch(() => props.editingGoal, (goal) => {
-  if (goal) {
-    form.value = {
-      title: goal.title,
-      description: goal.description || '',
-      type: goal.type as any,
-      period: goal.period as any,
-      target: goal.target,
-      targetUnit: goal.targetUnit || '',
-      status: goal.status,
-      tags: [...(goal.tags || [])],
-      priority: goal.priority
+watch(
+  () => props.editingGoal,
+  (goal) => {
+    if (goal) {
+      form.value = {
+        title: goal.title,
+        description: goal.description || '',
+        type: goal.type as any,
+        period: goal.period as any,
+        target: goal.target,
+        targetUnit: goal.targetUnit || '',
+        status: goal.status,
+        tags: [...(goal.tags || [])],
+        priority: goal.priority,
+      }
+    } else {
+      resetForm()
     }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // Computed properties
 const targetUnitDisplay = computed(() => {
   switch (form.value.type) {
-    case 'time': return 'hours'
-    case 'activity_count': return 'activities'
-    case 'streak': return 'days'
-    case 'focus_rating': return 'average rating'
-    default: return 'units'
+    case 'time':
+      return 'hours'
+    case 'activity_count':
+      return 'activities'
+    case 'streak':
+      return 'days'
+    case 'focus_rating':
+      return 'average rating'
+    default:
+      return 'units'
   }
 })
 
-const isFormValid = computed(() => {
-  return form.value.title.trim().length > 0 &&
-         form.value.type &&
-         form.value.period &&
-         form.value.target > 0
+const _isFormValid = computed(() => {
+  return (
+    form.value.title.trim().length > 0 &&
+    form.value.type &&
+    form.value.period &&
+    form.value.target > 0
+  )
 })
 
-const addTag = () => {
+const _addTag = () => {
   const tag = tagInput.value.trim()
   if (tag && !form.value.tags.includes(tag) && form.value.tags.length < 10) {
     form.value.tags.push(tag)
@@ -314,7 +325,7 @@ const addTag = () => {
   }
 }
 
-const removeTag = (tag: string) => {
+const _removeTag = (tag: string) => {
   const index = form.value.tags.indexOf(tag)
   if (index > -1) {
     form.value.tags.splice(index, 1)
@@ -323,51 +334,51 @@ const removeTag = (tag: string) => {
 
 const validateForm = (): boolean => {
   errors.value = {}
-  
+
   if (!form.value.title.trim()) {
     errors.value.title = 'Title is required'
   } else if (form.value.title.length > 100) {
     errors.value.title = 'Title is too long'
   }
-  
+
   if (!form.value.type) {
     errors.value.type = 'Goal type is required'
   }
-  
+
   if (!form.value.period) {
     errors.value.period = 'Period is required'
   }
-  
+
   if (!form.value.target || form.value.target <= 0) {
     errors.value.target = 'Target must be a positive number'
   }
-  
+
   return Object.keys(errors.value).length === 0
 }
 
-const handleSubmit = async () => {
+const _handleSubmit = async () => {
   if (!validateForm()) return
-  
+
   try {
     loading.value = true
-    
+
     // Set target unit based on type
     form.value.targetUnit = targetUnitDisplay.value
-    
+
     // Prepare form data
     const goalData = {
       ...form.value,
-      priority: form.value.priority || undefined
+      priority: form.value.priority || undefined,
     }
-    
+
     let result: Goal | null = null
-    
+
     if (props.editingGoal) {
       result = await updateGoal(props.editingGoal.id, goalData)
     } else {
       result = await createGoal(goalData)
     }
-    
+
     if (result) {
       emit('goal-saved', result)
       emit('close')

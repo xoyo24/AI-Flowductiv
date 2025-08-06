@@ -176,11 +176,11 @@ const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement>()
 const refreshing = ref(false)
 
-const toggleDropdown = () => {
+const _toggleDropdown = () => {
   isOpen.value = !isOpen.value
 }
 
-const refreshProviders = async () => {
+const _refreshProviders = async () => {
   if (refreshing.value) return
 
   refreshing.value = true

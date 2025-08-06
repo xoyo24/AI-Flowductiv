@@ -34,7 +34,7 @@ describe('useAISettings Composable', () => {
   // Simple display name test - pure function, no dependencies
   it('should handle provider display names correctly', () => {
     // Test the simple utility function that doesn't require complex mocking
-    const providerNames = {
+    const _providerNames = {
       claude: 'Claude (Anthropic)',
       openai: 'GPT-4 (OpenAI)',
     }

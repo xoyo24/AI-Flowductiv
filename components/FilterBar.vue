@@ -216,66 +216,66 @@ const showSaveDialog = ref(false)
 const saveFilterName = ref('')
 
 // Methods
-const removeTagFilter = (tag: string) => {
+const _removeTagFilter = (tag: string) => {
   emit('remove-tag-filter', tag)
 }
 
-const removePriorityFilter = (priority: number) => {
+const _removePriorityFilter = (priority: number) => {
   emit('remove-priority-filter', priority)
 }
 
-const removeFocusFilter = (focus: number) => {
+const _removeFocusFilter = (focus: number) => {
   emit('remove-focus-filter', focus)
 }
 
-
-const clearDateRangeFilter = () => {
+const _clearDateRangeFilter = () => {
   emit('clear-date-range-filter')
 }
 
-const clearDurationFilters = () => {
+const _clearDurationFilters = () => {
   emit('clear-duration-filters')
 }
 
-const clearAllFilters = () => {
+const _clearAllFilters = () => {
   emit('clear-all-filters')
 }
 
-const formatDateRange = (dateRange: { start: Date; end: Date }) => {
+const _formatDateRange = (dateRange: { start: Date; end: Date }) => {
   const start = dateRange.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const end = dateRange.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   return `${start} - ${end}`
 }
 
-const formatDurationFilter = () => {
+const _formatDurationFilter = () => {
   const { minDuration, maxDuration } = props.activeFilters
-  
+
   const formatMs = (ms: number) => {
     const minutes = Math.round(ms / 60000)
     if (minutes < 60) {
       return `${minutes}min`
-    } else {
-      const hours = Math.floor(minutes / 60)
-      const remainingMins = minutes % 60
-      return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
     }
+    const hours = Math.floor(minutes / 60)
+    const remainingMins = minutes % 60
+    return remainingMins > 0 ? `${hours}h ${remainingMins}min` : `${hours}h`
   }
-  
+
   if (minDuration !== undefined && maxDuration !== undefined) {
     return `${formatMs(minDuration)} - ${formatMs(maxDuration)}`
-  } else if (minDuration !== undefined) {
+  }
+  if (minDuration !== undefined) {
     return `≥ ${formatMs(minDuration)}`
-  } else if (maxDuration !== undefined) {
+  }
+  if (maxDuration !== undefined) {
     return `≤ ${formatMs(maxDuration)}`
   }
-  
+
   return 'Duration'
 }
 
 // Save filter methods
-const saveCurrentFilters = () => {
+const _saveCurrentFilters = () => {
   if (!saveFilterName.value.trim()) return
-  
+
   try {
     saveCurrentFilterCombination(saveFilterName.value.trim())
     cancelSave()
@@ -289,9 +289,9 @@ const cancelSave = () => {
   showSaveDialog.value = false
 }
 
-const getActiveFiltersDescription = () => {
+const _getActiveFiltersDescription = () => {
   const parts: string[] = []
-  
+
   if (props.activeFilters.priority?.length) {
     parts.push(`Priority: ${props.activeFilters.priority.join(', ')}`)
   }
@@ -299,8 +299,12 @@ const getActiveFiltersDescription = () => {
     parts.push(`Focus: ${props.activeFilters.focusRating.join(', ')}`)
   }
   if (props.activeFilters.minDuration || props.activeFilters.maxDuration) {
-    const min = props.activeFilters.minDuration ? `${Math.round(props.activeFilters.minDuration / 60000)}min` : '0'
-    const max = props.activeFilters.maxDuration ? `${Math.round(props.activeFilters.maxDuration / 60000)}min` : '∞'
+    const min = props.activeFilters.minDuration
+      ? `${Math.round(props.activeFilters.minDuration / 60000)}min`
+      : '0'
+    const max = props.activeFilters.maxDuration
+      ? `${Math.round(props.activeFilters.maxDuration / 60000)}min`
+      : '∞'
     parts.push(`Duration: ${min} - ${max}`)
   }
   if (props.activeFilters.tags?.length) {
@@ -309,8 +313,7 @@ const getActiveFiltersDescription = () => {
   if (props.activeFilters.dateRange) {
     parts.push('Date range selected')
   }
-  
+
   return parts.length > 0 ? parts.join(', ') : 'No filters'
 }
-
 </script>

@@ -5,10 +5,10 @@ export class InputParserService {
    * Parse a complete activity input string into structured data
    */
   static parseActivity(input: string): ParsedActivity {
-    const tags = this.extractTags(input)
-    const priority = this.extractPriority(input)
-    const focusRating = this.extractFocusRating(input)
-    const cleanText = this.cleanText(input)
+    const tags = InputParserService.extractTags(input)
+    const priority = InputParserService.extractPriority(input)
+    const focusRating = InputParserService.extractFocusRating(input)
+    const cleanText = InputParserService.cleanText(input)
 
     return {
       originalText: input,

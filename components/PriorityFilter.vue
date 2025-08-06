@@ -26,26 +26,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Flame } from 'lucide-vue-next'
-import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
+import { computed } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
-interface Emits {
-  (e: 'priority-toggle', priority: number): void
-}
+type Emits = (e: 'priority-toggle', priority: number) => void
 
-const emit = defineEmits<Emits>()
+const _emit = defineEmits<Emits>()
 
 // Composables
 const { togglePriorityFilter } = useAdvancedFilters()
 const { activeFilters } = useActivities()
 
 // Current filter state
-const currentFilters = computed(() => activeFilters.value)
+const _currentFilters = computed(() => activeFilters.value)
 
 // Methods
-const togglePriority = (priority: number) => {
+const _togglePriority = (priority: number) => {
   togglePriorityFilter(priority)
 }
 </script>

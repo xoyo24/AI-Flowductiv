@@ -36,7 +36,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // Computed values
-const timerStatus = computed(() => {
+const _timerStatus = computed(() => {
   if (props.isRunning) return 'Running'
   if (props.isPaused) return 'Paused'
   return 'Stopped'
