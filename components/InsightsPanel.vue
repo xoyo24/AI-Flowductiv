@@ -1,13 +1,5 @@
 <template>
   <div class="space-y-3">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-2">
-        <BarChart3 class="w-4 h-4 text-muted-foreground" />
-        <span class="text-sm font-medium text-foreground">Insights</span>
-      </div>
-    </div>
-
     <!-- Quick Summary -->
     <div class="bg-secondary/20 rounded-lg p-3">
       <!-- AI Insight (if available) or fallback -->
@@ -15,8 +7,7 @@
         <Brain class="w-3 h-3 text-primary" />
         <span class="text-xs text-muted-foreground">{{ quickInsight }}</span>
       </div>
-      <div v-else class="flex items-center space-x-2 mb-2">
-        <BarChart3 class="w-3 h-3 text-muted-foreground" />
+      <div v-else class="mb-2">
         <span class="text-xs text-muted-foreground">{{ staticInsight }}</span>
       </div>
     </div>
@@ -71,6 +62,7 @@ const showAnalyticsDialog = ref(false)
 
 // Quick insight state
 const todayStats = ref({ totalTime: 0, activitiesCount: 0, avgFocus: 0 })
+const overallStats = ref({ totalTime: 0, activitiesCount: 0, avgFocus: 0 })
 
 // Dialog management
 const openAnalyticsDialog = () => {
@@ -93,16 +85,30 @@ const loadTodayStats = async () => {
       new Date(a.startTime) >= startOfDay
     )
 
-    const totalTime = todayActivities.reduce((sum, a) => sum + a.durationMs, 0)
-    const ratedActivities = todayActivities.filter(a => a.focusRating !== null)
-    const avgFocus = ratedActivities.length > 0 
-      ? ratedActivities.reduce((sum, a) => sum + (a.focusRating || 0), 0) / ratedActivities.length
+    // Calculate today's stats
+    const todayTotalTime = todayActivities.reduce((sum, a) => sum + a.durationMs, 0)
+    const todayRatedActivities = todayActivities.filter(a => a.focusRating !== null)
+    const todayAvgFocus = todayRatedActivities.length > 0 
+      ? todayRatedActivities.reduce((sum, a) => sum + (a.focusRating || 0), 0) / todayRatedActivities.length
       : 0
 
     todayStats.value = {
-      totalTime,
+      totalTime: todayTotalTime,
       activitiesCount: todayActivities.length,
-      avgFocus
+      avgFocus: todayAvgFocus
+    }
+
+    // Calculate overall stats
+    const overallTotalTime = activities.reduce((sum, a) => sum + a.durationMs, 0)
+    const overallRatedActivities = activities.filter(a => a.focusRating !== null)
+    const overallAvgFocus = overallRatedActivities.length > 0 
+      ? overallRatedActivities.reduce((sum, a) => sum + (a.focusRating || 0), 0) / overallRatedActivities.length
+      : 0
+
+    overallStats.value = {
+      totalTime: overallTotalTime,
+      activitiesCount: activities.length,
+      avgFocus: overallAvgFocus
     }
   } catch (error) {
     console.error('Failed to load today stats:', error)
@@ -135,19 +141,34 @@ const quickInsight = computed(() => {
 })
 
 const staticInsight = computed(() => {
-  if (todayStats.value.activitiesCount === 0) {
+  // If no overall data, show fallback
+  if (overallStats.value.activitiesCount === 0) {
     return 'Start tracking to see your productivity patterns'
   }
   
-  const hours = Math.floor(todayStats.value.totalTime / (1000 * 60 * 60))
-  const minutes = Math.floor((todayStats.value.totalTime % (1000 * 60 * 60)) / (1000 * 60))
-  const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
-  
-  if (todayStats.value.avgFocus > 0) {
-    return `Today: ${timeStr} tracked, ${todayStats.value.avgFocus.toFixed(1)}/5 avg focus`
+  // If have today's data, show today's summary
+  if (todayStats.value.activitiesCount > 0) {
+    const hours = Math.floor(todayStats.value.totalTime / (1000 * 60 * 60))
+    const minutes = Math.floor((todayStats.value.totalTime % (1000 * 60 * 60)) / (1000 * 60))
+    const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+    
+    if (todayStats.value.avgFocus > 0) {
+      return `Today: ${timeStr} tracked, ${todayStats.value.avgFocus.toFixed(1)}/5 avg focus`
+    }
+    
+    return `Today: ${timeStr} tracked across ${todayStats.value.activitiesCount} activities`
   }
   
-  return `Today: ${timeStr} tracked across ${todayStats.value.activitiesCount} activities`
+  // If no today's data but have historical data, show overall summary
+  const totalHours = Math.floor(overallStats.value.totalTime / (1000 * 60 * 60))
+  const totalMinutes = Math.floor((overallStats.value.totalTime % (1000 * 60 * 60)) / (1000 * 60))
+  const totalTimeStr = totalHours > 0 ? `${totalHours}h ${totalMinutes}m` : `${totalMinutes}m`
+  
+  if (overallStats.value.avgFocus > 0) {
+    return `${totalTimeStr} total tracked, ${overallStats.value.avgFocus.toFixed(1)}/5 avg focus`
+  }
+  
+  return `${totalTimeStr} tracked across ${overallStats.value.activitiesCount} activities`
 })
 
 // Initialize on mount
