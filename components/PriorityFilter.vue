@@ -33,17 +33,17 @@ import { useAdvancedFilters } from '~/composables/useAdvancedFilters'
 
 type Emits = (e: 'priority-toggle', priority: number) => void
 
-const _emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 // Composables
 const { togglePriorityFilter } = useAdvancedFilters()
 const { activeFilters } = useActivities()
 
 // Current filter state
-const _currentFilters = computed(() => activeFilters.value)
+const currentFilters = computed(() => activeFilters.value)
 
 // Methods
-const _togglePriority = (priority: number) => {
+const togglePriority = (priority: number) => {
   togglePriorityFilter(priority)
 }
 </script>

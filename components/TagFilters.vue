@@ -280,11 +280,11 @@ const _displayTags = computed(() => {
 })
 
 // Methods
-const _isSelected = (tagName: string): boolean => {
+const isSelected = (tagName: string): boolean => {
   return selectedTags.value.has(tagName)
 }
 
-const _toggleTag = (tagName: string) => {
+const toggleTag = (tagName: string) => {
   if (selectedTags.value.has(tagName)) {
     selectedTags.value.delete(tagName)
     emit('tag-deselected', tagName)

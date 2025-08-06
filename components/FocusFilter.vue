@@ -40,10 +40,10 @@ const { toggleFocusRatingFilter } = useAdvancedFilters()
 const { activeFilters } = useActivities()
 
 // Current filter state
-const _currentFilters = computed(() => activeFilters.value)
+const currentFilters = computed(() => activeFilters.value)
 
 // Methods
-const _toggleFocus = (focus: number) => {
+const toggleFocus = (focus: number) => {
   toggleFocusRatingFilter(focus)
 }
 </script>
