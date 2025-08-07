@@ -58,98 +58,18 @@
         @day-selected="handleDaySelected" 
       />
 
-      <!-- Insights (Collapsible) -->
-      <div class="space-y-2">
-        <button
-          @click="showInsights = !showInsights"
-          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
-        >
-          <span>Insights</span>
-          <ChevronDown 
-            :class="{
-              'w-3 h-3 transition-transform duration-200': true,
-              'rotate-180': showInsights
-            }"
-          />
-        </button>
-        
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-2"
-        >
-          <div v-if="showInsights" class="space-y-2">
-            <InsightsPanel :compact="!mobileMode" :mobile-mode="mobileMode" />
-          </div>
-        </Transition>
-      </div>
+      <!-- Insights -->
+      <InsightsPanel :compact="!mobileMode" :mobile-mode="mobileMode" />
 
-      <!-- Goals (Collapsible) -->
-      <div class="space-y-2">
+      <!-- Goal Management - Only show when no goals integrated in stats -->
+      <div v-if="activeGoals.length === 0" class="flex justify-center">
         <button
-          @click="showGoals = !showGoals"
-          class="w-full flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
+          @click="showGoalForm = true"
+          class="inline-flex items-center px-3 py-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
         >
-          <span>Goals</span>
-          <div class="flex items-center space-x-1">
-            <button
-              @click.stop="showGoalForm = true"
-              class="p-0.5 rounded hover:bg-muted/50 transition-colors"
-              title="Add new goal"
-            >
-              <Plus class="w-3 h-3" />
-            </button>
-            <ChevronDown 
-              :class="{
-                'w-3 h-3 transition-transform duration-200': true,
-                'rotate-180': showGoals
-              }"
-            />
-          </div>
+          <Target class="w-3 h-3 mr-1" />
+          Set Goals
         </button>
-        
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-2"
-        >
-          <div v-if="showGoals" class="space-y-3">
-            <!-- Active Goals -->
-            <div v-if="activeGoals.length > 0" class="space-y-2">
-              <GoalProgressCard
-                v-for="goal in activeGoals"
-                :key="goal.id"
-                :goal="goal"
-                :progress="goalProgresses[goal.id]"
-                :loading="loadingProgresses[goal.id]"
-                @edit-goal="handleEditGoal"
-                @delete-goal="handleDeleteGoal"
-                @toggle-status="handleToggleGoalStatus"
-                @mark-complete="handleMarkComplete"
-                @view-details="handleViewGoalDetails"
-              />
-            </div>
-            
-            <!-- Empty State -->
-            <div v-else class="text-center py-4">
-              <Target class="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p class="text-sm text-muted-foreground mb-2">No active goals</p>
-              <button
-                @click="showGoalForm = true"
-                class="inline-flex items-center px-3 py-1.5 text-xs border border-border rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <Plus class="w-3 h-3 mr-1" />
-                Create Goal
-              </button>
-            </div>
-          </div>
-        </Transition>
       </div>
 
 

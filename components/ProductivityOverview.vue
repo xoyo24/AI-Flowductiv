@@ -18,39 +18,81 @@
       }">
         <div>
           <div :class="{
-            'font-bold text-foreground': true,
+            'font-bold': true,
+            'text-foreground': !activityCountDisplay.isGoal,
+            'text-primary': activityCountDisplay.isGoal,
             'text-sm': !mobileMode,
             'text-2xl': mobileMode
-          }">{{ metrics.activityCount }}</div>
+          }">{{ activityCountDisplay.value }}</div>
           <div :class="{
             'text-muted-foreground': true,
             'text-xs': !mobileMode,
             'text-sm': mobileMode
-          }">Activities</div>
+          }">
+            {{ activityCountDisplay.label }}
+            <span v-if="activityCountDisplay.isGoal && activityCountDisplay.progress !== undefined" 
+                  class="ml-1 text-xs"
+                  :class="{
+                    'text-green-500': activityCountDisplay.progress >= 100,
+                    'text-yellow-500': activityCountDisplay.progress >= 75 && activityCountDisplay.progress < 100,
+                    'text-primary': activityCountDisplay.progress < 75
+                  }"
+            >
+              {{ activityCountDisplay.progress >= 100 ? '✓' : '📈' }}
+            </span>
+          </div>
         </div>
         <div>
           <div :class="{
-            'font-bold text-foreground': true,
+            'font-bold': true,
+            'text-foreground': !totalTimeDisplay.isGoal,
+            'text-primary': totalTimeDisplay.isGoal,
             'text-sm': !mobileMode,
             'text-2xl': mobileMode
-          }">{{ formatDuration(metrics.totalTime) }}</div>
+          }">{{ totalTimeDisplay.value }}</div>
           <div :class="{
             'text-muted-foreground': true,
             'text-xs': !mobileMode,
             'text-sm': mobileMode
-          }">Total Time</div>
+          }">
+            {{ totalTimeDisplay.label }}
+            <span v-if="totalTimeDisplay.isGoal && totalTimeDisplay.progress !== undefined" 
+                  class="ml-1 text-xs"
+                  :class="{
+                    'text-green-500': totalTimeDisplay.progress >= 100,
+                    'text-yellow-500': totalTimeDisplay.progress >= 75 && totalTimeDisplay.progress < 100,
+                    'text-primary': totalTimeDisplay.progress < 75
+                  }"
+            >
+              {{ totalTimeDisplay.progress >= 100 ? '✓' : '📈' }}
+            </span>
+          </div>
         </div>
         <div>
           <div :class="{
-            'font-bold text-foreground': true,
+            'font-bold': true,
+            'text-foreground': !avgFocusDisplay.isGoal,
+            'text-primary': avgFocusDisplay.isGoal,
             'text-sm': !mobileMode,
             'text-2xl': mobileMode
-          }">{{ metrics.averageFocus.toFixed(1) }}</div>
+          }">{{ avgFocusDisplay.value }}</div>
           <div :class="{
             'text-muted-foreground': true,
             'text-xs': !mobileMode,
             'text-sm': mobileMode
-          }">Avg Focus</div>
+          }">
+            {{ avgFocusDisplay.label }}
+            <span v-if="avgFocusDisplay.isGoal && avgFocusDisplay.progress !== undefined" 
+                  class="ml-1 text-xs"
+                  :class="{
+                    'text-green-500': avgFocusDisplay.progress >= 100,
+                    'text-yellow-500': avgFocusDisplay.progress >= 75 && avgFocusDisplay.progress < 100,
+                    'text-primary': avgFocusDisplay.progress < 75
+                  }"
+            >
+              {{ avgFocusDisplay.progress >= 100 ? '✓' : '📈' }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -119,6 +161,7 @@
 
 <script setup lang="ts">
 import type { HeatmapDay } from '~/composables/useActivities'
+import type { Goal, GoalProgress } from '~/types/goal'
 
 interface Props {
   collapsed?: boolean
@@ -134,6 +177,15 @@ interface ActivityMetrics {
   streakDays: number
 }
 
+interface StatDisplay {
+  value: string
+  label: string
+  isGoal: boolean
+  progress?: number
+  target?: number
+  unit?: string
+}
+
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   loading: false,
@@ -145,8 +197,9 @@ const props = withDefaults(defineProps<Props>(), {
 type Emits = (e: 'day-selected', day: HeatmapDay) => void
 const emit = defineEmits<Emits>()
 
-// Composable
+// Composables
 const { getHeatmapData, formatDuration, getActivities } = useActivities()
+const { getGoals, calculateGoalProgress } = useGoals()
 
 // Reactive state
 const heatmapData = ref<HeatmapDay[]>([])
@@ -156,6 +209,8 @@ const metrics = ref<ActivityMetrics>({
   averageFocus: 0,
   streakDays: 0,
 })
+const activeGoals = ref<Goal[]>([])
+const goalProgresses = ref<Map<string, GoalProgress>>(new Map())
 
 const tooltip = ref({
   visible: false,
@@ -208,6 +263,91 @@ const gridDays = computed(() => {
 
 // Get current color mode for theme-aware colors
 const colorMode = useColorMode()
+
+// Computed stats display based on active goals
+const activityCountDisplay = computed((): StatDisplay => {
+  // Check for activity count goals (daily/weekly/monthly)
+  const activityGoal = activeGoals.value.find(g => 
+    g.type === 'activity_count' && g.status === 'active'
+  )
+  
+  if (activityGoal) {
+    const progress = goalProgresses.value.get(activityGoal.id)
+    if (progress) {
+      return {
+        value: `${Math.floor(progress.currentValue)}/${progress.targetValue}`,
+        label: `${activityGoal.period === 'daily' ? 'Today' : activityGoal.period === 'weekly' ? 'This Week' : 'This Month'}`,
+        isGoal: true,
+        progress: progress.progressPercentage,
+        target: progress.targetValue,
+        unit: 'activities'
+      }
+    }
+  }
+  
+  return {
+    value: metrics.value.activityCount.toString(),
+    label: 'Activities',
+    isGoal: false
+  }
+})
+
+const totalTimeDisplay = computed((): StatDisplay => {
+  // Check for time goals (daily/weekly/monthly)
+  const timeGoal = activeGoals.value.find(g => 
+    g.type === 'time' && g.status === 'active'
+  )
+  
+  if (timeGoal) {
+    const progress = goalProgresses.value.get(timeGoal.id)
+    if (progress) {
+      const currentHours = progress.currentValue
+      const targetHours = progress.targetValue
+      
+      return {
+        value: `${currentHours.toFixed(1)}h/${targetHours}h`,
+        label: `${timeGoal.period === 'daily' ? 'Today' : timeGoal.period === 'weekly' ? 'This Week' : 'This Month'}`,
+        isGoal: true,
+        progress: progress.progressPercentage,
+        target: targetHours,
+        unit: 'hours'
+      }
+    }
+  }
+  
+  return {
+    value: formatDuration(metrics.value.totalTime),
+    label: 'Total Time',
+    isGoal: false
+  }
+})
+
+const avgFocusDisplay = computed((): StatDisplay => {
+  // Check for focus rating goals
+  const focusGoal = activeGoals.value.find(g => 
+    g.type === 'focus_rating' && g.status === 'active'
+  )
+  
+  if (focusGoal) {
+    const progress = goalProgresses.value.get(focusGoal.id)
+    if (progress) {
+      return {
+        value: `${progress.currentValue.toFixed(1)}/${progress.targetValue.toFixed(1)}`,
+        label: 'Focus Goal',
+        isGoal: true,
+        progress: progress.progressPercentage,
+        target: progress.targetValue,
+        unit: 'rating'
+      }
+    }
+  }
+  
+  return {
+    value: metrics.value.averageFocus.toFixed(1),
+    label: 'Avg Focus',
+    isGoal: false
+  }
+})
 
 const legendColors = computed(() => {
   if (colorMode.value === 'dark') {
@@ -264,6 +404,23 @@ const showTooltip = (event: MouseEvent, day: HeatmapDay) => {
 
 const hideTooltip = () => {
   tooltip.value.visible = false
+}
+
+const loadActiveGoals = async () => {
+  try {
+    // Get active goals
+    const goals = await getGoals({ status: 'active' })
+    activeGoals.value = goals
+    
+    // Calculate progress for each goal
+    goalProgresses.value.clear()
+    for (const goal of goals) {
+      const progress = await calculateGoalProgress(goal)
+      goalProgresses.value.set(goal.id, progress)
+    }
+  } catch (error) {
+    console.error('Failed to load active goals:', error)
+  }
 }
 
 const calculateMetrics = async (): Promise<ActivityMetrics> => {
@@ -333,8 +490,12 @@ const calculateMetrics = async (): Promise<ActivityMetrics> => {
 // Load data on mount
 onMounted(async () => {
   try {
-    // Load both heatmap data and metrics
-    const [heatmapResult, metricsResult] = await Promise.all([getHeatmapData(), calculateMetrics()])
+    // Load heatmap data, metrics, and goals
+    const [heatmapResult, metricsResult] = await Promise.all([
+      getHeatmapData(), 
+      calculateMetrics(),
+      loadActiveGoals()
+    ])
 
     heatmapData.value = heatmapResult
     metrics.value = metricsResult
@@ -343,13 +504,22 @@ onMounted(async () => {
   }
 })
 
-// Refresh when activities change
+// Refresh when activities or goals change
 if (typeof window !== 'undefined') {
-  window.addEventListener('activity-saved', async () => {
-    const [heatmapResult, metricsResult] = await Promise.all([getHeatmapData(), calculateMetrics()])
+  const refreshData = async () => {
+    const [heatmapResult, metricsResult] = await Promise.all([
+      getHeatmapData(), 
+      calculateMetrics(),
+      loadActiveGoals()
+    ])
 
     heatmapData.value = heatmapResult
     metrics.value = metricsResult
-  })
+  }
+  
+  window.addEventListener('activity-saved', refreshData)
+  window.addEventListener('goal-created', refreshData)
+  window.addEventListener('goal-updated', refreshData)
+  window.addEventListener('goal-deleted', refreshData)
 }
 </script>
