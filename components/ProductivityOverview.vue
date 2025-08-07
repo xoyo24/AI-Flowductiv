@@ -11,11 +11,12 @@
     <!-- Content -->
     <div v-else class="space-y-3">
       <!-- Key Metrics Row -->
-      <div v-if="!collapsed" :class="{
-        'grid grid-cols-3 gap-2 text-center': true,
-        'text-xs': !mobileMode,
-        'text-base': mobileMode
-      }">
+      <div v-if="!collapsed" class="space-y-2">
+        <div :class="{
+          'grid grid-cols-3 gap-2 text-center': true,
+          'text-xs': !mobileMode,
+          'text-base': mobileMode
+        }">
         <div>
           <div :class="{
             'font-bold': true,
@@ -92,6 +93,48 @@
             >
               {{ avgFocusDisplay.progress >= 100 ? '✓' : '📈' }}
             </span>
+          </div>
+        </div>
+        
+        <!-- Goal Management Actions -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center space-x-2">
+            <!-- Goal status indicator -->
+            <div v-if="hasActiveGoals" class="text-xs text-muted-foreground flex items-center space-x-1">
+              <span class="w-2 h-2 bg-primary rounded-full"></span>
+              <span>{{ activeGoalCount }} goal{{ activeGoalCount > 1 ? 's' : '' }} active</span>
+            </div>
+            <div v-else class="text-xs text-muted-foreground">
+              No goals set
+            </div>
+          </div>
+          
+          <!-- Management actions -->
+          <div class="flex items-center space-x-2">
+            <button
+              v-if="hasActiveGoals"
+              @click="openGoalManagement"
+              class="text-xs px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="manage-goals-button"
+            >
+              ⚙️ Manage
+            </button>
+            <button
+              v-else
+              @click="openGoalManagement"
+              class="text-xs px-2 py-1 bg-secondary/50 hover:bg-secondary text-foreground rounded transition-colors"
+              data-testid="set-goals-button"
+            >
+              Set Goals
+            </button>
+            
+            <button
+              @click="openAnalyticsDialog"
+              class="text-xs px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="view-details-button"
+            >
+              View Details
+            </button>
           </div>
         </div>
       </div>
@@ -194,7 +237,11 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // Define emits
-type Emits = (e: 'day-selected', day: HeatmapDay) => void
+interface Emits {
+  (e: 'day-selected', day: HeatmapDay): void
+  (e: 'open-goal-management'): void
+  (e: 'open-analytics-dialog'): void
+}
 const emit = defineEmits<Emits>()
 
 // Composables
@@ -260,6 +307,10 @@ const gridDays = computed(() => {
 
   return days.slice(0, 84) // Exactly 84 days (12 weeks)
 })
+
+// Goal management computed properties
+const hasActiveGoals = computed(() => activeGoals.value.length > 0)
+const activeGoalCount = computed(() => activeGoals.value.length)
 
 // Get current color mode for theme-aware colors
 const colorMode = useColorMode()
@@ -404,6 +455,14 @@ const showTooltip = (event: MouseEvent, day: HeatmapDay) => {
 
 const hideTooltip = () => {
   tooltip.value.visible = false
+}
+
+const openGoalManagement = () => {
+  emit('open-goal-management')
+}
+
+const openAnalyticsDialog = () => {
+  emit('open-analytics-dialog')
 }
 
 const loadActiveGoals = async () => {

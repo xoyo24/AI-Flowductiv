@@ -55,22 +55,14 @@
         :loading="loading"
         :mobile-mode="mobileMode"
         :selected-date-filter="activeDateFilter"
-        @day-selected="handleDaySelected" 
+        @day-selected="handleDaySelected"
+        @open-goal-management="handleOpenGoalManagement"
+        @open-analytics-dialog="handleOpenAnalyticsDialog"
       />
 
       <!-- Insights -->
       <InsightsPanel :compact="!mobileMode" :mobile-mode="mobileMode" />
 
-      <!-- Goal Management - Only show when no goals integrated in stats -->
-      <div v-if="activeGoals.length === 0" class="flex justify-center">
-        <button
-          @click="showGoalForm = true"
-          class="inline-flex items-center px-3 py-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
-        >
-          <Target class="w-3 h-3 mr-1" />
-          Set Goals
-        </button>
-      </div>
 
 
       <!-- ⚙️ FILTER AREA -->
@@ -170,19 +162,12 @@ import {
   BarChart3,
   Brain,
   Calendar,
-  ChevronDown,
   ChevronLeft,
-  Clock,
-  Plus,
-  RotateCw,
-  Settings,
-  Target,
   X,
 } from 'lucide-vue-next'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
 import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
-import GoalProgressCard from '~/components/GoalProgressCard.vue'
 import InsightsPanel from '~/components/InsightsPanel.vue'
 import PriorityFilter from '~/components/PriorityFilter.vue'
 import ProductivityOverview from '~/components/ProductivityOverview.vue'
@@ -205,7 +190,7 @@ interface Props {
   tagsLoading?: boolean
   tagData?: TagData[]
   selectedTags?: Set<string>
-  activeDateFilter?: string | null
+  activeDateFilter?: string | null | undefined
   mobileMode?: boolean
 }
 
@@ -242,13 +227,11 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 // Local state
-const showGoals = ref(true) // Show goals by default
-const showInsights = ref(true) // Show insights by default
 const showGoalForm = ref(false)
 const editingGoal = ref<Goal | null>(null)
 
 // Goal management
-const { getGoals, updateGoal, deleteGoal, calculateGoalProgress } = useGoals()
+const { getGoals, calculateGoalProgress } = useGoals()
 const activeGoals = ref<Goal[]>([])
 const goalProgresses = ref<Record<string, GoalProgress>>({})
 const loadingProgresses = ref<Record<string, boolean>>({})
@@ -258,9 +241,14 @@ const handleDaySelected = (day: any) => {
   emit('day-selected', day)
 }
 
-const _refreshData = () => {
-  emit('refresh-data')
+const handleOpenGoalManagement = () => {
+  showGoalForm.value = true
 }
+
+const handleOpenAnalyticsDialog = () => {
+  emit('show-analytics-modal')
+}
+
 
 // Tag filter event handlers - forward to parent
 const handleTagSelected = (tag: string) => {
@@ -333,60 +321,6 @@ const loadGoalProgress = async (goal: Goal) => {
   }
 }
 
-const handleEditGoal = (goal: Goal) => {
-  editingGoal.value = goal
-  showGoalForm.value = true
-}
-
-const handleDeleteGoal = async (goalId: string) => {
-  try {
-    const success = await deleteGoal(goalId)
-    if (success) {
-      activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
-      delete goalProgresses.value[goalId]
-      delete loadingProgresses.value[goalId]
-    }
-  } catch (error) {
-    console.error('Failed to delete goal:', error)
-  }
-}
-
-const handleToggleGoalStatus = async (goalId: string, newStatus: string) => {
-  try {
-    const goal = activeGoals.value.find((g) => g.id === goalId)
-    if (!goal) return
-
-    const updated = await updateGoal(goalId, { status: newStatus as any })
-    if (updated) {
-      if (newStatus !== 'active') {
-        // Remove from active goals if no longer active
-        activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
-        delete goalProgresses.value[goalId]
-        delete loadingProgresses.value[goalId]
-      }
-    }
-  } catch (error) {
-    console.error('Failed to toggle goal status:', error)
-  }
-}
-
-const handleMarkComplete = async (goalId: string) => {
-  try {
-    const updated = await updateGoal(goalId, { status: 'completed' })
-    if (updated) {
-      activeGoals.value = activeGoals.value.filter((g) => g.id !== goalId)
-      delete goalProgresses.value[goalId]
-      delete loadingProgresses.value[goalId]
-    }
-  } catch (error) {
-    console.error('Failed to mark goal complete:', error)
-  }
-}
-
-const handleViewGoalDetails = (goal: Goal) => {
-  // TODO: Implement goal details modal
-  console.log('View goal details:', goal)
-}
 
 const handleGoalSaved = (goal: Goal) => {
   if (editingGoal.value) {

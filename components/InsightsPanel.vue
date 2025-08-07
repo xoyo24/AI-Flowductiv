@@ -1,26 +1,12 @@
 <template>
-  <div class="space-y-3">
-    <!-- Quick Summary -->
-    <div class="bg-secondary/20 rounded-lg p-3">
-      <!-- AI Insight (if available) or fallback -->
-      <div v-if="hasQuickInsight" class="flex items-center space-x-2 mb-3">
+  <div>
+    <!-- AI Insight (Only if available) -->
+    <div v-if="hasQuickInsight" class="bg-secondary/20 rounded-lg p-3 mb-3">
+      <div class="flex items-center space-x-2">
         <Brain class="w-4 h-4 text-primary" />
         <span class="text-sm font-medium text-foreground">{{ quickInsight }}</span>
       </div>
-      <div v-else class="mb-3">
-        <span class="text-sm font-medium text-foreground">{{ staticInsight }}</span>
-      </div>
     </div>
-
-    <!-- View Analytics Button -->
-    <button
-      @click="openAnalyticsDialog"
-      data-testid="view-analytics-button"
-      class="inline-flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
-    >
-      <TrendingUp class="w-3 h-3" />
-      <span>View Details</span>
-    </button>
 
     <!-- Analytics Dialog -->
     <AnalyticsDialog 
