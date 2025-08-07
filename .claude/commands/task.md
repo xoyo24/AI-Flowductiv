@@ -92,6 +92,7 @@ Create GitHub-style 365-day activity heatmap with click-to-filter
 ### What It Does:
 1. **Remove Completed Work**: Remove completed tasks/details from SESSION_NOTES.md to keep it focused on current work
 2. **Create Individual Session Log**: Add detailed session file to `docs/history/session-YYYY-MM-DD-[topic].md` with implementation details
+   1. If log already exist for the same day, appending to existing log instead of creating new one.
 3. **Update TodoWrite**: Mark relevant tasks as completed
 4. **Plan Next**: Identify immediate next priority
 

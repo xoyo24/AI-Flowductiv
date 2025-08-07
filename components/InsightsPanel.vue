@@ -176,4 +176,9 @@ onUnmounted(() => {
     window.removeEventListener('activity-deleted', loadTodayStats)
   }
 })
+
+// Expose methods for parent components
+defineExpose({
+  openAnalyticsDialog
+})
 </script>

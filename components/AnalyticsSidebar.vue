@@ -61,7 +61,11 @@
       />
 
       <!-- Insights -->
-      <InsightsPanel :compact="!mobileMode" :mobile-mode="mobileMode" />
+      <InsightsPanel 
+        ref="insightsPanelRef"
+        :compact="!mobileMode" 
+        :mobile-mode="mobileMode" 
+      />
 
 
 
@@ -228,6 +232,7 @@ const emit = defineEmits<Emits>()
 
 // Local state
 const showGoalForm = ref(false)
+const insightsPanelRef = ref()
 const editingGoal = ref<Goal | null>(null)
 
 // Goal management
@@ -242,11 +247,21 @@ const handleDaySelected = (day: any) => {
 }
 
 const handleOpenGoalManagement = () => {
+  // If there are active goals, set the first one for editing
+  // Otherwise, open the form for creating a new goal
+  if (activeGoals.value.length > 0) {
+    editingGoal.value = activeGoals.value[0] || null
+  } else {
+    editingGoal.value = null
+  }
   showGoalForm.value = true
 }
 
 const handleOpenAnalyticsDialog = () => {
-  emit('show-analytics-modal')
+  // Call the InsightsPanel's openAnalyticsDialog method directly
+  if (insightsPanelRef.value?.openAnalyticsDialog) {
+    insightsPanelRef.value.openAnalyticsDialog()
+  }
 }
 
 
