@@ -17,7 +17,11 @@
           'text-xs': !mobileMode,
           'text-base': mobileMode
         }">
-        <div>
+        <div 
+          @click="handleStatClick('activity_count')"
+          class="cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors duration-200 group"
+          :title="activityCountDisplay.isGoal ? 'Edit activity goal' : 'Set activity goal'"
+        >
           <div :class="{
             'font-bold': true,
             'text-foreground': !activityCountDisplay.isGoal,
@@ -30,20 +34,29 @@
             'text-xs': !mobileMode,
             'text-sm': mobileMode
           }">
-            {{ activityCountDisplay.label }}
-            <span v-if="activityCountDisplay.isGoal && activityCountDisplay.progress !== undefined" 
-                  class="ml-1 text-xs"
-                  :class="{
-                    'text-green-500': activityCountDisplay.progress >= 100,
-                    'text-yellow-500': activityCountDisplay.progress >= 75 && activityCountDisplay.progress < 100,
-                    'text-primary': activityCountDisplay.progress < 75
-                  }"
-            >
-              {{ activityCountDisplay.progress >= 100 ? '✓' : '📈' }}
+            <span class="flex items-center justify-center space-x-1">
+              <span>{{ activityCountDisplay.label }}</span>
+              <span v-if="activityCountDisplay.isGoal && activityCountDisplay.progress !== undefined" 
+                    class="text-xs"
+                    :class="{
+                      'text-green-500': activityCountDisplay.progress >= 100,
+                      'text-yellow-500': activityCountDisplay.progress >= 75 && activityCountDisplay.progress < 100,
+                      'text-primary': activityCountDisplay.progress < 75
+                    }"
+              >
+                {{ activityCountDisplay.progress >= 100 ? '✓' : '📈' }}
+              </span>
+              <svg class="w-3 h-3 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
             </span>
           </div>
         </div>
-        <div>
+        <div 
+          @click="handleStatClick('time')"
+          class="cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors duration-200 group"
+          :title="totalTimeDisplay.isGoal ? 'Edit time goal' : 'Set time goal'"
+        >
           <div :class="{
             'font-bold': true,
             'text-foreground': !totalTimeDisplay.isGoal,
@@ -56,20 +69,29 @@
             'text-xs': !mobileMode,
             'text-sm': mobileMode
           }">
-            {{ totalTimeDisplay.label }}
-            <span v-if="totalTimeDisplay.isGoal && totalTimeDisplay.progress !== undefined" 
-                  class="ml-1 text-xs"
-                  :class="{
-                    'text-green-500': totalTimeDisplay.progress >= 100,
-                    'text-yellow-500': totalTimeDisplay.progress >= 75 && totalTimeDisplay.progress < 100,
-                    'text-primary': totalTimeDisplay.progress < 75
-                  }"
-            >
-              {{ totalTimeDisplay.progress >= 100 ? '✓' : '📈' }}
+            <span class="flex items-center justify-center space-x-1">
+              <span>{{ totalTimeDisplay.label }}</span>
+              <span v-if="totalTimeDisplay.isGoal && totalTimeDisplay.progress !== undefined" 
+                    class="text-xs"
+                    :class="{
+                      'text-green-500': totalTimeDisplay.progress >= 100,
+                      'text-yellow-500': totalTimeDisplay.progress >= 75 && totalTimeDisplay.progress < 100,
+                      'text-primary': totalTimeDisplay.progress < 75
+                    }"
+              >
+                {{ totalTimeDisplay.progress >= 100 ? '✓' : '📈' }}
+              </span>
+              <svg class="w-3 h-3 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
             </span>
           </div>
         </div>
-        <div>
+        <div 
+          @click="handleStatClick('focus_rating')"
+          class="cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors duration-200 group"
+          :title="avgFocusDisplay.isGoal ? 'Edit focus goal' : 'Set focus goal'"
+        >
           <div :class="{
             'font-bold': true,
             'text-foreground': !avgFocusDisplay.isGoal,
@@ -82,61 +104,46 @@
             'text-xs': !mobileMode,
             'text-sm': mobileMode
           }">
-            {{ avgFocusDisplay.label }}
-            <span v-if="avgFocusDisplay.isGoal && avgFocusDisplay.progress !== undefined" 
-                  class="ml-1 text-xs"
-                  :class="{
-                    'text-green-500': avgFocusDisplay.progress >= 100,
-                    'text-yellow-500': avgFocusDisplay.progress >= 75 && avgFocusDisplay.progress < 100,
-                    'text-primary': avgFocusDisplay.progress < 75
-                  }"
-            >
-              {{ avgFocusDisplay.progress >= 100 ? '✓' : '📈' }}
+            <span class="flex items-center justify-center space-x-1">
+              <span>{{ avgFocusDisplay.label }}</span>
+              <span v-if="avgFocusDisplay.isGoal && avgFocusDisplay.progress !== undefined" 
+                    class="text-xs"
+                    :class="{
+                      'text-green-500': avgFocusDisplay.progress >= 100,
+                      'text-yellow-500': avgFocusDisplay.progress >= 75 && avgFocusDisplay.progress < 100,
+                      'text-primary': avgFocusDisplay.progress < 75
+                    }"
+              >
+                {{ avgFocusDisplay.progress >= 100 ? '✓' : '📈' }}
+              </span>
+              <svg class="w-3 h-3 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
             </span>
           </div>
         </div>
         </div>
         
-        <!-- Goal Management Actions -->
-        <div class="flex items-center justify-between pt-1">
-          <div class="flex items-center space-x-2">
-            <!-- Goal status indicator -->
-            <div v-if="hasActiveGoals" class="text-xs text-muted-foreground flex items-center space-x-1">
-              <span class="w-2 h-2 bg-primary rounded-full"></span>
-              <span>{{ activeGoalCount }} goal{{ activeGoalCount > 1 ? 's' : '' }} active</span>
+        <!-- AI Analytics Button -->
+        <div class="pt-2">
+          <button
+            @click="openAnalyticsDialog"
+            class="w-full px-4 py-2 bg-muted/30 hover:bg-muted/50 rounded-lg transition-colors duration-200 group focus:outline-none focus:ring-2 focus:ring-primary/50"
+            data-testid="view-details-button"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <div class="flex items-center space-x-1">
+                <svg class="w-3 h-3 text-primary group-hover:text-primary/80 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="2"/>
+                  <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 4"/>
+                </svg>
+                <span class="text-xs font-medium text-foreground/90 group-hover:text-foreground">AI Analysis</span>
+              </div>
+              <svg class="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
             </div>
-            <div v-else class="text-xs text-muted-foreground">
-              No goals set
-            </div>
-          </div>
-          
-          <!-- Management actions -->
-          <div class="flex items-center space-x-2">
-            <button
-              v-if="hasActiveGoals"
-              @click="openGoalManagement"
-              class="text-xs px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="manage-goals-button"
-            >
-              ⚙️ Manage
-            </button>
-            <button
-              v-else
-              @click="openGoalManagement"
-              class="text-xs px-2 py-1 bg-secondary/50 hover:bg-secondary text-foreground rounded transition-colors"
-              data-testid="set-goals-button"
-            >
-              Set Goals
-            </button>
-            
-            <button
-              @click="openAnalyticsDialog"
-              class="text-xs px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="view-details-button"
-            >
-              View Details
-            </button>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -240,7 +247,7 @@ const props = withDefaults(defineProps<Props>(), {
 // Define emits
 interface Emits {
   (e: 'day-selected', day: HeatmapDay): void
-  (e: 'open-goal-management'): void
+  (e: 'open-goal-management', goalType: 'activity_count' | 'time' | 'focus_rating'): void
   (e: 'open-analytics-dialog'): void
 }
 const emit = defineEmits<Emits>()
@@ -309,9 +316,6 @@ const gridDays = computed(() => {
   return days.slice(0, 84) // Exactly 84 days (12 weeks)
 })
 
-// Goal management computed properties
-const hasActiveGoals = computed(() => activeGoals.value.length > 0)
-const activeGoalCount = computed(() => activeGoals.value.length)
 
 // Get current color mode for theme-aware colors
 const colorMode = useColorMode()
@@ -458,8 +462,8 @@ const hideTooltip = () => {
   tooltip.value.visible = false
 }
 
-const openGoalManagement = () => {
-  emit('open-goal-management')
+const handleStatClick = (goalType: 'activity_count' | 'time' | 'focus_rating') => {
+  emit('open-goal-management', goalType)
 }
 
 const openAnalyticsDialog = () => {

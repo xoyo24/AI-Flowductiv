@@ -217,6 +217,7 @@ import type { Goal, NewGoal } from '~/server/database/schema'
 
 interface Props {
   editingGoal?: Goal | null
+  initialGoalType?: 'activity_count' | 'time' | 'focus_rating' | null
 }
 
 interface Emits {
@@ -226,6 +227,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   editingGoal: null,
+  initialGoalType: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -257,7 +259,7 @@ const resetForm = () => {
   form.value = {
     title: '',
     description: '',
-    type: 'time',
+    type: props.initialGoalType || 'time',
     period: 'daily',
     target: 1,
     targetUnit: '',
@@ -287,6 +289,17 @@ watch(
       }
     } else {
       resetForm()
+    }
+  },
+  { immediate: true }
+)
+
+// Watch for initialGoalType changes when creating new goals
+watch(
+  () => props.initialGoalType,
+  (newType) => {
+    if (newType && !props.editingGoal) {
+      form.value.type = newType
     }
   },
   { immediate: true }

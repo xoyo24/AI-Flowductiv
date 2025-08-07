@@ -151,6 +151,7 @@
         <div class="p-6">
           <GoalDefinitionForm
             :editing-goal="editingGoal"
+            :initial-goal-type="selectedGoalType"
             @goal-saved="handleGoalSaved"
             @close="handleCloseGoalForm"
           />
@@ -233,6 +234,7 @@ const emit = defineEmits<Emits>()
 // Local state
 const showGoalForm = ref(false)
 const insightsPanelRef = ref()
+const selectedGoalType = ref<'activity_count' | 'time' | 'focus_rating' | null>(null)
 const editingGoal = ref<Goal | null>(null)
 
 // Goal management
@@ -246,13 +248,18 @@ const handleDaySelected = (day: any) => {
   emit('day-selected', day)
 }
 
-const handleOpenGoalManagement = () => {
-  // If there are active goals, set the first one for editing
-  // Otherwise, open the form for creating a new goal
-  if (activeGoals.value.length > 0) {
-    editingGoal.value = activeGoals.value[0] || null
+const handleOpenGoalManagement = (goalType: 'activity_count' | 'time' | 'focus_rating') => {
+  // Find existing goal for this specific type
+  const existingGoal = activeGoals.value.find(goal => goal.type === goalType)
+  
+  if (existingGoal) {
+    // Edit existing goal
+    editingGoal.value = existingGoal
   } else {
+    // Create new goal with type pre-filled - we'll pass this to the form
     editingGoal.value = null
+    // Store the goal type for the form to use
+    selectedGoalType.value = goalType
   }
   showGoalForm.value = true
 }
@@ -357,6 +364,7 @@ const handleGoalSaved = (goal: Goal) => {
 const handleCloseGoalForm = () => {
   showGoalForm.value = false
   editingGoal.value = null
+  selectedGoalType.value = null
 }
 
 // Load goals on mount
