@@ -95,6 +95,7 @@
             </span>
           </div>
         </div>
+        </div>
         
         <!-- Goal Management Actions -->
         <div class="flex items-center justify-between pt-1">
