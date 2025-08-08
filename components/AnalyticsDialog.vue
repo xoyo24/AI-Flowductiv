@@ -396,15 +396,15 @@
                 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                   <div class="bg-white dark:bg-card rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold">${{ (aiSettings.currentMonthCost || 0).toFixed(3) }}</div>
+                    <div class="text-lg font-bold">${{ safeCurrentMonthCost.toFixed(3) }}</div>
                     <div class="text-xs text-muted-foreground">This month</div>
                   </div>
                   <div class="bg-white dark:bg-card rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold">${{ (aiSettings.remainingBudget || 0).toFixed(2) }}</div>
+                    <div class="text-lg font-bold">${{ safeRemainingBudget.toFixed(2) }}</div>
                     <div class="text-xs text-muted-foreground">Remaining</div>
                   </div>
                   <div class="bg-white dark:bg-card rounded-lg p-3 text-center col-span-2 sm:col-span-1">
-                    <div class="text-lg font-bold">{{ Math.round(aiSettings.budgetUtilization || 0) }}%</div>
+                    <div class="text-lg font-bold">{{ Math.round(safeBudgetUtilization) }}%</div>
                     <div class="text-xs text-muted-foreground">Used</div>
                   </div>
                 </div>
@@ -413,13 +413,13 @@
                 <div class="mb-3">
                   <div class="flex justify-between text-xs mb-1">
                     <span>Budget Usage</span>
-                    <span>${{ aiSettings.monthlyLimit || 10 }}</span>
+                    <span>${{ safeMonthlyLimit.toFixed(0) }}</span>
                   </div>
                   <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
                     <div 
                       class="h-full rounded-full transition-all duration-300"
-                      :class="(aiSettings.budgetUtilization || 0) >= 90 ? 'bg-red-500' : (aiSettings.budgetUtilization || 0) >= 70 ? 'bg-yellow-500' : 'bg-green-500'"
-                      :style="{ width: `${Math.min(100, aiSettings.budgetUtilization || 0)}%` }"
+                      :class="safeBudgetUtilization >= 90 ? 'bg-red-500' : safeBudgetUtilization >= 70 ? 'bg-yellow-500' : 'bg-green-500'"
+                      :style="{ width: `${Math.min(100, safeBudgetUtilization)}%` }"
                     ></div>
                   </div>
                 </div>
@@ -712,6 +712,12 @@ const generateNewInsights = async () => {
     console.error('Failed to generate insights:', error)
   }
 }
+
+// Safe computed properties for cost display
+const safeCurrentMonthCost = computed(() => Number(aiSettings.currentMonthCost || 0))
+const safeRemainingBudget = computed(() => Number(aiSettings.remainingBudget || 0))
+const safeBudgetUtilization = computed(() => Number(aiSettings.budgetUtilization || 0))
+const safeMonthlyLimit = computed(() => Number(aiSettings.monthlyLimit || 10))
 
 // Methods
 const closeDialog = () => {
