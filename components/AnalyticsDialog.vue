@@ -433,9 +433,9 @@
                     <span class="text-sm font-medium">AI Provider</span>
                   </div>
                   <div class="flex items-center space-x-1">
-                    <div class="w-2 h-2 rounded-full" :class="aiSettings.getCurrentProviderStatus.available ? 'bg-green-500' : 'bg-red-500'"></div>
+                    <div class="w-2 h-2 rounded-full" :class="(aiSettings.getCurrentProviderStatus?.available || false) ? 'bg-green-500' : 'bg-red-500'"></div>
                     <span class="text-xs text-muted-foreground">
-                      {{ aiSettings.getCurrentProviderStatus.available ? 'Online' : 'Offline' }}
+                      {{ (aiSettings.getCurrentProviderStatus?.available || false) ? 'Online' : 'Offline' }}
                     </span>
                   </div>
                 </div>
@@ -450,9 +450,9 @@
                     <div class="text-right">
                       <span 
                         class="px-2 py-1 text-xs rounded-full"
-                        :class="`bg-${aiSettings.getProviderBadge(aiSettings.currentProvider).color}-100 text-${aiSettings.getProviderBadge(aiSettings.currentProvider).color}-700 dark:bg-${aiSettings.getProviderBadge(aiSettings.currentProvider).color}-950 dark:text-${aiSettings.getProviderBadge(aiSettings.currentProvider).color}-300`"
+                        :class="getBadgeClasses(aiSettings.getProviderBadge(aiSettings.currentProvider || 'claude'))"
                       >
-                        {{ aiSettings.getProviderBadge(aiSettings.currentProvider).text }}
+                        {{ aiSettings.getProviderBadge(aiSettings.currentProvider || 'claude').text }}
                       </span>
                     </div>
                   </div>
@@ -470,7 +470,7 @@
                     <div class="flex items-center space-x-3">
                       <div 
                         class="w-3 h-3 rounded-full"
-                        :class="aiSettings.providerStatus[provider].available ? 'bg-green-500' : 'bg-gray-400'"
+                        :class="(aiSettings.providerStatus[provider]?.available || false) ? 'bg-green-500' : 'bg-gray-400'"
                       ></div>
                       <span class="text-sm">{{ aiSettings.getProviderDisplayName(provider) }}</span>
                     </div>
@@ -481,7 +481,7 @@
                         {{ aiSettings.getProviderBadge(provider).text }}
                       </span>
                       <button
-                        v-if="provider !== aiSettings.currentProvider && aiSettings.providerStatus[provider].available"
+                        v-if="provider !== aiSettings.currentProvider && (aiSettings.providerStatus[provider]?.available || false)"
                         @click="aiSettings.setProvider(provider)"
                         class="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
                       >
@@ -718,6 +718,12 @@ const safeCurrentMonthCost = computed(() => Number(aiSettings.currentMonthCost |
 const safeRemainingBudget = computed(() => Number(aiSettings.remainingBudget || 0))
 const safeBudgetUtilization = computed(() => Number(aiSettings.budgetUtilization || 0))
 const safeMonthlyLimit = computed(() => Number(aiSettings.monthlyLimit || 10))
+
+// Safe badge class helper
+const getBadgeClasses = (badge: { color: string }) => {
+  const color = badge?.color || 'gray'
+  return `bg-${color}-100 text-${color}-700 dark:bg-${color}-950 dark:text-${color}-300`
+}
 
 // Methods
 const closeDialog = () => {
