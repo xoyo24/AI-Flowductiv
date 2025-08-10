@@ -2,11 +2,11 @@
 
 > **Daily session tracking - Current focus and immediate priorities**
 
-## 🎯 **Current Focus: Analytics & Insights Enhancement**
+## 🎯 **Current Focus: Analytics Dialog Fundamental Redesign**
 
-**Phase Progress**: Phase 1C Complete (Tag Management & Filter Architecture)  
-**Current Goal**: Technical cleanup and enhanced AI features  
-**Status**: Mobile analytics complete, ready for build optimization
+**Phase Progress**: Analytics UI technically complete but needs user-centered rethink  
+**Current Goal**: Redesign analytics to provide genuinely useful insights  
+**Status**: Previous approach focused on fixing broken features instead of fundamentally rethinking purpose
 
 ---
 
@@ -25,6 +25,9 @@
 - ✅ **Analytics UI Integration** - Clean unified interface eliminating information redundancy with contextual goal management
 - ✅ **Enhanced Goal Management** - Smart clickable statistics with direct goal management, type-aware forms, and refined UI
 - ✅ **Code Quality Cleanup** - Reduced lint errors by 73% (459→126), removed dead code, fixed runtime issues
+- ✅ **AI Insights Dialog Enhancement** - Enhanced data presentation with visual charts, better interaction patterns, mobile-optimized dialog
+- ✅ **Cost-Aware AI Settings** - Provider selection with cost indicators, usage tracking, budget management, smart fallback logic
+- ✅ **UX Improvements** - Dialog-only AI insights, fixed provider status errors, improved user feedback flow
 
 ### **Recent Critical Fixes**
 - ✅ **Focus Rating System** - Complete post-activity 5-star rating system with inline UI
@@ -45,18 +48,22 @@
 
 ### **🎯 High Priority - Next Session**
 
-**Enhanced Goal Management Complete!** Smart clickable statistics with direct goal management, type-aware forms, and refined UI implemented.
+**CRITICAL: Analytics Dialog Needs Fundamental Redesign**
 
-**Next Focus: Enhanced AI Features & UX Polish**
-- ❌ **AI Insights Dialog Enhancement** (60 min): Improved modal interface with better data visualization
-  - Enhanced data presentation with charts and visual insights
-  - Better interaction patterns for exploring AI recommendations
-  - Mobile-optimized dialog experience with touch-friendly controls
+Previous session failed by removing AI features instead of thoughtfully redesigning them. Need to restart with user-centered approach.
 
-- ❌ **Cost-Aware AI Settings** (30 min): Better provider fallback and usage tracking
-  - Improved provider selection with cost indicators
-  - Usage tracking and budget management features
-  - Smart fallback logic for cost optimization
+**Next Focus: Rethink Analytics Purpose** (90 min)
+- 🧠 **User Research**: What insights do users actually need from productivity data?
+- 🎯 **Purpose Definition**: Define clear value proposition for analytics dialog
+- 🤖 **AI Integration Strategy**: How can AI genuinely enhance analytics (not just add complexity)?
+- 🔧 **Fix vs Replace Decision**: When to fix broken features vs when to redesign fundamentally
+- 🛠️ **Implementation Plan**: Concrete steps to build genuinely useful analytics
+
+**Key Questions to Answer**:
+1. What actions should users take after viewing analytics?
+2. What insights help users improve their productivity?  
+3. How can AI provide value beyond basic statistical analysis?
+4. What's the difference between useful AI features vs "AI theater"?
 
 ### **🎨 Medium Priority**
 
@@ -76,15 +83,16 @@
 
 ## **📋 Next Session Recommendation**
 
-**Suggested Focus**: **Enhanced AI Features & UX Polish**  
+**Suggested Focus**: **Analytics Dialog Fundamental Redesign**  
 **Estimated Duration**: 90 minutes  
-**Rationale**: Enhanced goal management complete with smart clickable statistics, ready for advanced AI features
+**Rationale**: Current analytics show basic stats but don't help users understand WHY their productivity varies or WHAT actions they should take. Previous attempt failed by removing complexity instead of thoughtfully redesigning it.
 
 **Success Criteria**:
-- Implement AI insights dialog enhancement with better data visualization and mobile optimization
-- Improve provider fallback, usage tracking, and cost-aware AI settings
-- Performance optimization through bundle analysis and code splitting
-- Mobile UX polish with enhanced touch interactions and responsiveness
+- Define what insights users actually need (not just what's easy to calculate)
+- Design AI integration that adds genuine value (not just impressive visuals)
+- Create actionable recommendations users can actually implement  
+- Fix AI Settings properly instead of removing functionality
+- Establish clear decision framework: when to fix vs when to redesign
 
 ---
 
@@ -96,4 +104,4 @@
 
 ---
 
-**Status Summary**: Enhanced goal management complete with smart clickable statistics • Type-aware forms and refined UI implemented • Ready for enhanced AI features and UX polish
+**Status Summary**: ⚠️ **LESSON LEARNED** - Redesign failed by removing AI features instead of thoughtfully improving them • Next session must focus on user-centered analytics design • Need to define fundamental purpose before building features

@@ -187,25 +187,36 @@ export const useAISettings = () => {
   // Provider health checks
   const checkProviderHealth = async (provider: SupportedProvider): Promise<boolean> => {
     try {
-      // Simple health check - attempt to create AIRouter instance
-      const { AIRouter } = await import('~/services/ai/aiRouter')
-      const router = new AIRouter()
-      router.setProvider(provider)
+      const startTime = Date.now()
+      
+      // Use the API endpoint to perform actual health check
+      const response = await $fetch<{
+        provider: SupportedProvider,
+        status: {
+          available: boolean,
+          latency?: number,
+          error?: string
+        }
+      }>(`/api/ai/health-check?provider=${provider}`)
+
+      const responseTime = Date.now() - startTime
 
       // Update status
       providerStatus.value[provider] = {
         provider,
-        available: true,
+        available: response.status.available,
         lastChecked: Date.now(),
+        ...(response.status.error && { error: response.status.error }),
+        responseTime: response.status.latency || responseTime,
       }
 
-      return true
+      return response.status.available
     } catch (error) {
       providerStatus.value[provider] = {
         provider,
         available: false,
         lastChecked: Date.now(),
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'Network error - unable to reach API',
       }
 
       return false
@@ -225,7 +236,7 @@ export const useAISettings = () => {
                    providerStatus.value[provider]?.available
       )
       if (freeProviders.length > 0) {
-        return freeProviders[0]
+        return freeProviders[0]!
       }
     }
 
@@ -274,7 +285,10 @@ export const useAISettings = () => {
     await checkProviderHealth(currentProvider.value)
 
     if (!getCurrentProviderStatus.value.available && availableProviders.value.length > 0) {
-      setProvider(availableProviders.value[0])
+      const firstAvailable = availableProviders.value[0]
+      if (firstAvailable) {
+        setProvider(firstAvailable)
+      }
     }
   }
 
