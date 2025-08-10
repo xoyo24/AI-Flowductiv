@@ -40,6 +40,42 @@ Please analyze:
 Keep the summary concise but insightful, focusing on actionable insights that can help improve future productivity.`
   }
 
+  static chatResponse(message: string, reportContext: string, activities: Activity[]): string {
+    const totalDuration = PromptTemplates.getTotalDuration(activities)
+    const activitiesCount = activities.length
+    const avgDuration = activitiesCount > 0 ? totalDuration / activitiesCount : 0
+    
+    // Focus ratings summary
+    const ratedActivities = activities.filter(a => a.focusRating !== null && a.focusRating !== undefined)
+    const avgFocus = ratedActivities.length > 0 
+      ? ratedActivities.reduce((sum, a) => sum + (a.focusRating || 0), 0) / ratedActivities.length
+      : 0
+
+    // Tags summary
+    const groupedByTags = PromptTemplates.groupByTags(activities)
+    const topTags = Object.entries(groupedByTags)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([tag, duration]) => `${tag}: ${PromptTemplates.formatDuration(duration)}`)
+      .join(', ')
+
+    return `You are a productivity assistant helping a user understand their work patterns. The user has asked a question about their productivity data.
+
+CONTEXT - Previous Analysis Report:
+${reportContext}
+
+CONTEXT - Current Activity Data:
+- Total activities: ${activitiesCount}
+- Total time tracked: ${PromptTemplates.formatDuration(totalDuration)}
+- Average session length: ${PromptTemplates.formatDuration(avgDuration)}
+${avgFocus > 0 ? `- Average focus rating: ${avgFocus.toFixed(1)}/5` : '- No focus ratings yet'}
+${topTags ? `- Top categories: ${topTags}` : '- No tags used yet'}
+
+USER QUESTION: "${message}"
+
+Please provide a helpful, specific response to the user's question based on their actual productivity data. Be conversational but informative. If the question requires specific data that isn't available, guide them on how to track it. Keep the response concise (2-3 paragraphs maximum).`
+  }
+
   static enhanceActivity(activity: Activity): string {
     const duration = PromptTemplates.formatDuration(activity.durationMs)
 

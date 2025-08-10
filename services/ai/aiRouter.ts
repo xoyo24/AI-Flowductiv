@@ -42,6 +42,19 @@ export class AIRouter {
     return this.generateWithFallback(prompt, activities)
   }
 
+  async generateChatResponse(
+    message: string, 
+    reportContext: string, 
+    activities: Activity[]
+  ): Promise<RouterResponse> {
+    if (!message.trim()) {
+      throw new Error('No message provided')
+    }
+
+    const prompt = PromptTemplates.chatResponse(message, reportContext, activities)
+    return this.generateWithFallback(prompt, activities)
+  }
+
   private async generateWithFallback(
     prompt: string,
     activities: Activity[]
