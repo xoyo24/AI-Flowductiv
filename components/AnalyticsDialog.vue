@@ -49,7 +49,8 @@
       <div class="flex-1 overflow-y-auto p-4 sm:p-6">
         <!-- Analytics & Trends Tab -->
         <div v-if="activeTab === 'analytics'" class="space-y-4 sm:space-y-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <!-- Quick Stats Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <!-- Today Stats -->
             <div class="bg-secondary/20 rounded-lg p-4">
               <div class="flex items-center space-x-2 mb-2">
@@ -90,87 +91,70 @@
             </div>
           </div>
 
-          <!-- Quick Insights -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Quick Insights</h3>
-            
-            <!-- Peak Hours -->
-            <div class="bg-secondary/20 rounded-lg p-4">
-              <div class="flex items-center space-x-2 mb-2">
-                <TrendingUp class="w-4 h-4 text-muted-foreground" />
-                <span class="text-sm font-medium">Peak Performance Hours</span>
+          <!-- Charts Section -->
+          <div class="space-y-6">
+            <!-- Activity Trends -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Daily Activity Chart -->
+              <div class="bg-secondary/20 rounded-lg p-4">
+                <DailyActivityChart :activities="allActivities" :days="30" />
               </div>
-              <div class="text-sm text-muted-foreground">
-                {{ peakHoursText }}
+
+              <!-- Focus Trend Chart -->
+              <div class="bg-secondary/20 rounded-lg p-4">
+                <FocusTrendChart :activities="allActivities" :days="30" />
               </div>
             </div>
 
-            <!-- Focus Pattern -->
-            <div class="bg-secondary/20 rounded-lg p-4">
-              <div class="flex items-center space-x-2 mb-2">
-                <Brain class="w-4 h-4 text-muted-foreground" />
-                <span class="text-sm font-medium">Focus Patterns</span>
+            <!-- Distribution & Timing -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Activity Distribution -->
+              <div class="bg-secondary/20 rounded-lg p-4">
+                <ActivityDistributionChart :activities="allActivities" />
               </div>
-              <div class="text-sm text-muted-foreground">
-                {{ focusPatternText }}
-              </div>
-            </div>
 
-            <!-- Top Categories -->
-            <div class="bg-secondary/20 rounded-lg p-4">
-              <div class="flex items-center space-x-2 mb-2">
-                <Tag class="w-4 h-4 text-muted-foreground" />
-                <span class="text-sm font-medium">Top Categories</span>
-              </div>
-              <div class="space-y-2">
-                <div 
-                  v-for="category in topCategories.slice(0, 3)" 
-                  :key="category.name"
-                  class="flex items-center justify-between text-sm"
-                >
-                  <span class="text-muted-foreground">#{{ category.name }}</span>
-                  <span class="font-medium">{{ category.percentage }}%</span>
-                </div>
-                <div v-if="topCategories.length === 0" class="text-sm text-muted-foreground">
-                  Add tags to see category breakdown
-                </div>
+              <!-- Peak Hours Heatmap -->
+              <div class="bg-secondary/20 rounded-lg p-4">
+                <PeakHoursChart :activities="allActivities" />
               </div>
             </div>
           </div>
-          
-          <!-- Smart Recommendations -->
+
+          <!-- Smart Insights Summary -->
           <div v-if="getRecommendations.length > 0" class="space-y-3">
             <h3 class="text-lg font-semibold flex items-center space-x-2">
               <Brain class="w-5 h-5 text-primary" />
-              <span>Smart Recommendations</span>
+              <span>Smart Insights</span>
             </h3>
             
-            <div 
-              v-for="(rec, index) in getRecommendations" 
-              :key="index"
-              class="rounded-lg p-4 border-l-4"
-              :class="getPriorityColor(rec.priority)"
-            >
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-xs font-bold">
-                  {{ index + 1 }}
-                </div>
-                <div class="flex-1">
-                  <div class="text-xs font-medium uppercase mb-1 opacity-70">
-                    {{ rec.type }} • {{ rec.priority }} priority
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div 
+                v-for="(rec, index) in getRecommendations.slice(0, 4)" 
+                :key="index"
+                class="rounded-lg p-4 border-l-4"
+                :class="getPriorityColor(rec.priority)"
+              >
+                <div class="flex items-start space-x-3">
+                  <div class="w-6 h-6 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-xs font-bold">
+                    {{ index + 1 }}
                   </div>
-                  <p class="text-sm font-medium">{{ rec.message }}</p>
+                  <div class="flex-1">
+                    <div class="text-xs font-medium uppercase mb-1 opacity-70">
+                      {{ rec.type }} • {{ rec.priority }}
+                    </div>
+                    <p class="text-sm font-medium">{{ rec.message }}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
           <!-- Empty State -->
-          <div v-else class="text-center py-8">
-            <Brain class="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 class="text-lg font-semibold mb-2">Track More Activities</h3>
+          <div v-if="!allActivities.length" class="text-center py-12">
+            <BarChart3 class="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 class="text-lg font-semibold mb-2">No Data Yet</h3>
             <p class="text-muted-foreground">
-              Complete a few more sessions with focus ratings to unlock personalized insights.
+              Start tracking activities to see beautiful analytics and insights.
             </p>
           </div>
         </div>
@@ -241,6 +225,10 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import DailyActivityChart from '~/components/Charts/DailyActivityChart.vue'
+import FocusTrendChart from '~/components/Charts/FocusTrendChart.vue'
+import ActivityDistributionChart from '~/components/Charts/ActivityDistributionChart.vue'
+import PeakHoursChart from '~/components/Charts/PeakHoursChart.vue'
 
 interface Props {
   isOpen: boolean
@@ -259,6 +247,7 @@ const { getActivities } = useActivities()
 // State
 const activeTab = ref('analytics')
 const loading = ref(false)
+const allActivities = ref<any[]>([])
 
 // Stats
 const todayStats = ref({ totalTime: 0, activitiesCount: 0, avgFocus: 0 })
@@ -354,6 +343,7 @@ const loadAnalytics = async () => {
   loading.value = true
   try {
     const activities = await getActivities(1, 100)
+    allActivities.value = activities
     
     if (activities.length === 0) {
       loading.value = false
