@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center">
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
     <!-- Backdrop -->
     <div 
       class="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -7,7 +7,7 @@
     />
     
     <!-- Dialog -->
-    <div class="relative bg-card border border-border rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col overflow-hidden
+    <div class="relative bg-card border border-border rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col
                 md:max-h-[85vh] sm:mx-2 sm:max-w-[calc(100vw-1rem)]">
       <!-- Header -->
       <div class="flex items-center justify-between p-4 sm:p-6 border-b border-border">
@@ -47,7 +47,7 @@
 
       <!-- Tab Content -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-6">
-        <!-- Analytics & Insights Tab -->
+        <!-- Analytics & Trends Tab -->
         <div v-if="activeTab === 'analytics'" class="space-y-4 sm:space-y-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <!-- Today Stats -->
@@ -176,47 +176,48 @@
         </div>
 
 
-        <!-- Settings & Export Tab -->
+        <!-- AI Insights & Chat Tab -->
         <div v-else class="space-y-4 sm:space-y-6">
           <div>
-            <h3 class="text-lg font-semibold mb-4">Settings & Export</h3>
+            <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+              <Brain class="w-5 h-5 text-primary" />
+              <span>AI Insights & Chat</span>
+            </h3>
             
             <div class="space-y-4">
-              <!-- Data Range -->
+              <!-- AI Report Section -->
               <div class="bg-secondary/20 rounded-lg p-4">
                 <div class="flex items-center space-x-2 mb-2">
-                  <Calendar class="w-4 h-4 text-muted-foreground" />
-                  <span class="text-sm font-medium">Data Range</span>
+                  <Brain class="w-4 h-4 text-muted-foreground" />
+                  <span class="text-sm font-medium">Productivity Analysis</span>
                 </div>
                 <div class="text-sm text-muted-foreground">
-                  Analytics are calculated from your last 100 activities or 30 days, whichever is more recent.
+                  Generate AI-powered insights about your productivity patterns and focus trends.
                 </div>
+                <button class="mt-3 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 transition-colors">
+                  Generate AI Report
+                </button>
               </div>
 
-              <!-- Export Options -->
+              <!-- Chat Interface Placeholder -->
               <div class="bg-secondary/20 rounded-lg p-4">
                 <div class="flex items-center space-x-2 mb-2">
-                  <Download class="w-4 h-4 text-muted-foreground" />
-                  <span class="text-sm font-medium">Export Data</span>
+                  <Brain class="w-4 h-4 text-muted-foreground" />
+                  <span class="text-sm font-medium">Chat Interface</span>
                 </div>
-                <div class="text-sm text-muted-foreground mb-3">
-                  Export your productivity data and insights for external analysis.
+                <div class="text-sm text-muted-foreground">
+                  Ask follow-up questions about your productivity insights and get personalized recommendations.
                 </div>
-                <div class="flex flex-wrap gap-2">
-                  <button class="px-3 py-1 text-xs bg-muted text-muted-foreground rounded border hover:bg-muted/80 transition-colors">
-                    CSV Export (Coming Soon)
-                  </button>
-                  <button class="px-3 py-1 text-xs bg-muted text-muted-foreground rounded border hover:bg-muted/80 transition-colors">
-                    JSON Export (Coming Soon)
-                  </button>
+                <div class="mt-3 p-3 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground text-center">
+                  Chat interface coming in Phase 3
                 </div>
               </div>
               
               <!-- Privacy Notice -->
               <div class="bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-500 rounded p-4">
-                <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-1">Privacy-First Analytics</h4>
+                <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-1">AI Privacy & Cost</h4>
                 <p class="text-sm text-blue-700 dark:text-blue-300">
-                  All analytics calculations happen locally in your browser. Your data never leaves your device.
+                  AI insights are generated using your configured AI provider. Data is sent securely and not stored by AI providers.
                 </p>
               </div>
             </div>
@@ -233,8 +234,6 @@ import {
   Brain, 
   Calendar, 
   Clock, 
-  Download, 
-  Settings, 
   Tag, 
   Target, 
   TrendingUp,
@@ -271,8 +270,8 @@ const topCategories = ref<Array<{ name: string; percentage: number; totalTime: n
 
 // Tab configuration
 const tabs = [
-  { id: 'analytics', label: 'Analytics & Insights', icon: Brain },
-  { id: 'settings', label: 'Settings & Export', icon: Settings }
+  { id: 'analytics', label: 'Analytics & Trends', icon: BarChart3 },
+  { id: 'ai-insights', label: 'AI Insights & Chat', icon: Brain }
 ]
 
 // Computed
