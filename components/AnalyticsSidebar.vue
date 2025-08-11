@@ -64,7 +64,8 @@
       <InsightsPanel 
         ref="insightsPanelRef"
         :compact="!mobileMode" 
-        :mobile-mode="mobileMode" 
+        :mobile-mode="mobileMode"
+        @open-settings="$emit('open-settings')"
       />
 
 
@@ -205,6 +206,7 @@ interface Emits {
   (e: 'refresh-data'): void
   (e: 'navigate-to-settings'): void
   (e: 'navigate-to-history'): void
+  (e: 'open-settings'): void
   (e: 'show-analytics-modal'): void
   (e: 'show-heatmap-modal'): void
   (e: 'show-insights-modal'): void

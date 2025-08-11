@@ -271,25 +271,21 @@
                 </div>
               </div>
               
-              <!-- Cost & Privacy -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Cost Info -->
-                <div class="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 rounded p-4">
-                  <h4 class="font-medium text-amber-800 dark:text-amber-200 mb-1 flex items-center space-x-1">
-                    <span>Cost Tracking</span>
-                  </h4>
-                  <p class="text-sm text-amber-700 dark:text-amber-300">
-                    Current provider: {{ getProviderDisplayName(currentProvider) }}<br>
-                    Estimated cost per request: {{ getProviderBadge(currentProvider).text }}
-                  </p>
-                </div>
-                
-                <!-- Privacy Notice -->
-                <div class="bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-500 rounded p-4">
-                  <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-1">AI Privacy</h4>
-                  <p class="text-sm text-blue-700 dark:text-blue-300">
-                    Data is sent securely to your chosen AI provider and is not stored by AI services.
-                  </p>
+              <!-- Settings Link -->
+              <div class="bg-muted/50 border border-dashed border-muted-foreground/30 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium mb-1">AI Settings & Configuration</h4>
+                    <p class="text-sm text-muted-foreground">
+                      Configure AI providers, cost tracking, and privacy settings
+                    </p>
+                  </div>
+                  <button 
+                    @click="$emit('open-settings')"
+                    class="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  >
+                    Open Settings
+                  </button>
                 </div>
               </div>
             </div>
@@ -313,7 +309,6 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useActivities } from '~/composables/useActivities'
-import { useAISettings } from '~/composables/useAISettings'
 import DailyActivityChart from '~/components/Charts/DailyActivityChart.vue'
 import FocusTrendChart from '~/components/Charts/FocusTrendChart.vue'
 import ActivityDistributionChart from '~/components/Charts/ActivityDistributionChart.vue'
@@ -325,6 +320,7 @@ interface Props {
 
 interface Emits {
   (e: 'close'): void
+  (e: 'open-settings'): void
 }
 
 const props = defineProps<Props>()
@@ -332,11 +328,6 @@ const emit = defineEmits<Emits>()
 
 // Composables
 const { getActivities } = useActivities()
-const { 
-  currentProvider, 
-  getProviderDisplayName, 
-  getProviderBadge 
-} = useAISettings()
 
 // State
 const activeTab = ref('analytics')

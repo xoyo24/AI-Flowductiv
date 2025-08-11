@@ -22,6 +22,7 @@
         @refresh-data="refreshAnalytics"
         @navigate-to-settings="navigateToSettings"
         @navigate-to-history="navigateToHistory"
+        @open-settings="showSettingsModal = true"
         @show-analytics-modal="showAnalyticsModal = true"
         @show-heatmap-modal="showHeatmapModal = true"
         @show-insights-modal="showInsightsModal = true"
@@ -89,6 +90,7 @@
               @refresh-data="refreshAnalytics"
               @navigate-to-settings="navigateToSettings"
               @navigate-to-history="navigateToHistory"
+              @open-settings="showSettingsModal = true"
               @toggle-collapse="showMobileMenu = false"
               @show-analytics-modal="() => {}"
               @show-heatmap-modal="() => {}"
@@ -311,6 +313,12 @@
     @show-insights-modal="showInsightsModal = true; showMobileAnalyticsPanel = false"
     @refresh-data="handleMobileRefreshData"
   />
+
+  <!-- Settings Dialog -->
+  <SettingsDialog 
+    :is-open="showSettingsModal"
+    @close="showSettingsModal = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -324,6 +332,7 @@ import FilterBar from '~/components/FilterBar.vue'
 import FocusRatingModal from '~/components/FocusRatingModal.vue'
 import InputComposer from '~/components/InputComposer.vue'
 import MobileAnalyticsPanel from '~/components/MobileAnalyticsPanel.vue'
+import SettingsDialog from '~/components/SettingsDialog.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import TimerDisplay from '~/components/TimerDisplay.vue'
@@ -562,6 +571,7 @@ const showAnalyticsModal = ref(false)
 const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
 const showGoalsModal = ref(false)
+const showSettingsModal = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -817,7 +827,10 @@ const navigateAndCloseMenu = (path: string) => {
   navigateTo(path)
 }
 
-const navigateToSettings = () => navigateAndCloseMenu('/settings')
+const navigateToSettings = () => {
+  showSettingsModal.value = true
+  showMobileMenu.value = false // Close mobile menu if open
+}
 const navigateToHistory = () => navigateAndCloseMenu('/history')
 
 // Handle heatmap day selection

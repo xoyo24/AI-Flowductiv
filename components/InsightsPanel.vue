@@ -4,6 +4,7 @@
     <AnalyticsDialog 
       :is-open="showAnalyticsDialog" 
       @close="closeAnalyticsDialog"
+      @open-settings="$emit('open-settings')"
     />
   </div>
 </template>
@@ -17,10 +18,16 @@ interface Props {
   mobileMode?: boolean
 }
 
+interface Emits {
+  (e: 'open-settings'): void
+}
+
 const props = withDefaults(defineProps<Props>(), {
   compact: false,
   mobileMode: false,
 })
+
+const emit = defineEmits<Emits>()
 
 // UI State
 const showAnalyticsDialog = ref(false)
