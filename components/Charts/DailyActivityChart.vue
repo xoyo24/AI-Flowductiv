@@ -26,7 +26,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler
 } from 'chart.js'
 import { computed } from 'vue'
 
@@ -39,7 +40,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler
 )
 
 interface Activity {

@@ -106,45 +106,34 @@
               </div>
             </div>
 
-            <!-- Distribution & Timing -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <!-- Activity Distribution -->
-              <div class="bg-secondary/20 rounded-lg p-4">
-                <ActivityDistributionChart :activities="allActivities" />
-              </div>
-
-              <!-- Peak Hours Heatmap -->
-              <div class="bg-secondary/20 rounded-lg p-4">
-                <PeakHoursChart :activities="allActivities" />
-              </div>
+            <!-- Activity Distribution -->
+            <div class="bg-secondary/20 rounded-lg p-4">
+              <ActivityDistributionChart :activities="allActivities" />
             </div>
           </div>
 
           <!-- Smart Insights Summary -->
-          <div v-if="getRecommendations.length > 0" class="space-y-3">
-            <h3 class="text-lg font-semibold flex items-center space-x-2">
-              <Brain class="w-5 h-5 text-primary" />
+          <div v-if="getRecommendations.length > 0" class="bg-secondary/20 rounded-lg p-4">
+            <h3 class="text-base font-semibold flex items-center space-x-2 mb-3">
+              <Brain class="w-4 h-4 text-primary" />
               <span>Smart Insights</span>
+              <span v-if="peakHours.length > 0" class="text-xs text-muted-foreground ml-auto">
+                Peak: {{ peakHours.join(', ') }}
+              </span>
             </h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
               <div 
-                v-for="(rec, index) in getRecommendations.slice(0, 4)" 
+                v-for="(rec, index) in getRecommendations.slice(0, 3)" 
                 :key="index"
-                class="rounded-lg p-4 border-l-4"
-                :class="getPriorityColor(rec.priority)"
+                class="flex items-center space-x-3 p-2 rounded border-l-2"
+                :class="getPriorityColorCompact(rec.priority)"
               >
-                <div class="flex items-start space-x-3">
-                  <div class="w-6 h-6 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-xs font-bold">
-                    {{ index + 1 }}
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-xs font-medium uppercase mb-1 opacity-70">
-                      {{ rec.type }} • {{ rec.priority }}
-                    </div>
-                    <p class="text-sm font-medium">{{ rec.message }}</p>
-                  </div>
+                <div class="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                  {{ index + 1 }}
                 </div>
+                <p class="text-sm flex-1">{{ rec.message }}</p>
+                <span class="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground capitalize">{{ rec.priority }}</span>
               </div>
             </div>
           </div>
@@ -161,88 +150,98 @@
 
 
         <!-- AI Insights & Chat Tab -->
-        <div v-else class="space-y-4 sm:space-y-6">
+        <div v-else class="space-y-4">
           <div>
-            <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-              <Brain class="w-5 h-5 text-primary" />
-              <span>AI Insights & Chat</span>
-            </h3>
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold flex items-center space-x-2">
+                <Brain class="w-5 h-5 text-primary" />
+                <span>AI Insights & Chat</span>
+              </h3>
+            </div>
             
-            <div class="space-y-6">
+            <div class="space-y-4">
               <!-- AI Report Generation -->
-              <div class="bg-secondary/20 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-4">
+              <div class="bg-secondary/20 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center space-x-2">
-                    <Brain class="w-4 h-4 text-muted-foreground" />
-                    <span class="text-sm font-medium">Productivity Analysis Report</span>
+                    <Brain class="w-4 h-4 text-primary" />
+                    <span class="text-sm font-medium">AI Analysis</span>
+                    <button 
+                      v-if="isAIEnabled"
+                      @click="$emit('view-ai-history')"
+                      class="px-2 py-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      History
+                    </button>
                   </div>
                   <button 
                     @click="generateAIReport"
-                    :disabled="reportLoading || !allActivities.length"
-                    class="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    :disabled="!isAIEnabled || reportLoading || !allActivities.length"
+                    class="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <div v-if="reportLoading" class="flex items-center space-x-2">
-                      <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Analyzing...</span>
+                    <div v-if="reportLoading" class="flex items-center space-x-1">
+                      <div class="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span class="text-xs">Analyzing...</span>
                     </div>
-                    <span v-else>Generate Report</span>
+                    <span v-else class="text-xs">Generate</span>
                   </button>
                 </div>
                 
                 <!-- Report Content -->
-                <div v-if="aiReport" class="space-y-4">
-                  <div class="prose prose-sm max-w-none dark:prose-invert">
-                    <div class="whitespace-pre-line text-sm leading-relaxed" v-html="formatAIContent(aiReport.content)"></div>
+                <div v-if="aiReport" class="space-y-3">
+                  <div class="prose prose-sm max-w-none dark:prose-invert max-h-48 overflow-y-auto">
+                    <div class="whitespace-pre-line text-sm" v-html="formatAIContent(aiReport.content)"></div>
                   </div>
                   
-                  <div class="flex items-center justify-between pt-3 border-t border-border text-xs text-muted-foreground">
-                    <div class="flex items-center space-x-2">
-                      <span>Generated by {{ getProviderDisplayName(aiReport.provider) }}</span>
-                      <span v-if="aiReport.tokensUsed">• {{ aiReport.tokensUsed }} tokens</span>
-                    </div>
+                  <div class="flex items-center justify-between pt-2 border-t border-border text-xs text-muted-foreground">
+                    <span>{{ getProviderDisplayName(aiReport.provider) }}{{ aiReport.tokensUsed ? ` • ${aiReport.tokensUsed} tokens` : '' }}</span>
                     <span>{{ formatTimestamp(aiReport.generatedAt) }}</span>
                   </div>
                 </div>
                 
                 <!-- Empty State -->
-                <div v-else-if="!reportLoading" class="text-center py-8">
-                  <Brain class="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                  <p class="text-sm text-muted-foreground mb-3">
+                <div v-else-if="!reportLoading" class="text-center py-4">
+                  <p class="text-sm text-muted-foreground">
                     {{ !allActivities.length 
-                      ? 'Track some activities first to generate insights'
-                      : 'Generate an AI-powered report about your productivity patterns and focus trends'
+                      ? 'Track activities to generate insights'
+                      : 'Generate AI report about your productivity'
                     }}
                   </p>
                 </div>
               </div>
 
               <!-- Chat Interface -->
-              <div class="bg-secondary/20 rounded-lg p-4">
-                <div class="flex items-center space-x-2 mb-4">
-                  <Brain class="w-4 h-4 text-muted-foreground" />
-                  <span class="text-sm font-medium">Ask Follow-up Questions</span>
+              <div v-if="aiReport" class="bg-secondary/20 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-sm font-medium flex items-center space-x-2">
+                    <Brain class="w-4 h-4 text-primary" />
+                    <span>Follow-up Questions</span>
+                  </span>
+                  <button 
+                    @click="$emit('open-settings')"
+                    class="px-2 py-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Settings
+                  </button>
                 </div>
                 
                 <!-- Chat Messages -->
-                <div v-if="chatMessages.length > 0" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                <div v-if="chatMessages.length > 0" class="space-y-2 mb-3 max-h-32 overflow-y-auto">
                   <div 
                     v-for="message in chatMessages" 
                     :key="message.id"
-                    class="flex space-x-3"
+                    class="flex space-x-2"
                     :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
                   >
                     <div 
                       :class="[
-                        'max-w-[80%] px-3 py-2 rounded-lg text-sm',
+                        'max-w-[80%] px-2 py-1 rounded text-sm',
                         message.role === 'user' 
                           ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground border'
+                          : 'bg-muted'
                       ]"
                     >
                       <div class="whitespace-pre-line" v-html="formatAIContent(message.content)"></div>
-                      <div class="text-xs opacity-70 mt-1">
-                        {{ formatTimestamp(message.timestamp) }}
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -252,39 +251,17 @@
                   <input
                     v-model="chatInput"
                     @keydown.enter="sendChatMessage"
-                    :disabled="chatLoading || !aiReport"
-                    placeholder="Ask about your productivity patterns..."
-                    class="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="!isAIEnabled || chatLoading"
+                    placeholder="Ask about your productivity..."
+                    class="flex-1 px-2 py-1.5 text-sm border border-border rounded bg-background disabled:opacity-50"
                   />
                   <button
                     @click="sendChatMessage"
-                    :disabled="chatLoading || !chatInput.trim() || !aiReport"
-                    class="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    :disabled="!isAIEnabled || chatLoading || !chatInput.trim()"
+                    class="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded hover:bg-primary/90 disabled:opacity-50 transition-colors"
                   >
-                    <div v-if="chatLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span v-else>Send</span>
-                  </button>
-                </div>
-                
-                <div v-if="!aiReport" class="text-xs text-muted-foreground mt-2">
-                  Generate a report first to enable chat
-                </div>
-              </div>
-              
-              <!-- Settings Link -->
-              <div class="bg-muted/50 border border-dashed border-muted-foreground/30 rounded-lg p-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h4 class="font-medium mb-1">AI Settings & Configuration</h4>
-                    <p class="text-sm text-muted-foreground">
-                      Configure AI providers, cost tracking, and privacy settings
-                    </p>
-                  </div>
-                  <button 
-                    @click="$emit('open-settings')"
-                    class="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                  >
-                    Open Settings
+                    <div v-if="chatLoading" class="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span v-else class="text-xs">Send</span>
                   </button>
                 </div>
               </div>
@@ -301,7 +278,8 @@ import {
   BarChart3, 
   Brain, 
   Calendar, 
-  Clock, 
+  Clock,
+  History,
   Tag, 
   Target, 
   TrendingUp,
@@ -309,6 +287,7 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { useAISettings } from '~/composables/useAISettings'
 import DailyActivityChart from '~/components/Charts/DailyActivityChart.vue'
 import FocusTrendChart from '~/components/Charts/FocusTrendChart.vue'
 import ActivityDistributionChart from '~/components/Charts/ActivityDistributionChart.vue'
@@ -321,6 +300,7 @@ interface Props {
 interface Emits {
   (e: 'close'): void
   (e: 'open-settings'): void
+  (e: 'view-ai-history'): void
 }
 
 const props = defineProps<Props>()
@@ -328,9 +308,17 @@ const emit = defineEmits<Emits>()
 
 // Composables
 const { getActivities } = useActivities()
+const { isEnabled: isAIEnabled } = useAISettings()
 
 // State
 const activeTab = ref('analytics')
+
+// Watch AI enabled state and switch tab if needed
+watch(isAIEnabled, (newValue) => {
+  if (!newValue && activeTab.value === 'ai-insights') {
+    activeTab.value = 'analytics'
+  }
+})
 const loading = ref(false)
 const allActivities = ref<any[]>([])
 
@@ -360,10 +348,17 @@ const focusPattern = ref<string>('')
 const topCategories = ref<Array<{ name: string; percentage: number; totalTime: number }>>([])
 
 // Tab configuration
-const tabs = [
-  { id: 'analytics', label: 'Analytics & Trends', icon: BarChart3 },
-  { id: 'ai-insights', label: 'AI Insights & Chat', icon: Brain }
-]
+const tabs = computed(() => {
+  const baseTabs = [
+    { id: 'analytics', label: 'Analytics & Trends', icon: BarChart3 }
+  ]
+  
+  if (isAIEnabled.value) {
+    baseTabs.push({ id: 'ai-insights', label: 'AI Insights & Chat', icon: Brain })
+  }
+  
+  return baseTabs
+})
 
 // Computed
 const todayTimeFormatted = computed(() => formatTime(todayStats.value.totalTime))
@@ -424,9 +419,18 @@ const getPriorityColor = (priority: string): string => {
   }
 }
 
+const getPriorityColorCompact = (priority: string): string => {
+  switch (priority) {
+    case 'high': return 'border-red-400'
+    case 'medium': return 'border-yellow-400' 
+    case 'low': return 'border-blue-400'
+    default: return 'border-gray-400'
+  }
+}
+
 // AI Methods
 const generateAIReport = async () => {
-  if (!allActivities.value.length || reportLoading.value) return
+  if (!isAIEnabled.value || !allActivities.value.length || reportLoading.value) return
   
   reportLoading.value = true
   try {
@@ -456,7 +460,7 @@ const generateAIReport = async () => {
 }
 
 const sendChatMessage = async () => {
-  if (!chatInput.value.trim() || !aiReport.value || chatLoading.value) return
+  if (!isAIEnabled.value || !chatInput.value.trim() || !aiReport.value || chatLoading.value) return
   
   const userMessage = {
     id: Date.now().toString(),
@@ -520,6 +524,16 @@ const formatTimestamp = (timestamp: string): string => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+const getProviderDisplayName = (provider: string): string => {
+  const names: Record<string, string> = {
+    claude: 'Claude',
+    openai: 'OpenAI',
+    gemini: 'Gemini',
+    ollama: 'Ollama'
+  }
+  return names[provider] || provider
 }
 
 // Methods

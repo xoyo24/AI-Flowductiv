@@ -5,6 +5,7 @@
       :is-open="showAnalyticsDialog" 
       @close="closeAnalyticsDialog"
       @open-settings="$emit('open-settings')"
+      @view-ai-history="$emit('view-ai-history')"
     />
   </div>
 </template>
@@ -20,6 +21,7 @@ interface Props {
 
 interface Emits {
   (e: 'open-settings'): void
+  (e: 'view-ai-history'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

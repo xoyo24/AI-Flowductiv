@@ -71,29 +71,43 @@ export default defineEventHandler(async (event) => {
         },
       }
     } catch (aiError) {
-      console.warn('AI generation failed, falling back to mock:', aiError)
+      console.error('AI generation failed:', aiError)
 
-      // Fallback to mock if AI fails
-      const summary = generateMockSummary(body.activities)
+      // Only use mock fallback in development mode
+      if (process.env.NODE_ENV === 'development' && process.env.ENABLE_MOCK_FALLBACK === 'true') {
+        console.warn('Using development mock fallback')
+        
+        const summary = generateMockSummary(body.activities)
+        const today = new Date().toISOString().split('T')[0]
+        const activitiesHash = generateActivitiesHash(body.activities)
 
-      const today = new Date().toISOString().split('T')[0]
-      const activitiesHash = generateActivitiesHash(body.activities)
+        const summaryData = {
+          date: today,
+          content: summary,
+          provider: 'mock-fallback',
+          activitiesHash,
+          tokensUsed: 0,
+          userId: null,
+        }
 
-      const summaryData = {
-        date: today,
-        content: summary,
-        provider: 'mock-fallback',
-        activitiesHash,
-        tokensUsed: 0,
-        userId: null,
+        const result = await db.insert(aiSummaries).values(summaryData).returning()
+
+        return {
+          data: result[0],
+          message: 'Summary generated using development fallback (AI unavailable)',
+        }
       }
 
-      const result = await db.insert(aiSummaries).values(summaryData).returning()
-
-      return {
-        data: result[0],
-        message: 'Summary generated using fallback (AI unavailable)',
-      }
+      // In production or when mock is disabled, throw the AI error
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'AI service is currently unavailable. Please try again later.',
+        data: {
+          error: 'AI service unavailable',
+          timestamp: new Date().toISOString(),
+          details: process.env.NODE_ENV === 'development' && aiError instanceof Error ? aiError.message : undefined,
+        },
+      })
     }
   } catch (error) {
     if (error.statusCode) {

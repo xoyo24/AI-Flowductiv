@@ -22,6 +22,7 @@
         @refresh-data="refreshAnalytics"
         @navigate-to-settings="navigateToSettings"
         @navigate-to-history="navigateToHistory"
+        @view-ai-history="navigateToHistory"
         @open-settings="showSettingsModal = true"
         @show-analytics-modal="showAnalyticsModal = true"
         @show-heatmap-modal="showHeatmapModal = true"
@@ -90,6 +91,7 @@
               @refresh-data="refreshAnalytics"
               @navigate-to-settings="navigateToSettings"
               @navigate-to-history="navigateToHistory"
+              @view-ai-history="navigateToHistory"
               @open-settings="showSettingsModal = true"
               @toggle-collapse="showMobileMenu = false"
               @show-analytics-modal="() => {}"
@@ -319,6 +321,12 @@
     :is-open="showSettingsModal"
     @close="showSettingsModal = false"
   />
+  
+  <!-- AI History Dialog -->
+  <AIHistoryDialog 
+    :is-open="showHistoryModal"
+    @close="showHistoryModal = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -333,6 +341,7 @@ import FocusRatingModal from '~/components/FocusRatingModal.vue'
 import InputComposer from '~/components/InputComposer.vue'
 import MobileAnalyticsPanel from '~/components/MobileAnalyticsPanel.vue'
 import SettingsDialog from '~/components/SettingsDialog.vue'
+import AIHistoryDialog from '~/components/AIHistoryDialog.vue'
 import StatusCallout from '~/components/StatusCallout.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import TimerDisplay from '~/components/TimerDisplay.vue'
@@ -572,6 +581,7 @@ const showHeatmapModal = ref(false)
 const showInsightsModal = ref(false)
 const showGoalsModal = ref(false)
 const showSettingsModal = ref(false)
+const showHistoryModal = ref(false)
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -831,7 +841,10 @@ const navigateToSettings = () => {
   showSettingsModal.value = true
   showMobileMenu.value = false // Close mobile menu if open
 }
-const navigateToHistory = () => navigateAndCloseMenu('/history')
+const navigateToHistory = () => {
+  showHistoryModal.value = true
+  showMobileMenu.value = false // Close mobile menu if open
+}
 
 // Handle heatmap day selection
 const handleDaySelected = (day: HeatmapDay) => {

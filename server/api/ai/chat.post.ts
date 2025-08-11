@@ -38,16 +38,31 @@ export default defineEventHandler(async (event) => {
         }
       }
     } catch (aiError) {
-      console.warn('AI chat failed, providing fallback response:', aiError)
+      console.error('AI chat failed:', aiError)
 
-      // Fallback response based on the message content
-      const fallbackResponse = generateChatFallback(body.message, body.context.activities || [])
+      // Only use mock fallback in development mode
+      if (process.env.NODE_ENV === 'development' && process.env.ENABLE_MOCK_FALLBACK === 'true') {
+        console.warn('Using development mock fallback for chat')
+        
+        const fallbackResponse = generateChatFallback(body.message, body.context.activities || [])
 
-      return {
-        content: fallbackResponse,
-        provider: 'mock-fallback',
-        usage: { tokens: 0 }
+        return {
+          content: fallbackResponse,
+          provider: 'mock-fallback',
+          usage: { tokens: 0 }
+        }
       }
+
+      // In production or when mock is disabled, throw the AI error
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'AI service is currently unavailable for chat. Please try again later.',
+        data: {
+          error: 'AI service unavailable',
+          timestamp: new Date().toISOString(),
+          details: process.env.NODE_ENV === 'development' && aiError instanceof Error ? aiError.message : undefined,
+        },
+      })
     }
   } catch (error) {
     if (error.statusCode) {

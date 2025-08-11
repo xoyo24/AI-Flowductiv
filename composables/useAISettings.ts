@@ -3,9 +3,6 @@ import type { SupportedProvider, UsageStats } from '~/types/ai'
 interface AISettings {
   enabled: boolean
   provider: SupportedProvider
-  fallbackToMock: boolean
-  costTracking: boolean
-  monthlyCostLimit: number
   preferredProviderOrder: SupportedProvider[]
 }
 
@@ -31,9 +28,6 @@ export const useAISettings = () => {
   const settings = useLocalStorage<AISettings>('ai-settings', {
     enabled: true,
     provider: 'claude' as SupportedProvider,
-    fallbackToMock: true,
-    costTracking: true,
-    monthlyCostLimit: 10.0, // Default $10/month
     preferredProviderOrder: ['claude', 'openai'],
   })
 
@@ -43,9 +37,6 @@ export const useAISettings = () => {
     requestCount: 0,
     providers: {},
   })
-
-  // Monthly cost tracking
-  const monthlyCosts = useLocalStorage<Record<string, number>>('ai-monthly-costs', {})
 
   // Provider cost information
   const providerCostInfo = ref<Record<SupportedProvider, ProviderCostInfo>>({
@@ -79,10 +70,10 @@ export const useAISettings = () => {
     },
   })
 
-  // Provider health status
+  // Provider health status - will be populated by API calls
   const providerStatus = ref<Record<SupportedProvider, ProviderStatus>>({
-    claude: { provider: 'claude', available: true, lastChecked: 0 },
-    openai: { provider: 'openai', available: true, lastChecked: 0 },
+    claude: { provider: 'claude', available: false, lastChecked: 0 },
+    openai: { provider: 'openai', available: false, lastChecked: 0 },
     gemini: { provider: 'gemini', available: false, lastChecked: 0 },
     ollama: { provider: 'ollama', available: false, lastChecked: 0 },
   })
@@ -90,33 +81,7 @@ export const useAISettings = () => {
   // Computed for easy access
   const isEnabled = computed(() => Boolean(settings.value?.enabled))
   const currentProvider = computed(() => settings.value?.provider || 'claude')
-  const canFallback = computed(() => Boolean(settings.value?.fallbackToMock))
-  const isCostTrackingEnabled = computed(() => Boolean(settings.value?.costTracking))
-  const monthlyLimit = computed(() => Number(settings.value?.monthlyCostLimit || 10))
 
-  // Cost calculations
-  const getCurrentMonthKey = (): string => {
-    const now = new Date()
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  }
-
-  const currentMonthCost = computed((): number => {
-    const monthKey = getCurrentMonthKey()
-    return Number(monthlyCosts.value[monthKey] || 0)
-  })
-
-  const remainingBudget = computed((): number => {
-    const limit = Number(monthlyLimit.value || 10)
-    const current = Number(currentMonthCost.value || 0)
-    return Math.max(0, limit - current)
-  })
-
-  const budgetUtilization = computed((): number => {
-    const limit = Number(monthlyLimit.value || 10)
-    const current = Number(currentMonthCost.value || 0)
-    if (limit <= 0) return 0
-    return (current / limit) * 100
-  })
 
   const calculateEstimatedCost = (provider: SupportedProvider, inputTokens: number, outputTokens: number): number => {
     const costInfo = providerCostInfo.value[provider]
@@ -147,26 +112,13 @@ export const useAISettings = () => {
     settings.value.enabled = enabled
   }
 
-  const toggleFallback = () => {
-    settings.value.fallbackToMock = !settings.value.fallbackToMock
-  }
-
-  const toggleCostTracking = () => {
-    settings.value.costTracking = !settings.value.costTracking
-  }
-
-  const setMonthlyLimit = (limit: number) => {
-    settings.value.monthlyCostLimit = Math.max(0, limit)
-  }
 
   const setPreferredProviderOrder = (order: SupportedProvider[]) => {
     settings.value.preferredProviderOrder = order
   }
 
   const trackUsage = (provider: SupportedProvider, inputTokens: number, outputTokens: number) => {
-    if (!isCostTrackingEnabled.value) return
-
-    // Update usage stats
+    // Update usage stats for informational purposes
     const totalTokens = inputTokens + outputTokens
     usageStats.value.totalTokens += totalTokens
     usageStats.value.requestCount += 1
@@ -177,11 +129,6 @@ export const useAISettings = () => {
 
     usageStats.value.providers[provider].tokens += totalTokens
     usageStats.value.providers[provider].requests += 1
-
-    // Update monthly costs
-    const cost = calculateEstimatedCost(provider, inputTokens, outputTokens)
-    const monthKey = getCurrentMonthKey()
-    monthlyCosts.value[monthKey] = (monthlyCosts.value[monthKey] || 0) + cost
   }
 
   // Provider health checks
@@ -224,23 +171,17 @@ export const useAISettings = () => {
   }
 
   const checkAllProviders = async () => {
-    const providers: SupportedProvider[] = ['claude', 'openai', 'gemini', 'ollama']
+    // Only check providers that are implemented in the AIRouter
+    const providers: SupportedProvider[] = ['claude', 'openai']
     await Promise.all(providers.map(provider => checkProviderHealth(provider)))
+    
+    // Mark unimplemented providers as unavailable
+    providerStatus.value.gemini = { provider: 'gemini', available: false, lastChecked: Date.now(), error: 'Provider not implemented' }
+    providerStatus.value.ollama = { provider: 'ollama', available: false, lastChecked: Date.now(), error: 'Provider not implemented' }
   }
 
   const getBestProvider = (): SupportedProvider => {
-    // If budget exceeded, prefer free providers
-    if (budgetUtilization.value >= 100) {
-      const freeProviders = settings.value.preferredProviderOrder.filter(
-        provider => providerCostInfo.value[provider]?.tier === 'free' && 
-                   providerStatus.value[provider]?.available
-      )
-      if (freeProviders.length > 0) {
-        return freeProviders[0]!
-      }
-    }
-
-    // Otherwise, use preferred order with availability check
+    // Use preferred order with availability check
     for (const provider of settings.value.preferredProviderOrder) {
       if (providerStatus.value[provider]?.available) {
         return provider
@@ -321,11 +262,8 @@ export const useAISettings = () => {
     }
   }
 
-  const resetMonthlyUsage = () => {
-    const monthKey = getCurrentMonthKey()
-    monthlyCosts.value[monthKey] = 0
-    
-    // Reset usage stats for current month
+  const resetUsageStats = () => {
+    // Reset usage stats
     usageStats.value = {
       totalTokens: 0,
       requestCount: 0,
@@ -346,28 +284,18 @@ export const useAISettings = () => {
     settings: readonly(settings),
     isEnabled,
     currentProvider,
-    canFallback,
-    isCostTrackingEnabled,
-    monthlyLimit,
 
-    // Cost tracking
+    // Usage stats (informational only)
     usageStats: readonly(usageStats),
-    monthlyCosts: readonly(monthlyCosts),
-    currentMonthCost,
-    remainingBudget,
-    budgetUtilization,
     providerCostInfo: readonly(providerCostInfo),
 
     // Actions
     setProvider,
     toggleEnabled,
     setEnabled,
-    toggleFallback,
-    toggleCostTracking,
-    setMonthlyLimit,
     setPreferredProviderOrder,
     trackUsage,
-    resetMonthlyUsage,
+    resetUsageStats,
 
     // Health checks
     providerStatus: readonly(providerStatus),
@@ -377,7 +305,7 @@ export const useAISettings = () => {
     checkAllProviders,
     ensureProviderAvailable,
 
-    // Cost-aware provider selection
+    // Provider selection
     getBestProvider,
     getProvidersSortedByCost,
     calculateEstimatedCost,

@@ -66,6 +66,7 @@
         :compact="!mobileMode" 
         :mobile-mode="mobileMode"
         @open-settings="$emit('open-settings')"
+        @view-ai-history="$emit('view-ai-history')"
       />
 
 
@@ -207,6 +208,7 @@ interface Emits {
   (e: 'navigate-to-settings'): void
   (e: 'navigate-to-history'): void
   (e: 'open-settings'): void
+  (e: 'view-ai-history'): void
   (e: 'show-analytics-modal'): void
   (e: 'show-heatmap-modal'): void
   (e: 'show-insights-modal'): void

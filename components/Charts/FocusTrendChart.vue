@@ -25,7 +25,8 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 } from 'chart.js'
 import { computed } from 'vue'
 
@@ -37,7 +38,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 )
 
 interface Activity {
