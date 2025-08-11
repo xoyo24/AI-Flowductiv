@@ -46,24 +46,47 @@
 
 ## 📋 **Current Focus Priorities**
 
-### **🎯 High Priority - Next Session**
+### **🎯 High Priority - Current Session**
 
-**CRITICAL: Analytics Dialog Needs Fundamental Redesign**
+**Analytics Dialog Redesign: 2-Tab Structure with Charts & AI Chat**
 
-Previous session failed by removing AI features instead of thoughtfully redesigning them. Need to restart with user-centered approach.
+**Refined Approach** (User Feedback Integrated):
+- **Tab 1: Analytics & Trends** 📈 - Visual time series with lightweight chart library
+- **Tab 2: AI Insights & Chat** 🤖 - Structured AI report + basic chat interface  
+- **Separate Settings Dialog** ⚙️ - Triggered from sidebar dropdown, not mixed with analytics
 
-**Next Focus: Rethink Analytics Purpose** (90 min)
-- 🧠 **User Research**: What insights do users actually need from productivity data?
-- 🎯 **Purpose Definition**: Define clear value proposition for analytics dialog
-- 🤖 **AI Integration Strategy**: How can AI genuinely enhance analytics (not just add complexity)?
-- 🔧 **Fix vs Replace Decision**: When to fix broken features vs when to redesign fundamentally
-- 🛠️ **Implementation Plan**: Concrete steps to build genuinely useful analytics
+**Implementation Plan** (4-5 hours total):
 
-**Key Questions to Answer**:
-1. What actions should users take after viewing analytics?
-2. What insights help users improve their productivity?  
-3. How can AI provide value beyond basic statistical analysis?
-4. What's the difference between useful AI features vs "AI theater"?
+**Phase 1: Dialog Foundation & Chart Integration** (60 min)
+- Chart library setup (Chart.js/ApexCharts for Nuxt 3 + TypeScript)
+- Fix dialog scroll behavior (only dialog scrolls, background fixed)  
+- Update tab structure (2 focused tabs)
+
+**Phase 2: Analytics & Trends Tab** (75 min)
+- Daily activity time series chart (last 30 days)
+- Focus trend line chart over time
+- Activity distribution pie chart (tag categories)
+- Peak hours heatmap with chart visualization
+- Enhanced metrics with trend indicators
+
+**Phase 3: AI Insights & Chat Tab** (90 min)
+- Structured AI report (start simple): Productivity Analysis, Focus Assessment, Recommendations
+- Basic chat interface for follow-up questions about report
+- Integration with existing `/api/ai/daily-summary` endpoint
+- Create new `/api/ai/chat.post.ts` for conversation
+
+**Phase 4: Settings Dialog Separation** (45 min)
+- New `components/SettingsDialog.vue` with all app settings
+- Fix useAISettings NaN values and provider toggles
+- Trigger from sidebar header dropdown
+- AI provider/cost management integration
+
+**Technical Decisions Made**:
+- ✅ Chart library for better visualization (Chart.js recommended)
+- ✅ Simple AI report structure (iterate later)
+- ✅ Basic chat implementation (iterate later)  
+- ✅ Settings separation for cleaner architecture
+- ✅ Proper modal scroll behavior
 
 ### **🎨 Medium Priority**
 
@@ -81,18 +104,20 @@ Previous session failed by removing AI features instead of thoughtfully redesign
 
 ---
 
-## **📋 Next Session Recommendation**
+## **📋 Current Session Progress**
 
-**Suggested Focus**: **Analytics Dialog Fundamental Redesign**  
-**Estimated Duration**: 90 minutes  
-**Rationale**: Current analytics show basic stats but don't help users understand WHY their productivity varies or WHAT actions they should take. Previous attempt failed by removing complexity instead of thoughtfully redesigning it.
+**Focus**: **Analytics Dialog Redesign - 2-Tab Structure**  
+**Status**: Planning Complete - Ready to Implement  
+**Estimated Duration**: 4-5 hours  
 
 **Success Criteria**:
-- Define what insights users actually need (not just what's easy to calculate)
-- Design AI integration that adds genuine value (not just impressive visuals)
-- Create actionable recommendations users can actually implement  
-- Fix AI Settings properly instead of removing functionality
-- Establish clear decision framework: when to fix vs when to redesign
+- ✅ Clear tab separation: Visual analytics vs AI insights
+- ✅ Charts help users see productivity patterns over time
+- ✅ AI provides structured report + chat follow-ups
+- ✅ Settings cleanly separated from analytics
+- ✅ Dialog scroll behavior fixed (background stays fixed)
+- ✅ Mobile-responsive with proper touch targets
+- ✅ Integration with existing AI infrastructure works correctly
 
 ---
 
