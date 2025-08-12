@@ -331,17 +331,19 @@
 
 <script setup lang="ts">
 import { BarChart, BookOpen, Clock, Lightbulb, Menu, Moon, Settings, Users } from 'lucide-vue-next'
-import { computed, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
+import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, triggerRef, watch } from 'vue'
 import ActivitySmartEditInput from '~/components/Activity/SmartEditInput.vue'
 import SuggestionDropdown from '~/components/Activity/SuggestionDropdown.vue'
-import ActivityList from '~/components/ActivityList.vue'
-import AnalyticsSidebar from '~/components/AnalyticsSidebar.vue'
-import FilterBar from '~/components/FilterBar.vue'
-import FocusRatingModal from '~/components/FocusRatingModal.vue'
-import InputComposer from '~/components/InputComposer.vue'
-import MobileAnalyticsPanel from '~/components/MobileAnalyticsPanel.vue'
-import SettingsDialog from '~/components/SettingsDialog.vue'
-import AIHistoryDialog from '~/components/AIHistoryDialog.vue'
+// Lazy load more heavy components for better performance
+const ActivityList = defineAsyncComponent(() => import('~/components/ActivityList.vue'))
+const AnalyticsSidebar = defineAsyncComponent(() => import('~/components/AnalyticsSidebar.vue'))
+const FilterBar = defineAsyncComponent(() => import('~/components/FilterBar.vue'))
+const FocusRatingModal = defineAsyncComponent(() => import('~/components/FocusRatingModal.vue'))
+const InputComposer = defineAsyncComponent(() => import('~/components/InputComposer.vue'))
+// Lazy load heavy components for better performance
+const MobileAnalyticsPanel = defineAsyncComponent(() => import('~/components/MobileAnalyticsPanel.vue'))
+const SettingsDialog = defineAsyncComponent(() => import('~/components/SettingsDialog.vue'))
+const AIHistoryDialog = defineAsyncComponent(() => import('~/components/AIHistoryDialog.vue'))
 import StatusCallout from '~/components/StatusCallout.vue'
 import ThemeToggle from '~/components/ThemeToggle.vue'
 import TimerDisplay from '~/components/TimerDisplay.vue'
@@ -352,6 +354,8 @@ import { useContextualStatus } from '~/composables/useContextualStatus'
 import { useFocusRating } from '~/composables/useFocusRating'
 import { useInputParser } from '~/composables/useInputParser'
 import { useTagManagement } from '~/composables/useTagManagement'
+import { useProgressiveEnhancement } from '~/composables/useProgressiveEnhancement'
+import { useResourceOptimization } from '~/composables/useResourceOptimization'
 
 // Timer and activities
 const {
@@ -392,6 +396,17 @@ const {
   clearDurationRangeFilter,
   clearAllAdvancedFilters,
 } = useAdvancedFilters()
+
+// Progressive enhancement for performance optimization
+const {
+  onTimerStart,
+  onAnalyticsOpen,
+  onFiltersOpen,
+  onSettingsOpen
+} = useProgressiveEnhancement()
+
+// Resource optimization
+useResourceOptimization()
 
 // Focus rating system
 const {
@@ -582,6 +597,15 @@ const showInsightsModal = ref(false)
 const showGoalsModal = ref(false)
 const showSettingsModal = ref(false)
 const showHistoryModal = ref(false)
+
+// Watch for modal opens to trigger progressive loading
+watch(showAnalyticsModal, (isOpen) => {
+  if (isOpen) onAnalyticsOpen()
+})
+
+watch(showSettingsModal, (isOpen) => {
+  if (isOpen) onSettingsOpen()
+})
 const quickStartHidden = ref(false)
 
 // Search functionality
@@ -634,6 +658,9 @@ const handleStart = () => {
     }
     vibrate([100])
     hideDropdown()
+    
+    // Trigger progressive enhancement
+    onTimerStart()
   }
 }
 

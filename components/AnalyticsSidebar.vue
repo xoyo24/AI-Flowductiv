@@ -165,6 +165,7 @@
 </template>
 
 <script setup lang="ts">
+import { defineAsyncComponent, ref } from 'vue'
 import {
   BarChart3,
   Brain,
@@ -174,12 +175,12 @@ import {
 } from 'lucide-vue-next'
 import DurationSlider from '~/components/DurationSlider.vue'
 import FocusFilter from '~/components/FocusFilter.vue'
-import GoalDefinitionForm from '~/components/GoalDefinitionForm.vue'
-import InsightsPanel from '~/components/InsightsPanel.vue'
+const GoalDefinitionForm = defineAsyncComponent(() => import('~/components/GoalDefinitionForm.vue'))
+const InsightsPanel = defineAsyncComponent(() => import('~/components/InsightsPanel.vue'))
 import PriorityFilter from '~/components/PriorityFilter.vue'
-import ProductivityOverview from '~/components/ProductivityOverview.vue'
+const ProductivityOverview = defineAsyncComponent(() => import('~/components/ProductivityOverview.vue'))
 import SavedFilterCombinations from '~/components/SavedFilterCombinations.vue'
-import TagFilters from '~/components/TagFilters.vue'
+const TagFilters = defineAsyncComponent(() => import('~/components/TagFilters.vue'))
 import UserDropdown from '~/components/UserDropdown.vue'
 import type { Goal } from '~/server/database/schema'
 import type { GoalProgress } from '~/types/goal'

@@ -1,6 +1,7 @@
 import { useIntervalFn } from '@vueuse/core'
 import { computed, getCurrentInstance, readonly, ref } from 'vue'
 import { useActivities } from '~/composables/useActivities'
+import { usePerformance } from '~/composables/usePerformance'
 import { InputParserService } from '~/services/inputParser'
 
 export interface TimerState {
@@ -12,6 +13,9 @@ export interface TimerState {
 }
 
 export const useTimer = () => {
+  // Performance monitoring
+  const { startMeasurement, endMeasurement } = usePerformance()
+  
   // Reactive state
   const isRunning = ref(false)
   const isPaused = ref(false)
@@ -53,7 +57,12 @@ export const useTimer = () => {
 
   // Actions
   const startTimer = (activity: string) => {
-    if (!activity.trim()) return false
+    startMeasurement('timer-start-operation')
+    
+    if (!activity.trim()) {
+      endMeasurement('timer-start-operation')
+      return false
+    }
 
     currentActivity.value = activity.trim()
     startTime.value = new Date()
@@ -66,6 +75,7 @@ export const useTimer = () => {
 
     // Save to localStorage for persistence
     saveTimerState()
+    endMeasurement('timer-start-operation')
     return true
   }
 
@@ -97,8 +107,16 @@ export const useTimer = () => {
   }
 
   const finishTimer = async (): Promise<{ success: boolean; activity?: any }> => {
-    if (!isRunning.value && !isPaused.value) return { success: false }
-    if (!startTime.value) return { success: false }
+    startMeasurement('timer-finish-operation')
+    
+    if (!isRunning.value && !isPaused.value) {
+      endMeasurement('timer-finish-operation')
+      return { success: false }
+    }
+    if (!startTime.value) {
+      endMeasurement('timer-finish-operation')
+      return { success: false }
+    }
 
     // Calculate final duration
     const finalDuration = isRunning.value
@@ -110,6 +128,7 @@ export const useTimer = () => {
     if (finalDuration < MIN_DURATION_MS) {
       // Reset timer without saving
       resetTimer()
+      endMeasurement('timer-finish-operation')
       return { success: true } // Return true to indicate successful "finish" (just not saved)
     }
 
@@ -142,11 +161,14 @@ export const useTimer = () => {
 
         // Reset timer state
         resetTimer()
+        endMeasurement('timer-finish-operation')
         return { success: true, activity: savedActivity }
       }
+      endMeasurement('timer-finish-operation')
       return { success: false }
     } catch (error) {
       console.error('Failed to save activity:', error)
+      endMeasurement('timer-finish-operation')
       return { success: false }
     }
   }

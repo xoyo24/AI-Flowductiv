@@ -92,6 +92,34 @@ export default defineNuxtConfig({
     typedPages: true,
   },
 
+  // Performance optimizations
+  vite: {
+    build: {
+      rollupOptions: {
+        // Enable tree shaking
+        treeshake: true,
+        output: {
+          manualChunks: {
+            // Separate Chart.js into its own chunk
+            'chart': ['chart.js', 'vue-chartjs'],
+            // Separate large icon library  
+            'icons': ['lucide-vue-next'],
+            // AI providers in separate chunk
+            'ai-providers': ['@ai-sdk/anthropic', '@ai-sdk/openai', '@ai-sdk/google'],
+            // Vue ecosystem
+            'vue-vendor': ['vue', '@vue/runtime-core', '@vue/runtime-dom']
+          }
+        }
+      }
+    },
+    // Optimize dependencies
+    optimizeDeps: {
+      include: ['vue', '@vue/runtime-core', '@vue/runtime-dom'],
+      exclude: ['chart.js', 'vue-chartjs'] // Lazy load these heavy deps
+    }
+  },
+
+
   // Nitro configuration for clean development
   nitro: {
     experimental: {

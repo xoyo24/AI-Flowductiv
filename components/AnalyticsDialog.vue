@@ -285,13 +285,14 @@ import {
   TrendingUp,
   X 
 } from 'lucide-vue-next'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useActivities } from '~/composables/useActivities'
 import { useAISettings } from '~/composables/useAISettings'
-import DailyActivityChart from '~/components/Charts/DailyActivityChart.vue'
-import FocusTrendChart from '~/components/Charts/FocusTrendChart.vue'
-import ActivityDistributionChart from '~/components/Charts/ActivityDistributionChart.vue'
-import PeakHoursChart from '~/components/Charts/PeakHoursChart.vue'
+// Lazy load Chart.js-based components for better performance
+const DailyActivityChart = defineAsyncComponent(() => import('~/components/Charts/DailyActivityChart.vue'))
+const FocusTrendChart = defineAsyncComponent(() => import('~/components/Charts/FocusTrendChart.vue'))
+const ActivityDistributionChart = defineAsyncComponent(() => import('~/components/Charts/ActivityDistributionChart.vue'))
+const PeakHoursChart = defineAsyncComponent(() => import('~/components/Charts/PeakHoursChart.vue'))
 
 interface Props {
   isOpen: boolean

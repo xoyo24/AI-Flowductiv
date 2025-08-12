@@ -1,5 +1,6 @@
 import { computed, readonly, ref } from 'vue'
 import { useActivities } from './useActivities'
+import { usePerformance } from './usePerformance'
 
 export type FilterPreset = 'high-performance' | 'deep-work' | 'quick-tasks'
 
@@ -24,6 +25,8 @@ export interface SavedFilterCombination {
 }
 
 export const useAdvancedFilters = () => {
+  const { startMeasurement, endMeasurement } = usePerformance()
+  
   const {
     activeFilters,
     addTagFilter,
@@ -88,7 +91,12 @@ export const useAdvancedFilters = () => {
   }
 
   const togglePriorityFilter = (priority: number) => {
-    if (priority < 1 || priority > 5) return
+    startMeasurement('filter-priority-toggle')
+    
+    if (priority < 1 || priority > 5) {
+      endMeasurement('filter-priority-toggle')
+      return
+    }
 
     const currentPriorities = activeFilters.value.priority || []
     const index = currentPriorities.indexOf(priority)
@@ -101,6 +109,7 @@ export const useAdvancedFilters = () => {
     }
 
     setPriorityFilter(newPriorities)
+    endMeasurement('filter-priority-toggle')
   }
 
   // Focus rating filtering (wrapped with validation)
@@ -110,7 +119,12 @@ export const useAdvancedFilters = () => {
   }
 
   const toggleFocusRatingFilter = (rating: number) => {
-    if (rating < 1 || rating > 5) return
+    startMeasurement('filter-focus-toggle')
+    
+    if (rating < 1 || rating > 5) {
+      endMeasurement('filter-focus-toggle')
+      return
+    }
 
     const currentRatings = activeFilters.value.focusRating || []
     const index = currentRatings.indexOf(rating)
@@ -123,6 +137,7 @@ export const useAdvancedFilters = () => {
     }
 
     setFocusRatingFilter(newRatings)
+    endMeasurement('filter-focus-toggle')
   }
 
   // Duration range filtering (wrapped with validation)
