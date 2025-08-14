@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+.npm
+.yarn
+.pnpm-debug.log
+
+# Dev and build artifacts
+.nuxt
+.output
+.cache
+
+# Environment and config
+.env*
+!.env.example
+
+# Logs and temp files
+logs
+*.log
+.DS_Store
+.vscode
+
+# Testing
+coverage
+.nyc_output
+test-results
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+local.db
+
+# Documentation (keep minimal)
+docs/
+README.md

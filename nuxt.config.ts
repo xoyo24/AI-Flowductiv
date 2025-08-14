@@ -125,5 +125,6 @@ export default defineNuxtConfig({
     experimental: {
       wasm: false,
     },
+    preset: process.env.NITRO_PRESET || 'node-server',
   },
 })
