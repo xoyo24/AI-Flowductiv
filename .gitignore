@@ -68,6 +68,9 @@ temp/
 .nuxt/
 .output/
 
+# Vercel
+.vercel/
+
 # Supabase
 .supabase/
 

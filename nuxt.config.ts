@@ -125,6 +125,6 @@ export default defineNuxtConfig({
     experimental: {
       wasm: false,
     },
-    preset: process.env.NITRO_PRESET || 'node-server',
+    preset: process.env.NITRO_PRESET || (process.env.NODE_ENV === 'production' ? 'vercel' : 'node-server'),
   },
 })
